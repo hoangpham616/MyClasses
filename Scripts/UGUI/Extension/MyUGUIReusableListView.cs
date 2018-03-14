@@ -4,6 +4,10 @@
  * Class:       MyUGUIReusableListView (version 2.0)
  */
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,24 +18,33 @@ namespace MyClasses.UI
     {
         #region ----- Variable -----
 
+        [HideInInspector]
         [SerializeField]
         private GameObject mItemPrefab;
+        [HideInInspector]
         [SerializeField]
-        private int mItemSize;
+        private int mItemSize = 100;
+        [HideInInspector]
         [SerializeField]
         private int mItemSpacing;
 
+        [HideInInspector]
         [SerializeField]
         private int mContentRealItemQuantity;
+        [HideInInspector]
         [SerializeField]
         private int mContentRealHeadIndex;
+        [HideInInspector]
         [SerializeField]
         private int mContentRealTailIndex;
 
+        [HideInInspector]
         [SerializeField]
         private int mContentItemQuantity;
+        [HideInInspector]
         [SerializeField]
         private int mContentHeadIndex;
+        [HideInInspector]
         [SerializeField]
         private int mContentTailIndex;
 
@@ -79,6 +92,16 @@ namespace MyClasses.UI
         #endregion
 
         #region ----- Public Method -----
+
+        /// <summary>
+        /// Initialize.
+        /// </summary>
+        public void Initialize(int itemSize, int itemSpacing)
+        {
+            mItemSize = itemSize;
+            mItemSpacing = itemSpacing;
+            Initialize();
+        }
 
         /// <summary>
         /// Initialize.
@@ -396,4 +419,80 @@ namespace MyClasses.UI
 
         #endregion
     }
+
+#if UNITY_EDITOR
+
+    [CustomEditor(typeof(MyUGUIReusableListView))]
+    public class MyUGUIReusableListViewEditor : Editor
+    {
+        private MyUGUIReusableListView mScript;
+        private SerializedProperty mItemPrefab;
+        private SerializedProperty mItemSize;
+        private SerializedProperty mItemSpacing;
+        private SerializedProperty mContentRealItemQuantity;
+        private SerializedProperty mContentRealHeadIndex;
+        private SerializedProperty mContentRealTailIndex;
+        private SerializedProperty mContentItemQuantity;
+        private SerializedProperty mContentHeadIndex;
+        private SerializedProperty mContentTailIndex;
+
+        private ScrollRect mScrollRect;
+        private bool mIsScrollRectHorizontal;
+
+        /// <summary>
+        /// OnEnable.
+        /// </summary>
+        void OnEnable()
+        {
+            mScript = (MyUGUIReusableListView)target;
+            mItemPrefab = serializedObject.FindProperty("mItemPrefab");
+            mItemSize = serializedObject.FindProperty("mItemSize");
+            mItemSpacing = serializedObject.FindProperty("mItemSpacing");
+            mContentRealItemQuantity = serializedObject.FindProperty("mContentRealItemQuantity");
+            mContentRealHeadIndex = serializedObject.FindProperty("mContentRealHeadIndex");
+            mContentRealTailIndex = serializedObject.FindProperty("mContentRealTailIndex");
+            mContentItemQuantity = serializedObject.FindProperty("mContentItemQuantity");
+            mContentHeadIndex = serializedObject.FindProperty("mContentHeadIndex");
+            mContentTailIndex = serializedObject.FindProperty("mContentTailIndex");
+
+            mScrollRect = mScript.gameObject.GetComponent<ScrollRect>();
+            mScrollRect.vertical = !mScrollRect.horizontal;
+            mIsScrollRectHorizontal = mScrollRect.horizontal;
+        }
+
+        /// <summary>
+        /// OnInspectorGUI.
+        /// </summary>
+        public override void OnInspectorGUI()
+        {
+            EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour(mScript), typeof(MyUGUIReusableListView), false);
+
+            serializedObject.Update();
+            EditorGUILayout.Space();
+            mItemPrefab.objectReferenceValue = EditorGUILayout.ObjectField("Item Prefab", mItemPrefab.objectReferenceValue, typeof(GameObject), false);
+            mItemSize.intValue = EditorGUILayout.IntField("Item Size", mItemSize.intValue);
+            mItemSpacing.intValue = EditorGUILayout.IntField("Item Spacing", mItemSpacing.intValue);
+            serializedObject.ApplyModifiedProperties();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Real Item Quantity", mContentRealItemQuantity.intValue.ToString());
+            EditorGUILayout.LabelField("Real Head Index", mContentRealHeadIndex.intValue.ToString());
+            EditorGUILayout.LabelField("Real Tail Index", mContentRealTailIndex.intValue.ToString());
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Item Quantity", mContentItemQuantity.intValue.ToString());
+            EditorGUILayout.LabelField("Head Index", mContentHeadIndex.intValue.ToString());
+            EditorGUILayout.LabelField("Tail Index", mContentTailIndex.intValue.ToString());
+
+            if ((mIsScrollRectHorizontal && mScrollRect.vertical) || (!mIsScrollRectHorizontal && mScrollRect.horizontal))
+            {
+                Debug.LogWarning("[" + typeof(MyUGUIReusableListView).Name + "] Initialize(): This version does not support twin scroll mode.");
+                mIsScrollRectHorizontal = !mIsScrollRectHorizontal;
+            }
+            mScrollRect.horizontal = mIsScrollRectHorizontal;
+            mScrollRect.vertical = !mIsScrollRectHorizontal;
+        }
+    }
+
+#endif
 }
