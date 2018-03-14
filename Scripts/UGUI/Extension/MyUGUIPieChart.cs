@@ -146,6 +146,18 @@ namespace MyClasses.UI
 
         #endregion
 
+        #region ----- Public Method -----
+
+        /// <summary>
+        /// Refresh.
+        /// </summary>
+        public void Refresh()
+        {
+            SetAllDirty();
+        }
+
+        #endregion
+
         #region ----- Private Method -----
 
         /// <summary>
