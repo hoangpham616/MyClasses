@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.1)
+ * Class:       MyUGUIManager (version 2.2)
  */
 
 #pragma warning disable 0162
@@ -1287,6 +1287,11 @@ namespace MyClasses.UI
                     break;
                 case EUnitySceneState.Load:
                     {
+                        if (mCoreAssetBundleConfig != null && !string.IsNullOrEmpty(mCoreAssetBundleConfig.URL))
+                        {
+                            MyAssetBundleManager.Load(mCoreAssetBundleConfig.URL, mCoreAssetBundleConfig.Version, null, MyAssetBundleManager.ECacheMode.UnremovableCache);
+                        }
+
                         if (mCurrentUnityScene.Name != SceneManager.GetActiveScene().name)
                         {
                             mUnitySceneLoad = SceneManager.LoadSceneAsync(mCurrentUnityScene.Name);
