@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyAssetBundleManager (version 1.0)
+ * Class:       MyAssetBundleManager (version 1.1)
  */
 
 using UnityEngine;
@@ -26,6 +26,8 @@ namespace MyClasses
 
         #region ----- Variable -----
 
+        private static string COLOR = "red";
+
         private static Dictionary<string, MyAssetBundle> mDictBundle = new Dictionary<string, MyAssetBundle>();
 
         #endregion
@@ -37,11 +39,19 @@ namespace MyClasses
         /// </summary>
         public static AssetBundle Get(string url, int version)
         {
+#if DEBUG_MY_ASSET_BUNDLE
+            Debug.Log(string.Format("<color={0}>[{1}] Get()</color>: url=\"{2}\" - version=\"{3}\"", COLOR, typeof(MyAssetBundleManager).Name, url, version));
+#endif
+
             if (mDictBundle.ContainsKey(url))
             {
                 MyAssetBundle bundle = mDictBundle[url];
                 if (bundle.Version >= version && bundle.Bundle != null)
                 {
+#if DEBUG_MY_ASSET_BUNDLE
+                    Debug.Log(string.Format("<color={0}>[{1}] Get()</color>: successed", COLOR, typeof(MyAssetBundleManager).Name));
+#endif
+
                     return bundle.Bundle;
                 }
             }
@@ -54,16 +64,25 @@ namespace MyClasses
         /// </summary>
         public static void Load(string url, int version, Action<AssetBundle> onLoadComplete, ECacheMode cacheMode = ECacheMode.Cache)
         {
+#if DEBUG_MY_ASSET_BUNDLE
+            Debug.Log(string.Format("<color={0}>[{1}] Load()</color>: url=\"{2}\" - version=\"{3}\" - cacheMode=\"{4}\"", COLOR, typeof(MyAssetBundleManager).Name, url, version, cacheMode));
+#endif
+
             if (mDictBundle.ContainsKey(url))
             {
                 MyAssetBundle bundle = mDictBundle[url];
                 if (bundle.Version >= version && bundle.Bundle != null)
                 {
+#if DEBUG_MY_ASSET_BUNDLE
+                    Debug.Log(string.Format("<color={0}>[{1}] Load()</color>: loaded from cache", COLOR, typeof(MyAssetBundleManager).Name));
+#endif
+
+                    bundle.CacheMode = cacheMode;
                     if (onLoadComplete != null)
                     {
                         onLoadComplete(bundle.Bundle);
-                        return;
                     }
+                    return;
                 }
             }
 
@@ -75,11 +94,19 @@ namespace MyClasses
         /// </summary>
         public static void Unload(string url)
         {
+#if DEBUG_MY_ASSET_BUNDLE
+            Debug.Log(string.Format("<color={0}>[{1}] Unload()</color>: url=\"{2}\"", COLOR, typeof(MyAssetBundleManager).Name, url));
+#endif
+
             if (mDictBundle.ContainsKey(url))
             {
                 MyAssetBundle bundle = mDictBundle[url];
                 if (bundle.Bundle != null)
                 {
+#if DEBUG_MY_ASSET_BUNDLE
+                    Debug.Log(string.Format("<color={0}>[{1}] Unload()</color>: succesed", COLOR, typeof(MyAssetBundleManager).Name));
+#endif
+
                     bundle.Bundle.Unload(false);
                 }
                 mDictBundle.Remove(url);
@@ -91,6 +118,10 @@ namespace MyClasses
         /// </summary>
         public static void UnloadAll(bool isIncludeUnremovableCache = false)
         {
+#if DEBUG_MY_ASSET_BUNDLE
+            Debug.Log(string.Format("<color={0}>[{1}] UnloadAll()</color>: isIncludeUnremovableCache=\"{2}\"", COLOR, typeof(MyAssetBundleManager).Name, isIncludeUnremovableCache));
+#endif
+
             if (isIncludeUnremovableCache)
             {
                 mDictBundle.Clear();
@@ -122,7 +153,7 @@ namespace MyClasses
 
                 if (!string.IsNullOrEmpty(www.error))
                 {
-                    Debug.LogError("[" + typeof(MyAssetBundleManager).Name + "] _DoLoadAssetBundle(): Could not load asset bundle url=\"" + url + "\" version=\"" + version + "\".");
+                    Debug.LogError("[" + typeof(MyAssetBundleManager).Name + "] _DoLoadAssetBundle(): Could not load asset bundle url=\"" + url + "\" - version=\"" + version + "\"");
                 }
                 else if (cacheMode != ECacheMode.None)
                 {
@@ -137,6 +168,10 @@ namespace MyClasses
                 if (onLoadComplete != null)
                 {
                     onLoadComplete(www.assetBundle);
+                }
+                else if (cacheMode == ECacheMode.None)
+                {
+                    www.assetBundle.Unload(false);
                 }
             }
         }
