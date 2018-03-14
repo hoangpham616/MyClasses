@@ -91,8 +91,8 @@ namespace MyClasses.UI.Tool
                             IsFoldOut = true,
                             IsInitWhenLoadUnityScene = false,
                             IsHideHUD = false,
-                            FadeInDuration = 0.5f,
-                            FadeOutDuration = 0.5f,
+                            FadeInDuration = 0.3f,
+                            FadeOutDuration = 0.2f,
                         });
                     }
                     EditorGUI.BeginDisabledGroup(unityScene.ListScene.Count == 0);
