@@ -615,6 +615,20 @@ namespace MyClasses.UI
         }
 
         /// <summary>
+        /// Show loading indicator and return loading id.
+        /// </summary>
+        public int ShowLoadingIndicator(float timeOut, Action timeOutCallback = null, ELoadingIndicatorID popupID = ELoadingIndicatorID.Circle)
+        {
+#if DEBUG_MY_UI
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowLoadingIndicator()</color>: timeOut=" + timeOut);
+#endif
+
+            _InitLoadingIndicator();
+
+            return mCurrentLoadingIndicator.Show(popupID, timeOut, timeOutCallback);
+        }
+
+        /// <summary>
         /// Hide loading indicator.
         /// </summary>
         /// <param name="minLiveTime">minimum seconds have to show before hiding</param>
@@ -908,10 +922,15 @@ namespace MyClasses.UI
                     uiCamera = new GameObject("UICamera");
                     uiCamera.AddComponent<Camera>();
                     uiCamera.transform.localPosition = new Vector3(0, 1, -10);
+
+                    mCameraUI = uiCamera.GetComponent<Camera>();
+                    mCameraUI.clearFlags = CameraClearFlags.Nothing;
+                    mCameraUI.cullingMask |= LayerMask.GetMask("UI");
                 }
-                mCameraUI = uiCamera.GetComponent<Camera>();
-                mCameraUI.clearFlags = CameraClearFlags.Nothing;
-                mCameraUI.cullingMask |= LayerMask.GetMask("UI");
+                else
+                {
+                    mCameraUI = uiCamera.GetComponent<Camera>();
+                }
             }
         }
 
