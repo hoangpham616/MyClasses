@@ -471,10 +471,12 @@ namespace MyClasses.UI
         {
             base.OnInspectorGUI();
 
-            mScript.IsEnableSoundClick = EditorGUILayout.Toggle("Is Enable Sound Click", mScript.IsEnableSoundClick);
+            EditorGUILayout.Space();
+
+            mScript.IsEnableSoundClick = EditorGUILayout.Toggle("Play Sound On Click", mScript.IsEnableSoundClick);
             if (mScript.IsEnableSoundClick)
             {
-                mScript.SFXClick = EditorGUILayout.TextField("Path", mScript.SFXClick);
+                mScript.SFXClick = EditorGUILayout.TextField("Resources Path", mScript.SFXClick);
             }
         }
     }
