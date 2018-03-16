@@ -232,7 +232,7 @@ namespace MyClasses.UI
         /// Resize the content panel and reposition its items.
         /// </summary>
         /// <param name="isKeepCurrentItems">keep current items at same position</param>
-        private void _ResizeAndReposition(int realNumItem, bool isKeepCurrentItems = false)
+        private void _ResizeAndReposition(int realNumItem, bool isKeepCurrentItems = true)
         {
             float contentSize = Mathf.Max(mContentParent.rect.height, (realNumItem * (mItemSize + mItemSpacing)) - mItemSpacing);
 
