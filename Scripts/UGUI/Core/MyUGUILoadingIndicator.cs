@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUILoadingIndicator (version 2.1)
+ * Class:       MyUGUILoadingIndicator (version 2.3)
 */
 
 using UnityEngine;
@@ -99,7 +99,7 @@ namespace MyClasses.UI
             {
                 if (minLiveTime > 0)
                 {
-                    float displayedTime = mStartingTime - Time.time;
+                    float displayedTime = Time.time - mStartingTime;
                     if (displayedTime < minLiveTime)
                     {
                         float delayTime = minLiveTime - displayedTime;
@@ -213,9 +213,9 @@ namespace MyClasses.UI
             return obj;
         }
 
-#endregion
+        #endregion
 
-#region ----- Private Method -----
+        #region ----- Private Method -----
 
         /// <summary>
         /// Show.
@@ -330,6 +330,6 @@ namespace MyClasses.UI
 
 #endif
 
-#endregion
+        #endregion
     }
 }
