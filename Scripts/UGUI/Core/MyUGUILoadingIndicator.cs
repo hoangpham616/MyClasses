@@ -280,7 +280,6 @@ namespace MyClasses.UI
         /// </summary>
         private IEnumerator _ProcessHide(int loadingID, float delayTime, Action callback = null)
         {
-            Debug.Log("_ProcessHide " + loadingID + " " + delayTime);
             yield return new WaitForSeconds(delayTime);
 
             if (mListID.Contains(loadingID))
