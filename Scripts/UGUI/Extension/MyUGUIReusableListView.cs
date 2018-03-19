@@ -177,7 +177,7 @@ namespace MyClasses.UI
         /// Reload list view.
         /// </summary>
         /// <param name="isKeepCurrentItems">keep current items at same position</param>
-        public void Reload(int itemQuantity, bool isKeepCurrentItems = false)
+        public void Reload(int itemQuantity, bool isKeepCurrentItems = true)
         {
             if (mContent == null)
             {
