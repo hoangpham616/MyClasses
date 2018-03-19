@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISceneFading (version 2.1)
+ * Class:       MyUGUISceneFading (version 2.3)
  */
 
 using UnityEngine;
@@ -92,6 +92,11 @@ namespace MyClasses.UI
 
                 MyUGUIManager.Instance.UpdateSceneFading();
             }
+            else
+            {
+                mIsFadeIn = false;
+                mIsFadeOut = false;
+            }
         }
 
         /// <summary>
@@ -109,6 +114,11 @@ namespace MyClasses.UI
                 mDuration = duration;
 
                 MyUGUIManager.Instance.UpdateSceneFading();
+            }
+            else
+            {
+                mIsFadeIn = false;
+                mIsFadeOut = false;
             }
         }
 
@@ -151,7 +161,11 @@ namespace MyClasses.UI
 
             while (true)
             {
-                if (Time.time < mEndTime)
+                if (!mIsFadeIn && !mIsFadeOut)
+                {
+                    mImage.enabled = false;
+                }
+                else if (Time.time < mEndTime)
                 {
                     if (mIsFadeIn)
                     {
