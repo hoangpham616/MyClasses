@@ -1,9 +1,7 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Shader:      Unlit/AlphaMask (version 1.0)
+ * Shader:      Unlit/AlphaMask (version 1.1)
  */
 
 Shader "MyClasses/Unlit/AlphaMask"
@@ -63,8 +61,11 @@ Shader "MyClasses/Unlit/AlphaMask"
 
 			fixed4 _Color;
 			fixed4 _TextureSampleAdd;
+            float4 _ClipRect;
 			sampler2D _MainTex;
 			sampler2D _AlphaMask;
+            sampler2D _Mask;
+            half4 _MaskUv;
 			float2 _AlphaUV;
 			float2 _Min;
 			float2 _Max;
@@ -88,20 +89,13 @@ Shader "MyClasses/Unlit/AlphaMask"
 			fixed4 frag(v2f i) : SV_Target
 			{
 				half4 color = (tex2D(_MainTex, i.texcoord) + _TextureSampleAdd) * i.color;
-
-				if (i.texcoord.x < _Min.x || i.texcoord.x > _Max.x || i.texcoord.y < _Min.y || i.texcoord.y > _Max.y)
-				{
-					color.a = 0;
-				}
-				else
-				{
-					float a = tex2D(_AlphaMask, (i.texcoord - _Min) / _AlphaUV).a;
-					if (_FlipAlphaMask > 0)
-					{
-						a = 1 - a;
-					}
-					color.a *= a;
-				}
+                
+                float a = tex2D(_AlphaMask, (i.texcoord - _Min) / _AlphaUV).a;
+                if (_FlipAlphaMask > 0)
+                {
+                    a = 1 - a;
+                }
+                color.a *= a;
 
 				return color;
 			}
