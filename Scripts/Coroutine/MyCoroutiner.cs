@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyCoroutiner (version 1.1)
+ * Class:       MyCoroutiner (version 1.2)
  */
 
 using UnityEngine;
@@ -99,6 +99,8 @@ namespace MyClasses
                 {
                     mCoroutineObject = new GameObject(objName);
                 }
+
+                GameObject.DontDestroyOnLoad(mCoroutineObject);
 
                 mDictionaryRoutine = new Dictionary<string, IEnumerator>();
             }
