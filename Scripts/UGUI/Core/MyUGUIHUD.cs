@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIHUD (version 2.0)
+ * Class:       MyUGUIHUD (version 2.3)
  */
 
 using UnityEngine;
@@ -81,17 +81,17 @@ namespace MyClasses.UI
         }
 
         /// <summary>
-        /// OnDestroy.
+        /// OnUGUIDestroy.
         /// </summary>
-        public override void OnDestroy()
+        public override void OnUGUIDestroy()
         {
-            base.OnDestroy();
+            base.OnUGUIDestroy();
 
             IsLoaded = false;
         }
 
         /// <summary>
-        /// OnUGUISwitchPanel.
+        /// OnUGUISceneSwitch.
         /// </summary>
         public virtual void OnUGUISceneSwitch(MyUGUIScene scene)
         {

@@ -9,12 +9,14 @@ namespace MyClasses.UI
 	public enum EUnitySceneID
 	{
 		LoginUnityScene,
-        GameplayUnityScene
+		MainMenuUnityScene,
+		GameplayUnityScene,
 	}
 
 	public enum ESceneID
 	{
 		LoginScene,
+		BoardListScene,
 		TLMNScene,
 	}
 

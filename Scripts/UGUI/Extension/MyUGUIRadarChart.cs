@@ -29,7 +29,7 @@ namespace MyClasses.UI
         private float mRotation = 0;
         [HideInInspector]
         [SerializeField]
-        private List<float> mListVerticle = new List<float>(){ 1, 1, 1, 1, 1, 1 };
+        private List<float> mListVerticle = new List<float>() { 1, 1, 1, 1, 1, 1 };
 
         #endregion
 
@@ -38,8 +38,8 @@ namespace MyClasses.UI
         public float Radius
         {
             get { return mRadius; }
-            set 
-            { 
+            set
+            {
                 mRadius = value;
                 SetAllDirty();
             }
@@ -48,8 +48,8 @@ namespace MyClasses.UI
         public float Rotation
         {
             get { return mRotation; }
-            set 
-            { 
+            set
+            {
                 mRotation = Mathf.Clamp(value, 0, 360);
                 SetAllDirty();
             }
@@ -104,6 +104,18 @@ namespace MyClasses.UI
                 vh.AddTriangle(countVerticle, curVert % countVerticle, prevVert % countVerticle);
                 vh.AddTriangle(countVerticle, curVert % countVerticle, nextVert);
             }
+        }
+
+        #endregion
+
+        #region ----- Public Method -----
+
+        /// <summary>
+        /// Refresh.
+        /// </summary>
+        public void Refresh()
+        {
+            SetAllDirty();
         }
 
         #endregion

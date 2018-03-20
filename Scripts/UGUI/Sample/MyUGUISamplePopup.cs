@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISamplePopup (version 2.1)
+ * Class:       MyUGUISamplePopup (version 2.3)
  */
 
 using UnityEngine;

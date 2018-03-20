@@ -67,13 +67,3 @@
 + Popup overlay, loading indicator, toast, running text...: "Resources\Prefabs\UGUI\Specials\"
 
 **************************************
-
-
-
-
-
-********** Debug **********
-
-Compile flag: DEBUG_MY_UI
-
-***************************

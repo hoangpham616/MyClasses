@@ -158,7 +158,7 @@ namespace MyClasses.UI
         /// <summary>
         /// OnDestroy.
         /// </summary>
-        public virtual void OnDestroy()
+        public virtual void OnUGUIDestroy()
         {
             mIsAssetBundleLoading = false;
             mIsAssetBundleLoaded = false;

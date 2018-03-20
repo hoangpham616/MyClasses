@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUILoadingIndicator (version 2.1)
+ * Class:       MyUGUILoadingIndicator (version 2.4)
 */
 
 using UnityEngine;
@@ -99,7 +99,7 @@ namespace MyClasses.UI
             {
                 if (minLiveTime > 0)
                 {
-                    float displayedTime = mStartingTime - Time.time;
+                    float displayedTime = Time.time - mStartingTime;
                     if (displayedTime < minLiveTime)
                     {
                         float delayTime = minLiveTime - displayedTime;
@@ -213,9 +213,9 @@ namespace MyClasses.UI
             return obj;
         }
 
-#endregion
+        #endregion
 
-#region ----- Private Method -----
+        #region ----- Private Method -----
 
         /// <summary>
         /// Show.
@@ -252,17 +252,20 @@ namespace MyClasses.UI
         /// </summary>
         private void _Hide()
         {
-            mStartingTime = -1;
-
-            if (mListID == null)
+            if (mRoot != null)
             {
-                mListID = new List<int>();
+                mStartingTime = -1;
+
+                if (mListID == null)
+                {
+                    mListID = new List<int>();
+                }
+                mListID.Clear();
+
+                mRoot.SetActive(false);
+
+                MyUGUIManager.Instance.UpdatePopupOverlay();
             }
-            mListID.Clear();
-
-            mRoot.SetActive(false);
-
-            MyUGUIManager.Instance.UpdatePopupOverlay();
         }
 
         /// <summary>
@@ -280,7 +283,6 @@ namespace MyClasses.UI
         /// </summary>
         private IEnumerator _ProcessHide(int loadingID, float delayTime, Action callback = null)
         {
-            Debug.Log("_ProcessHide " + loadingID + " " + delayTime);
             yield return new WaitForSeconds(delayTime);
 
             if (mListID.Contains(loadingID))
@@ -331,6 +333,6 @@ namespace MyClasses.UI
 
 #endif
 
-#endregion
+        #endregion
     }
 }

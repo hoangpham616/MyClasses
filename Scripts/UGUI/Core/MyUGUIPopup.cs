@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup (version 2.0)
+ * Class:       MyUGUIPopup (version 2.3)
  */
 
 using UnityEngine;
@@ -182,11 +182,19 @@ namespace MyClasses.UI
         }
 
         /// <summary>
-        /// OnDestroy.
+        /// OnUGUIDestroy.
         /// </summary>
-        public override void OnDestroy()
+        public override void OnUGUIDestroy()
         {
-            base.OnDestroy();
+            base.OnUGUIDestroy();
+        }
+
+        /// <summary>
+        /// OnUGUIBackKey.
+        /// </summary>
+        public virtual void OnUGUIBackKey()
+        {
+            MyUGUIManager.Instance.Back();
         }
 
         #endregion

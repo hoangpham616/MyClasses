@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.1)
+ * Class:       MyUGUIManager (version 2.4)
  */
 
 #pragma warning disable 0162
@@ -15,6 +15,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
@@ -48,6 +49,7 @@ namespace MyClasses.UI
         private GameObject mCanvasOnTopPopup;
         private GameObject mCanvasOnTopFloatPopup;
         private GameObject mCanvasOnTopLoadingIndicator;
+        private GameObject mCanvasSceneFading;
 
         private Dictionary<EPopupID, MyUGUIConfigPopup> mDictPopupConfig = new Dictionary<EPopupID, MyUGUIConfigPopup>();
         private AssetBundleConfig mCoreAssetBundleConfig;
@@ -76,8 +78,8 @@ namespace MyClasses.UI
         private AsyncOperation mUnitySceneUnloadUnusedAsset;
         private AsyncOperation mUnitySceneLoad;
 
-        private Action mScenePreEnterCallback;
-        private Action mScenePostEnterCallback;
+        private Action mOnScenePreEnterCallback;
+        private Action mOnScenePostEnterCallback;
 
         private bool mIsClosePopupByClickingOutside;
         private bool mIsHideRunningTextWhenSwitchingScene;
@@ -223,15 +225,13 @@ namespace MyClasses.UI
             _UpdateScene(Time.deltaTime);
             _UpdateHUD(Time.deltaTime);
 
-            int countPopup = mListPopup.Count;
-            for (int i = countPopup - 1; i >= 0; i--)
+            for (int i = 0, count = mListPopup.Count; i < count; i++)
             {
                 MyUGUIPopup popup = mListPopup[i];
                 _UpdatePopup(ref popup, Time.deltaTime);
                 mListPopup[i] = popup;
             }
-            int countFloatPopup = mListFloatPopup.Count;
-            for (int i = countFloatPopup - 1; i >= 0; i--)
+            for (int i = 0, count = mListFloatPopup.Count; i < count; i++)
             {
                 MyUGUIPopup popup = mListFloatPopup[i];
                 _UpdateFloatPopup(ref popup, Time.deltaTime);
@@ -442,8 +442,8 @@ namespace MyClasses.UI
                     mIsHideRunningTextWhenSwitchingScene = isHideRunningTextWhenSwitchingScene;
                     mIsHideToastWhenSwitchingScene = isHideToastWhenSwitchingScene;
 
-                    mScenePreEnterCallback = preEnterCallback;
-                    mScenePostEnterCallback = postEnterCallback;
+                    mOnScenePreEnterCallback = preEnterCallback;
+                    mOnScenePostEnterCallback = postEnterCallback;
 
                     if (mCurrentScene == null)
                     {
@@ -461,22 +461,14 @@ namespace MyClasses.UI
         }
 
         /// <summary>
-        /// Update scene fading.
-        /// </summary>
-        public void UpdateSceneFading()
-        {
-            if (mCurrentSceneFading != null)
-            {
-                mCurrentSceneFading.Transform.SetAsLastSibling();
-            }
-        }
-
-        /// <summary>
         /// Update popup overlay.
         /// </summary>
         public void UpdatePopupOverlay()
         {
-            StartCoroutine(_UpdatePopupOverlay());
+            if (mCurrentPopupOverlay != null)
+            {
+                StartCoroutine(_UpdatePopupOverlay());
+            }
         }
 
         /// <summary>
@@ -615,10 +607,24 @@ namespace MyClasses.UI
         }
 
         /// <summary>
+        /// Show loading indicator and return loading id.
+        /// </summary>
+        public int ShowLoadingIndicator(float timeOut, Action timeOutCallback = null, ELoadingIndicatorID popupID = ELoadingIndicatorID.Circle)
+        {
+#if DEBUG_MY_UI
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowLoadingIndicator()</color>: timeOut=" + timeOut);
+#endif
+
+            _InitLoadingIndicator();
+
+            return mCurrentLoadingIndicator.Show(popupID, timeOut, timeOutCallback);
+        }
+
+        /// <summary>
         /// Hide loading indicator.
         /// </summary>
         /// <param name="minLiveTime">minimum seconds have to show before hiding</param>
-        public void HideLoadingIndicator(float minLiveTime = 0.2f)
+        public void HideLoadingIndicator(float minLiveTime = 0.1f)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>HideLoadingIndicator()</color>: minLiveTime=" + minLiveTime);
@@ -634,7 +640,7 @@ namespace MyClasses.UI
         /// Hide loading indicator by loading id.
         /// </summary>
         /// <param name="minLiveTime">minimum seconds have to show before hiding</param>
-        public void HideLoadingIndicator(int loadingID, float minLiveTime = 0.2f)
+        public void HideLoadingIndicator(int loadingID, float minLiveTime = 0.1f)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>HideLoadingIndicator()</color>: loadingID=" + loadingID + " minLiveTime=" + minLiveTime);
@@ -806,7 +812,7 @@ namespace MyClasses.UI
             }
             if (mCanvas != null)
             {
-                mCanvas.GetComponent<Canvas>().sortingOrder = -99;
+                mCanvas.GetComponent<Canvas>().sortingOrder = -100;
             }
 
             mCanvasOnTop = GameObject.Find("CanvasOnTop");
@@ -816,7 +822,7 @@ namespace MyClasses.UI
             }
             if (mCanvasOnTop != null)
             {
-                mCanvasOnTop.GetComponent<Canvas>().sortingOrder = 99;
+                mCanvasOnTop.GetComponent<Canvas>().sortingOrder = 100;
 
                 if (mCurrentUnityScene.HUD != null)
                 {
@@ -889,6 +895,24 @@ namespace MyClasses.UI
                     mCanvasOnTopLoadingIndicator.transform.SetAsLastSibling();
                 }
             }
+
+            if (mCanvasSceneFading == null)
+            {
+                mCanvasSceneFading = GameObject.Find("CanvasSceneFading");
+                if (mCanvasSceneFading == null)
+                {
+                    Debug.LogError("[" + typeof(MyUGUIManager).Name + "] OnUGUIInit(): Could not find \"CanvasSceneFading\" in scene \"" + SceneManager.GetActiveScene().name + "\". A template was created instead.");
+
+                    mCanvasSceneFading = new GameObject("CanvasSceneFading");
+                    mCanvasSceneFading.AddComponent<Canvas>();
+                    mCanvasSceneFading.AddComponent<CanvasScaler>();
+                    mCanvasSceneFading.AddComponent<GraphicRaycaster>();
+                }
+                Canvas canvas = mCanvasSceneFading.GetComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.sortingOrder = 1000;
+                DontDestroyOnLoad(mCanvasSceneFading);
+            }
         }
 
         /// <summary>
@@ -908,10 +932,15 @@ namespace MyClasses.UI
                     uiCamera = new GameObject("UICamera");
                     uiCamera.AddComponent<Camera>();
                     uiCamera.transform.localPosition = new Vector3(0, 1, -10);
+
+                    mCameraUI = uiCamera.GetComponent<Camera>();
+                    mCameraUI.clearFlags = CameraClearFlags.Nothing;
+                    mCameraUI.cullingMask |= LayerMask.GetMask("UI");
                 }
-                mCameraUI = uiCamera.GetComponent<Camera>();
-                mCameraUI.clearFlags = CameraClearFlags.Nothing;
-                mCameraUI.cullingMask |= LayerMask.GetMask("UI");
+                else
+                {
+                    mCameraUI = uiCamera.GetComponent<Camera>();
+                }
             }
         }
 
@@ -948,12 +977,10 @@ namespace MyClasses.UI
                     {
                         mCurrentSceneFading.Root = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUISceneFading.PREFAB_NAME) as GameObject);
                     }
-                    DontDestroyOnLoad(mCurrentSceneFading.Root);
                 }
 
                 mCurrentSceneFading.Root.name = MyUGUISceneFading.PREFAB_NAME;
-                mCurrentSceneFading.Transform.SetParent(mCanvasOnTop.transform, false);
-                mCurrentSceneFading.Transform.SetAsLastSibling();
+                mCurrentSceneFading.Transform.SetParent(mCanvasSceneFading.transform, false);
                 mCurrentSceneFading.TurnOnFading();
             }
         }
@@ -1245,32 +1272,35 @@ namespace MyClasses.UI
             {
                 case EUnitySceneState.Unload:
                     {
-                        mCurrentPopupOverlay = null;
-                        mCurrentRunningText = null;
-                        mCurrentToast = null;
-
-                        if (mCurrentUnityScene.HUD != null && mCurrentUnityScene.HUD.IsLoaded)
+                        if (mCurrentSceneFading == null || !mCurrentSceneFading.IsFading)
                         {
-                            mCurrentUnityScene.HUD.OnUGUIExit();
-                            mCurrentUnityScene.HUD.OnUGUIInvisible();
-                        }
+                            mCurrentPopupOverlay = null;
+                            mCurrentRunningText = null;
+                            mCurrentToast = null;
 
-                        MyUGUIBase scene;
-                        int countScene = mCurrentUnityScene.ListScene.Count;
-                        for (int i = 0; i < countScene; i++)
-                        {
-                            scene = mCurrentUnityScene.ListScene[i];
-                            if (scene != null)
+                            if (mCurrentUnityScene.HUD != null && mCurrentUnityScene.HUD.IsLoaded)
                             {
-                                scene.OnDestroy();
+                                mCurrentUnityScene.HUD.OnUGUIExit();
+                                mCurrentUnityScene.HUD.OnUGUIInvisible();
                             }
+
+                            MyUGUIBase scene;
+                            int countScene = mCurrentUnityScene.ListScene.Count;
+                            for (int i = 0; i < countScene; i++)
+                            {
+                                scene = mCurrentUnityScene.ListScene[i];
+                                if (scene != null)
+                                {
+                                    scene.OnUGUIDestroy();
+                                }
+                            }
+
+                            mListPopup.Clear();
+
+                            mUnitySceneUnloadUnusedAsset = Resources.UnloadUnusedAssets();
+
+                            mCurrentUnityScene.State = EUnitySceneState.Unloading;
                         }
-
-                        mListPopup.Clear();
-
-                        mUnitySceneUnloadUnusedAsset = Resources.UnloadUnusedAssets();
-
-                        mCurrentUnityScene.State = EUnitySceneState.Unloading;
                     }
                     break;
                 case EUnitySceneState.Unloading:
@@ -1287,6 +1317,11 @@ namespace MyClasses.UI
                     break;
                 case EUnitySceneState.Load:
                     {
+                        if (mCoreAssetBundleConfig != null && !string.IsNullOrEmpty(mCoreAssetBundleConfig.URL))
+                        {
+                            MyAssetBundleManager.Load(mCoreAssetBundleConfig.URL, mCoreAssetBundleConfig.Version, null, MyAssetBundleManager.ECacheMode.UnremovableCache);
+                        }
+
                         if (mCurrentUnityScene.Name != SceneManager.GetActiveScene().name)
                         {
                             mUnitySceneLoad = SceneManager.LoadSceneAsync(mCurrentUnityScene.Name);
@@ -1417,18 +1452,18 @@ namespace MyClasses.UI
                             }
                         }
 
-                        if (mScenePreEnterCallback != null)
+                        if (mOnScenePreEnterCallback != null)
                         {
-                            mScenePreEnterCallback();
-                            mScenePreEnterCallback = null;
+                            mOnScenePreEnterCallback();
+                            mOnScenePreEnterCallback = null;
                         }
 
                         mCurrentScene.OnUGUIEnter();
 
-                        if (mScenePostEnterCallback != null)
+                        if (mOnScenePostEnterCallback != null)
                         {
-                            mScenePostEnterCallback();
-                            mScenePostEnterCallback = null;
+                            mOnScenePostEnterCallback();
+                            mOnScenePostEnterCallback = null;
                         }
 
                         if (mCurrentUnityScene.HUD != null && mCurrentUnityScene.HUD.State == EBaseState.Update)
@@ -1461,6 +1496,16 @@ namespace MyClasses.UI
                         else
                         {
                             mCurrentScene.OnUGUIUpdate(deltaTime);
+
+#if UNITY_EDITOR || UNITY_ANDROID
+                            if (mCurrentPopup == null && Input.GetKeyDown(KeyCode.Escape))
+                            {
+#if DEBUG_MY_UI
+                                Debug.Log("[" + mCurrentScene + "] <color=#00FF00FF>OnUGUIBackKey()</color>");
+#endif
+                                mCurrentScene.OnUGUIBackKey();
+                            }
+#endif
                         }
                     }
                     break;
@@ -1609,6 +1654,8 @@ namespace MyClasses.UI
                     break;
                 case EBaseState.Enter:
                     {
+                        mCurrentPopup = popup;
+
                         popup.OnUGUIEnter();
                         popup.State = EBaseState.Visible;
 
@@ -1626,6 +1673,16 @@ namespace MyClasses.UI
                 case EBaseState.Update:
                     {
                         popup.OnUGUIUpdate(deltaTime);
+
+#if UNITY_EDITOR || UNITY_ANDROID
+                        if (popup == mCurrentPopup && Input.GetKeyDown(KeyCode.Escape))
+                        {
+#if DEBUG_MY_UI
+                            Debug.Log("[" + mCurrentPopup + "] <color=#00FF00FF>OnUGUIBackKey()</color>");
+#endif
+                            mCurrentPopup.OnUGUIBackKey();
+                        }
+#endif
                     }
                     break;
                 case EBaseState.Exit:
@@ -1771,7 +1828,7 @@ namespace MyClasses.UI
                 mCurrentPopupOverlay.Transform.SetAsFirstSibling();
                 mCurrentPopupOverlay.Show();
             }
-            else
+            else if (mCurrentPopupOverlay != null)
             {
                 mCurrentPopupOverlay.Transform.SetParent(mCanvasOnTopPopup.transform, false);
 

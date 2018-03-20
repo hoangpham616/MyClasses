@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIScene (version 2.0)
+ * Class:       MyUGUIScene (version 2.3)
  */
 
 using UnityEngine;
@@ -106,10 +106,7 @@ namespace MyClasses.UI
         {
             base.OnUGUIEnter();
 
-            if (mFadeInDuration > 0)
-            {
-                MyUGUIManager.Instance.CurrentSceneFading.FadeIn(mFadeInDuration);
-            }
+            MyUGUIManager.Instance.CurrentSceneFading.FadeIn(mFadeInDuration);
         }
 
         /// <summary>
@@ -117,14 +114,7 @@ namespace MyClasses.UI
         /// </summary>
         public override bool OnUGUIVisible()
         {
-            if (mFadeInDuration > 0 && MyUGUIManager.Instance.CurrentSceneFading != null)
-            {
-                return !MyUGUIManager.Instance.CurrentSceneFading.IsFading;
-            }
-            else
-            {
-                return base.OnUGUIVisible();
-            }
+            return !MyUGUIManager.Instance.CurrentSceneFading.IsFading;
         }
 
         /// <summary>
@@ -141,10 +131,7 @@ namespace MyClasses.UI
         {
             base.OnUGUIExit();
 
-            if (mFadeOutDuration > 0)
-            {
-                MyUGUIManager.Instance.CurrentSceneFading.FadeOut(mFadeOutDuration);
-            }
+            MyUGUIManager.Instance.CurrentSceneFading.FadeOut(mFadeOutDuration);
         }
 
         /// <summary>
@@ -152,22 +139,23 @@ namespace MyClasses.UI
         /// </summary>
         public override bool OnUGUIInvisible()
         {
-            if (mFadeOutDuration > 0)
-            {
-                return !MyUGUIManager.Instance.CurrentSceneFading.IsFading;
-            }
-            else
-            {
-                return base.OnUGUIVisible();
-            }
+            return !MyUGUIManager.Instance.CurrentSceneFading.IsFading;
         }
 
         /// <summary>
-        /// OnDestroy.
+        /// OnUGUIDestroy.
         /// </summary>
-        public override void OnDestroy()
+        public override void OnUGUIDestroy()
         {
-            base.OnDestroy();
+            base.OnUGUIDestroy();
+        }
+
+        /// <summary>
+        /// OnUGUIBackKey.
+        /// </summary>
+        public virtual void OnUGUIBackKey()
+        {
+            MyUGUIManager.Instance.Back();
         }
 
         #endregion

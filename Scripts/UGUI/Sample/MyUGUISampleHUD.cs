@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISampleHUD (version 2.1)
+ * Class:       MyUGUISampleHUD (version 2.3)
  */
 
 using UnityEngine;
