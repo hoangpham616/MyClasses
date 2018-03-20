@@ -64,6 +64,11 @@ public class MyUGUISampleScene : MyUGUIScene
         return base.OnUGUIInvisible();
     }
 
+    public override void OnUGUIBackKey()
+    {
+        MyUGUIManager.Instance.Back();
+    }
+
     #endregion
 
     #region ----- Button Event -----

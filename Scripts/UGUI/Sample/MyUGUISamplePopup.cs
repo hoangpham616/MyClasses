@@ -64,6 +64,11 @@ public class MyUGUISamplePopup : MyUGUIPopup
         return base.OnUGUIInvisible();
     }
 
+    public override void OnUGUIBackKey()
+    {
+        MyUGUIManager.Instance.Back();
+    }
+
     #endregion
 
     #region ----- Button Event -----

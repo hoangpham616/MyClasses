@@ -91,7 +91,7 @@ namespace MyClasses.UI.Tool
                             IsFoldOut = true,
                             IsInitWhenLoadUnityScene = false,
                             IsHideHUD = false,
-                            FadeInDuration = 0.2f,
+                            FadeInDuration = 0.3f,
                             FadeOutDuration = 0.2f,
                         });
                     }
