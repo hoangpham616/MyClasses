@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUtilities.Currency (version 1.1)
+ * Class:       MyUtilities.Currency (version 1.2)
  */
 
 namespace MyClasses
@@ -9,6 +9,14 @@ namespace MyClasses
     public static partial class MyUtilities
     {
         #region ----- Public Method -----
+
+        /// <summary>
+        /// Add commas into thousands places.
+        /// </summary>
+        public static string AddThousandSeparator(long number)
+        {
+            return string.Format("{0:n0}", number);
+        }
 
         /// <summary>
         /// Add commas into thousands places.
