@@ -692,7 +692,7 @@ namespace MyClasses.UI
 
             _InitToast();
 
-            mCurrentToast.Show(content, (int)duration / 1000f);
+            mCurrentToast.Show(content, (int)duration);
         }
 
         /// <summary>
@@ -1963,9 +1963,9 @@ namespace MyClasses.UI
 
     public enum EToastDuration
     {
-        Short = 2000,
-        Medium = 4000,
-        Long = 6000
+        Short = 2,
+        Medium = 4,
+        Long = 6
     }
 
     #endregion
