@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.4)
+ * Class:       MyUGUIManager (version 2.5)
  */
 
 #pragma warning disable 0162
@@ -1483,6 +1483,7 @@ namespace MyClasses.UI
                         if (mCurrentScene.OnUGUIVisible())
                         {
                             mCurrentScene.State = EBaseState.Update;
+                            _UpdateScene(deltaTime);
                         }
                     }
                     break;
@@ -1667,6 +1668,7 @@ namespace MyClasses.UI
                         if (popup.OnUGUIVisible())
                         {
                             popup.State = EBaseState.Update;
+                            _UpdatePopup(ref popup, deltaTime);
                         }
                     }
                     break;
@@ -1759,6 +1761,7 @@ namespace MyClasses.UI
                         if (popup.OnUGUIVisible())
                         {
                             popup.State = EBaseState.Update;
+                            _UpdatePopup(ref popup, deltaTime);
                         }
                     }
                     break;
