@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyResourceManager (version 1.4)
+ * Class:       MyResourceManager (version 1.5)
  */
 
 using UnityEngine;
@@ -23,6 +23,27 @@ namespace MyClasses
         #endregion
 
         #region ----- Public Method -----
+
+        /// <summary>
+        /// Return AlphaMask material.
+        /// </summary>
+        public static Material GetMaterialAlphaMask()
+        {
+#if UNITY_EDITOR
+            Material mat = LoadMaterial("Materials/MyAlphaMask");
+            if (mat == null)
+            {
+                Debug.Log("[" + typeof(MyResourceManager).Name + "] GetMaterialMask(): A material was created at \"Assets/Resources/Materials/MyAlphaMask.mat\".");
+                if (!System.IO.Directory.Exists("Assets/Resources/Materials"))
+                {
+                    System.IO.Directory.CreateDirectory("Assets/Resources/Materials");
+                }
+                mat = new Material(Shader.Find("MyClasses/Unlit/AlphaMask"));
+                UnityEditor.AssetDatabase.CreateAsset(mat, "Assets/Resources/Materials/MyAlphaMask.mat");
+            }
+#endif
+            return LoadMaterial("Materials/MyAlphaMask", true);
+        }
 
         /// <summary>
         /// Return Darkening material.
@@ -67,7 +88,7 @@ namespace MyClasses
         }
 
         /// <summary>
-        /// Return Grayscale material.
+        /// Return Blur material.
         /// </summary>
         public static Material GetMaterialBlur()
         {
