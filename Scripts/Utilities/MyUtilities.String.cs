@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUtilities.String (version 1.6)
+ * Class:       MyUtilities.String (version 1.7)
  */
 
 using System.Collections.Generic;
@@ -200,6 +200,43 @@ namespace MyClasses
         #endregion
 
         #region ----- To String -----
+
+        /// <summary>
+        /// Print items in list bool.
+        /// </summary>
+        public static string ToString(List<bool> list)
+        {
+            return ToString(list != null ? list.ToArray() : null);
+        }
+
+        /// <summary>
+        /// Print items in bool array.
+        /// </summary>
+        public static string ToString(bool[] array)
+        {
+            if (array == null)
+            {
+                return "null";
+            }
+
+            if (array.Length == 0)
+            {
+                return "[]";
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.Append("[");
+            stringBuilder.Append(array[0]);
+            for (int i = 1; i < array.Length; i++)
+            {
+                stringBuilder.Append(",");
+                stringBuilder.Append(array[i]);
+            }
+            stringBuilder.Append("]");
+
+            return stringBuilder.ToString();
+        }
 
         /// <summary>
         /// Print items in list int.
