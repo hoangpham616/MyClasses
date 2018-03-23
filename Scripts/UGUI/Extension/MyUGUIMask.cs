@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIMask (version 2.0)
+ * Class:       MyUGUIMask (version 2.1)
  */
 
 #if UNITY_EDITOR
@@ -42,7 +42,7 @@ namespace MyClasses.UI
         void Start()
         {
             mRect = GetComponent<RectTransform>();
-            mMaterial = new Material(Shader.Find("MyClasses/Unlit/AlphaMask"));
+            mMaterial = MyResourceManager.GetMaterialAlphaMask();
             GetComponent<Graphic>().material = mMaterial;
         }
 
