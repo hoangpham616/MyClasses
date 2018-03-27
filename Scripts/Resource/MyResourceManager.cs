@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyResourceManager (version 1.5)
+ * Class:       MyResourceManager (version 1.6)
  */
 
 using UnityEngine;
@@ -17,8 +17,9 @@ namespace MyClasses
 
         private static Dictionary<string, GameObject> mDictPrefab = new Dictionary<string, GameObject>();
         private static Dictionary<string, Material> mDictMaterial = new Dictionary<string, Material>();
-        private static Dictionary<string, Sprite> mDictSprite = new Dictionary<string, Sprite>();
         private static Dictionary<string, Texture> mDictTexture = new Dictionary<string, Texture>();
+        private static Dictionary<string, Sprite> mDictSprite = new Dictionary<string, Sprite>();
+        private static Dictionary<string, Dictionary<string, Sprite>> mDictAtlas = new Dictionary<string, Dictionary<string, Sprite>>();
 
         #endregion
 
@@ -111,7 +112,6 @@ namespace MyClasses
         /// <summary>
         /// Load a prefab.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         public static GameObject LoadPrefab(string path, bool isCache = true)
         {
             if (mDictPrefab.ContainsKey(path))
@@ -134,7 +134,6 @@ namespace MyClasses
         /// <summary>
         /// Load some prefabs.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         public static List<GameObject> LoadPrefabs(List<string> paths, bool isCache = true)
         {
             List<GameObject> assets = new List<GameObject>();
@@ -150,7 +149,6 @@ namespace MyClasses
         /// <summary>
         /// Load a prefab asynchronously.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         public static void LoadAsyncPrefab(string path, Action<GameObject> onLoadComplete, bool isCache = true)
         {
             if (mDictPrefab.ContainsKey(path))
@@ -168,7 +166,6 @@ namespace MyClasses
         /// <summary>
         /// Load some prefabs asynchronously.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         public static void LoadAsyncPrefabs(List<string> paths, Action<List<GameObject>> onLoadComplete, bool isCache = true)
         {
             MyCoroutiner.StartCoroutine(_DoLoadAsyncPrefabs(paths, onLoadComplete, isCache));
@@ -177,7 +174,6 @@ namespace MyClasses
         /// <summary>
         /// Load a material.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         public static Material LoadMaterial(string path, bool isCache = true)
         {
             if (mDictMaterial.ContainsKey(path))
@@ -200,7 +196,6 @@ namespace MyClasses
         /// <summary>
         /// Load some materials.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         public static List<Material> LoadMaterials(List<string> paths, bool isCache = true)
         {
             List<Material> assets = new List<Material>();
@@ -216,7 +211,6 @@ namespace MyClasses
         /// <summary>
         /// Load a material asynchronously.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         public static void LoadAsyncMaterial(string path, Action<Material> onLoadComplete, bool isCache = true)
         {
             if (mDictMaterial.ContainsKey(path))
@@ -234,83 +228,14 @@ namespace MyClasses
         /// <summary>
         /// Load some materials asynchronously.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         public static void LoadAsyncMaterials(List<string> paths, Action<List<Material>> onLoadComplete, bool isCache = true)
         {
             MyCoroutiner.StartCoroutine(_DoLoadAsyncMaterials(paths, onLoadComplete, isCache));
         }
 
         /// <summary>
-        /// Load a sprite.
-        /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
-        public static Sprite LoadSprite(string path, bool isCache = true)
-        {
-            if (mDictSprite.ContainsKey(path))
-            {
-                return mDictSprite[path];
-            }
-
-            Sprite asset = Resources.Load(path, typeof(Sprite)) as Sprite;
-            if (asset == null)
-            {
-                Debug.LogError("[" + typeof(MyResourceManager).Name + "] LoadSprite(): Could not find file \"" + path + "\".");
-            }
-            else if (isCache)
-            {
-                mDictSprite[path] = asset;
-            }
-            return asset;
-        }
-
-        /// <summary>
-        /// Load some sprites.
-        /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
-        public static List<Sprite> LoadSprites(List<string> paths, bool isCache = true)
-        {
-            List<Sprite> assets = new List<Sprite>();
-
-            foreach (var path in paths)
-            {
-                assets.Add(LoadSprite(path, isCache));
-            }
-
-            return assets;
-        }
-
-        /// <summary>
-        /// Load a sprite asynchronously.
-        /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
-        public static void LoadAsyncSprite(string path, Action<Sprite> onLoadComplete, bool isCache = true)
-        {
-            if (mDictSprite.ContainsKey(path))
-            {
-                if (onLoadComplete != null)
-                {
-                    onLoadComplete(mDictSprite[path]);
-                }
-                return;
-            }
-
-            MyCoroutiner.StartCoroutine(_DoLoadAsyncSprite(path, onLoadComplete, isCache));
-        }
-
-        /// <summary>
-        /// Load some sprites asynchronously.
-        /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
-        public static void LoadAsyncSprites(List<string> paths, Action<List<Sprite>> onLoadComplete, bool isCache = true)
-        {
-            MyCoroutiner.StartCoroutine(_DoLoadAsyncSprites(paths, onLoadComplete, isCache));
-        }
-
-
-        /// <summary>
         /// Load a texture.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         public static Texture LoadTexture(string path, bool isCache = true)
         {
             if (mDictTexture.ContainsKey(path))
@@ -333,7 +258,6 @@ namespace MyClasses
         /// <summary>
         /// Load some textures.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         public static List<Texture> LoadTextures(List<string> paths, bool isCache = true)
         {
             List<Texture> assets = new List<Texture>();
@@ -374,14 +298,160 @@ namespace MyClasses
         }
 
         /// <summary>
+        /// Load a sprite.
+        /// </summary>
+        public static Sprite LoadSprite(string path, bool isCache = true)
+        {
+            if (mDictSprite.ContainsKey(path))
+            {
+                return mDictSprite[path];
+            }
+
+            Sprite asset = Resources.Load(path, typeof(Sprite)) as Sprite;
+            if (asset == null)
+            {
+                Debug.LogError("[" + typeof(MyResourceManager).Name + "] LoadSprite(): Could not find file \"" + path + "\".");
+            }
+            else if (isCache)
+            {
+                mDictSprite[path] = asset;
+            }
+            return asset;
+        }
+
+        /// <summary>
+        /// Load a sprite from a atlas
+        /// </summary>
+        public static Sprite LoadSpriteFromAtlas(string atlasPath, string spriteName, bool isCache = true)
+        {
+            if (mDictAtlas.ContainsKey(atlasPath))
+            {
+                Dictionary<string, Sprite> dictSprite = mDictAtlas[atlasPath];
+                if (!dictSprite.ContainsKey(spriteName))
+                {
+                    Debug.LogError("[" + typeof(MyResourceManager).Name + "] LoadSpriteFromAtlas(): Could not find sprite \"" + spriteName + "\".");
+                    return null;
+                }
+                else
+                {
+                    return dictSprite[spriteName];
+                }
+            }
+
+            if (isCache)
+            {
+                LoadAtlas(atlasPath);
+
+                Dictionary<string, Sprite> dictSprite = mDictAtlas[atlasPath];
+                if (!dictSprite.ContainsKey(spriteName))
+                {
+                    Debug.LogError("[" + typeof(MyResourceManager).Name + "] LoadSpriteFromAtlas(): Could not find sprite \"" + spriteName + "\".");
+                    return null;
+                }
+                else
+                {
+                    return dictSprite[spriteName];
+                }
+            }
+            else
+            {
+                Sprite[] sprites = Resources.LoadAll(atlasPath, typeof(Sprite)) as Sprite[];
+                if (sprites == null)
+                {
+                    Debug.LogError("[" + typeof(MyResourceManager).Name + "] LoadSpriteFromAtlas(): Could not find atlas \"" + atlasPath + "\".");
+                    return null;
+                }
+                else
+                {
+                    for (int i = 0; i < sprites.Length; i++)
+                    {
+                        if (sprites[i].name.Equals(spriteName))
+                        {
+                            return sprites[i];
+                        }
+                    }
+                    Debug.LogError("[" + typeof(MyResourceManager).Name + "] LoadSpriteFromAtlas(): Could not find sprite \"" + spriteName + "\".");
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Load some sprites.
+        /// </summary>
+        public static List<Sprite> LoadSprites(List<string> paths, bool isCache = true)
+        {
+            List<Sprite> assets = new List<Sprite>();
+
+            foreach (var path in paths)
+            {
+                assets.Add(LoadSprite(path, isCache));
+            }
+
+            return assets;
+        }
+
+        /// <summary>
+        /// Load a sprite asynchronously.
+        /// </summary>
+        public static void LoadAsyncSprite(string path, Action<Sprite> onLoadComplete, bool isCache = true)
+        {
+            if (mDictSprite.ContainsKey(path))
+            {
+                if (onLoadComplete != null)
+                {
+                    onLoadComplete(mDictSprite[path]);
+                }
+                return;
+            }
+
+            MyCoroutiner.StartCoroutine(_DoLoadAsyncSprite(path, onLoadComplete, isCache));
+        }
+
+        /// <summary>
+        /// Load some sprites asynchronously.
+        /// </summary>
+        public static void LoadAsyncSprites(List<string> paths, Action<List<Sprite>> onLoadComplete, bool isCache = true)
+        {
+            MyCoroutiner.StartCoroutine(_DoLoadAsyncSprites(paths, onLoadComplete, isCache));
+        }
+
+        /// <summary>
+        /// Load a atlas.
+        /// </summary>
+        public static void LoadAtlas(string path)
+        {
+            if (!mDictAtlas.ContainsKey(path))
+            {
+                Sprite[] assets = Resources.LoadAll<Sprite>(path);
+                if (assets == null)
+                {
+                    Debug.LogError("[" + typeof(MyResourceManager).Name + "] LoadAtlas(): Could not find file \"" + path + "\".");
+                }
+                else
+                {
+                    Dictionary<string, Sprite> dictSprite = new Dictionary<string, Sprite>();
+                    for (int i = 0; i < assets.Length; i++)
+                    {
+                        Sprite sprite = assets[i];
+                        dictSprite[sprite.name] = sprite;
+                    }
+                    mDictAtlas[path] = dictSprite;
+                }
+            }
+        }
+
+        /// <summary>
         /// Unload all cached resources.
         /// </summary>
         public static void UnloadAll()
         {
             mDictPrefab.Clear();
             mDictMaterial.Clear();
-            mDictSprite.Clear();
             mDictTexture.Clear();
+            mDictSprite.Clear();
+            mDictAtlas.Clear();
         }
 
         /// <summary>
@@ -401,19 +471,27 @@ namespace MyClasses
         }
 
         /// <summary>
-        /// Unload all cached sprites.
-        /// </summary>
-        public static void UnloadSprites()
-        {
-            mDictSprite.Clear();
-        }
-
-        /// <summary>
         /// Unload all cached textures.
         /// </summary>
         public static void UnloadTextures()
         {
             mDictTexture.Clear();
+        }
+
+        /// <summary>
+        /// Unload all cached atlases.
+        /// </summary>
+        public static void UnloadAllAtlases()
+        {
+            mDictAtlas.Clear();
+        }
+
+        /// <summary>
+        /// Unload a cached atlas.
+        /// </summary>
+        public static void UnloadAtlas(string path)
+        {
+            mDictAtlas.Remove(path);
         }
 
         #endregion
@@ -423,7 +501,6 @@ namespace MyClasses
         /// <summary>
         /// Load a prefab asynchronously.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         private static IEnumerator _DoLoadAsyncPrefab(string path, Action<GameObject> onLoadComplete, bool isCache)
         {
             ResourceRequest requester = Resources.LoadAsync<GameObject>(path);
@@ -453,7 +530,6 @@ namespace MyClasses
         /// <summary>
         /// Load some prefabs asynchronously.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         private static IEnumerator _DoLoadAsyncPrefabs(List<string> paths, Action<List<GameObject>> onLoadComplete, bool isCache)
         {
             List<GameObject> assets = new List<GameObject>();
@@ -492,7 +568,6 @@ namespace MyClasses
         /// <summary>
         /// Load a material asynchronously.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         private static IEnumerator _DoLoadAsyncMaterial(string path, Action<Material> onLoadComplete, bool isCache)
         {
             ResourceRequest requester = Resources.LoadAsync<Material>(path);
@@ -522,7 +597,6 @@ namespace MyClasses
         /// <summary>
         /// Load some materials asynchronously.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         private static IEnumerator _DoLoadAsyncMaterials(List<string> paths, Action<List<Material>> onLoadComplete, bool isCache)
         {
             List<Material> assets = new List<Material>();
@@ -559,78 +633,8 @@ namespace MyClasses
         }
 
         /// <summary>
-        /// Load a sprite asynchronously.
-        /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
-        private static IEnumerator _DoLoadAsyncSprite(string path, Action<Sprite> onLoadComplete, bool isCache)
-        {
-            ResourceRequest requester = Resources.LoadAsync<Sprite>(path);
-            yield return requester;
-
-            if (requester.asset == null)
-            {
-                Debug.LogError("[" + typeof(MyResourceManager).Name + "] _DoLoadAsyncSprite(): Could not find file \"" + path + "\".");
-                if (onLoadComplete != null)
-                {
-                    onLoadComplete(null);
-                }
-                yield break;
-            }
-
-            Sprite asset = requester.asset as Sprite;
-            if (isCache)
-            {
-                mDictSprite[path] = asset;
-            }
-            if (onLoadComplete != null)
-            {
-                onLoadComplete(asset);
-            }
-        }
-
-        /// <summary>
-        /// Load some sprites asynchronously.
-        /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
-        private static IEnumerator _DoLoadAsyncSprites(List<string> paths, Action<List<Sprite>> onLoadComplete, bool isCache)
-        {
-            List<Sprite> assets = new List<Sprite>();
-
-            foreach (var path in paths)
-            {
-                if (mDictSprite.ContainsKey(path))
-                {
-                    assets.Add(mDictSprite[path]);
-                    continue;
-                }
-
-                ResourceRequest requester = Resources.LoadAsync<Sprite>(path);
-                yield return requester;
-
-                if (requester.asset == null)
-                {
-                    Debug.LogError("[" + typeof(MyResourceManager).Name + "] _DoLoadAsyncSprites(): Could not find file \"" + path + "\".");
-                    continue;
-                }
-
-                Sprite asset = requester.asset as Sprite;
-                if (isCache)
-                {
-                    mDictSprite[path] = asset;
-                }
-                assets.Add(asset);
-            }
-
-            if (onLoadComplete != null)
-            {
-                onLoadComplete(assets);
-            }
-        }
-
-        /// <summary>
         /// Load a texture asynchronously.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         private static IEnumerator _DoLoadAsyncTexture(string path, Action<Texture> onLoadComplete, bool isCache)
         {
             ResourceRequest requester = Resources.LoadAsync<Texture>(path);
@@ -660,7 +664,6 @@ namespace MyClasses
         /// <summary>
         /// Load some textures asynchronously.
         /// </summary>
-        /// <param name="isCache">texture will be saved to re-use</param>
         private static IEnumerator _DoLoadAsyncTextures(List<string> paths, Action<List<Texture>> onLoadComplete, bool isCache)
         {
             List<Texture> assets = new List<Texture>();
@@ -686,6 +689,73 @@ namespace MyClasses
                 if (isCache)
                 {
                     mDictTexture[path] = asset;
+                }
+                assets.Add(asset);
+            }
+
+            if (onLoadComplete != null)
+            {
+                onLoadComplete(assets);
+            }
+        }
+
+        /// <summary>
+        /// Load a sprite asynchronously.
+        /// </summary>
+        private static IEnumerator _DoLoadAsyncSprite(string path, Action<Sprite> onLoadComplete, bool isCache)
+        {
+            ResourceRequest requester = Resources.LoadAsync<Sprite>(path);
+            yield return requester;
+
+            if (requester.asset == null)
+            {
+                Debug.LogError("[" + typeof(MyResourceManager).Name + "] _DoLoadAsyncSprite(): Could not find file \"" + path + "\".");
+                if (onLoadComplete != null)
+                {
+                    onLoadComplete(null);
+                }
+                yield break;
+            }
+
+            Sprite asset = requester.asset as Sprite;
+            if (isCache)
+            {
+                mDictSprite[path] = asset;
+            }
+            if (onLoadComplete != null)
+            {
+                onLoadComplete(asset);
+            }
+        }
+
+        /// <summary>
+        /// Load some sprites asynchronously.
+        /// </summary>
+        private static IEnumerator _DoLoadAsyncSprites(List<string> paths, Action<List<Sprite>> onLoadComplete, bool isCache)
+        {
+            List<Sprite> assets = new List<Sprite>();
+
+            foreach (var path in paths)
+            {
+                if (mDictSprite.ContainsKey(path))
+                {
+                    assets.Add(mDictSprite[path]);
+                    continue;
+                }
+
+                ResourceRequest requester = Resources.LoadAsync<Sprite>(path);
+                yield return requester;
+
+                if (requester.asset == null)
+                {
+                    Debug.LogError("[" + typeof(MyResourceManager).Name + "] _DoLoadAsyncSprites(): Could not find file \"" + path + "\".");
+                    continue;
+                }
+
+                Sprite asset = requester.asset as Sprite;
+                if (isCache)
+                {
+                    mDictSprite[path] = asset;
                 }
                 assets.Add(asset);
             }
