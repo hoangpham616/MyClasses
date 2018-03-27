@@ -1,13 +1,14 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Shader:      Unlit/Grayscale (version 1.1)
+ * Shader:      Unlit/Grayscale (version 1.2)
  */
 
 Shader "MyClasses/Unlit/Grayscale"
 {
     Properties
     {
+        _MainTex ("Texture", 2D) = "white" {}
     	_Brightness("Color to Brightness (Default #4C961C)", Color) = (0.3, 0.59, 0.11, 1)
     	_EffectAmount("Effect Amount", Range(0, 1)) = 1
     }
