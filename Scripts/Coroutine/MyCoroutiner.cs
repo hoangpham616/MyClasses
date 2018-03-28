@@ -25,7 +25,7 @@ namespace MyClasses
         /// <summary>
         /// Start a coroutine.
         /// </summary>
-        public static void StartCoroutine(IEnumerator routine)
+        public static void Start(IEnumerator routine)
         {
             _Initialize();
 
@@ -35,7 +35,7 @@ namespace MyClasses
         /// <summary>
         /// Start a coroutine.
         /// </summary>
-        public static void StartCoroutine(string key, IEnumerator routine)
+        public static void Start(string key, IEnumerator routine)
         {
             _Initialize();
 
@@ -55,7 +55,7 @@ namespace MyClasses
         /// <summary>
         /// Stop a coroutine.
         /// </summary>
-        public static void StopCoroutine(string key)
+        public static void Stop(string key)
         {
             _Initialize();
 
@@ -72,7 +72,7 @@ namespace MyClasses
         /// <summary>
         /// Stop all coroutines.
         /// </summary>
-        public static void StopAllCoroutine()
+        public static void StopAll()
         {
             _Initialize();
 
