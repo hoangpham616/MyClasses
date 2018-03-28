@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyResourceManager (version 1.6)
+ * Class:       MyResourceManager (version 1.7)
  */
 
 using UnityEngine;
@@ -160,7 +160,7 @@ namespace MyClasses
                 return;
             }
 
-            MyCoroutiner.StartCoroutine(_DoLoadAsyncPrefab(path, onLoadComplete, isCache));
+            MyCoroutiner.Start(_DoLoadAsyncPrefab(path, onLoadComplete, isCache));
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace MyClasses
         /// </summary>
         public static void LoadAsyncPrefabs(List<string> paths, Action<List<GameObject>> onLoadComplete, bool isCache = true)
         {
-            MyCoroutiner.StartCoroutine(_DoLoadAsyncPrefabs(paths, onLoadComplete, isCache));
+            MyCoroutiner.Start(_DoLoadAsyncPrefabs(paths, onLoadComplete, isCache));
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace MyClasses
                 return;
             }
 
-            MyCoroutiner.StartCoroutine(_DoLoadAsyncMaterial(path, onLoadComplete, isCache));
+            MyCoroutiner.Start(_DoLoadAsyncMaterial(path, onLoadComplete, isCache));
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace MyClasses
         /// </summary>
         public static void LoadAsyncMaterials(List<string> paths, Action<List<Material>> onLoadComplete, bool isCache = true)
         {
-            MyCoroutiner.StartCoroutine(_DoLoadAsyncMaterials(paths, onLoadComplete, isCache));
+            MyCoroutiner.Start(_DoLoadAsyncMaterials(paths, onLoadComplete, isCache));
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace MyClasses
                 return;
             }
 
-            MyCoroutiner.StartCoroutine(_DoLoadAsyncTexture(path, onLoadComplete, isCache));
+            MyCoroutiner.Start(_DoLoadAsyncTexture(path, onLoadComplete, isCache));
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace MyClasses
         /// <param name="isCache">texture will be saved to re-use</param>
         public static void LoadAsyncTextures(List<string> paths, Action<List<Texture>> onLoadComplete, bool isCache = true)
         {
-            MyCoroutiner.StartCoroutine(_DoLoadAsyncTextures(paths, onLoadComplete, isCache));
+            MyCoroutiner.Start(_DoLoadAsyncTextures(paths, onLoadComplete, isCache));
         }
 
         /// <summary>
@@ -406,7 +406,7 @@ namespace MyClasses
                 return;
             }
 
-            MyCoroutiner.StartCoroutine(_DoLoadAsyncSprite(path, onLoadComplete, isCache));
+            MyCoroutiner.Start(_DoLoadAsyncSprite(path, onLoadComplete, isCache));
         }
 
         /// <summary>
@@ -414,7 +414,7 @@ namespace MyClasses
         /// </summary>
         public static void LoadAsyncSprites(List<string> paths, Action<List<Sprite>> onLoadComplete, bool isCache = true)
         {
-            MyCoroutiner.StartCoroutine(_DoLoadAsyncSprites(paths, onLoadComplete, isCache));
+            MyCoroutiner.Start(_DoLoadAsyncSprites(paths, onLoadComplete, isCache));
         }
 
         /// <summary>
