@@ -1,11 +1,10 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyCoroutiner (version 1.2)
+ * Class:       MyCoroutiner (version 1.3)
  */
 
 using UnityEngine;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
