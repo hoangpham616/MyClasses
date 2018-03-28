@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISceneFading (version 2.4)
+ * Class:       MyUGUISceneFading (version 2.5)
  */
 
 using UnityEngine;
@@ -70,8 +70,8 @@ namespace MyClasses.UI
         public void TurnOnFading()
         {
             string key = typeof(MyUGUISceneFading).Name + "_HandleFading";
-            MyCoroutiner.StopCoroutine(key);
-            MyCoroutiner.StartCoroutine(key, _DoFading());
+            MyCoroutiner.Stop(key);
+            MyCoroutiner.Start(key, _DoFading());
         }
 
         /// <summary>
