@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup0Button (version 2.1)
+ * Class:       MyUGUIPopup0Button (version 2.2)
  */
 
 using UnityEngine;
@@ -140,17 +140,9 @@ namespace MyClasses.UI
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string body, bool isShowCloseButton = false)
+        public void SetData(string title, string body, Action<object> actionClose)
         {
-            _SetData(string.Empty, body, isShowCloseButton, null);
-        }
-
-        /// <summary>
-        /// Set data.
-        /// </summary>
-        public void SetData(string body, Action<object> actionClose)
-        {
-            _SetData(string.Empty, body, true, actionClose);
+            _SetData(title, body, true, actionClose);
         }
 
         /// <summary>
@@ -164,9 +156,17 @@ namespace MyClasses.UI
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string title, string body, Action<object> actionClose)
+        public void SetData(string body, Action<object> actionClose)
         {
-            _SetData(title, body, true, actionClose);
+            _SetData(string.Empty, body, true, actionClose);
+        }
+
+        /// <summary>
+        /// Set data.
+        /// </summary>
+        public void SetData(string body, bool isShowCloseButton = false)
+        {
+            _SetData(string.Empty, body, isShowCloseButton, null);
         }
 
         #endregion
