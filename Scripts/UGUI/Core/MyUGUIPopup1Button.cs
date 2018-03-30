@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup1Button (version 2.6)
+ * Class:       MyUGUIPopup2Buttons (version 2.6)
  */
 
 using UnityEngine;
@@ -11,16 +11,18 @@ using System;
 
 namespace MyClasses.UI
 {
-    public class MyUGUIPopup1Button : MyUGUIPopup
+    public class MyUGUIPopup2Buttons : MyUGUIPopup
     {
         #region ----- Variable -----
 
         private Text mTitle;
         private Text mBody;
         private MyUGUIButton mButtonClose;
-        private MyUGUIButton mButtonMain;
+        private MyUGUIButton mButtonLeft;
+        private MyUGUIButton mButtonRight;
         private Action<object> mActionClose;
-        private Action<object> mActionMain;
+        private Action<object> mActionLeft;
+        private Action<object> mActionRight;
 
         private bool mIsAutoHideWhenClickButton;
 
@@ -31,7 +33,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Constructor.
         /// </summary>
-        public MyUGUIPopup1Button(EPopupID id, string prefabName, bool isFloat = false, bool isRepeatable = false)
+        public MyUGUIPopup2Buttons(EPopupID id, string prefabName, bool isFloat = false, bool isRepeatable = false)
             : base(id, prefabName, isFloat, isRepeatable)
         {
 #if UNITY_EDITOR
@@ -40,6 +42,8 @@ namespace MyClasses.UI
                 _CreatePrefab();
             }
 #endif
+
+            mIsAutoHideWhenClickButton = true;
         }
 
         #endregion
@@ -55,9 +59,10 @@ namespace MyClasses.UI
 
             GameObject _container = MyUtilities.FindObjectInAllLayers(Root, "Container");
             mBody = MyUtilities.FindObjectInFirstLayer(_container, "Body").GetComponent<Text>();
-            mButtonMain = MyUtilities.FindObjectInFirstLayer(_container, "ButtonMain").GetComponent<MyUGUIButton>();
+            mButtonLeft = MyUtilities.FindObjectInFirstLayer(_container, "ButtonLeft").GetComponent<MyUGUIButton>();
+            mButtonRight = MyUtilities.FindObjectInFirstLayer(_container, "ButtonRight").GetComponent<MyUGUIButton>();
 
-            GameObject _title = MyUtilities.FindObjectInFirstLayer(_container, "Title");
+            GameObject _title = MyUtilities.FindObjectInAllLayers(Root, "Title");
             if (_title != null)
             {
                 mTitle = _title.GetComponent<Text>();
@@ -81,7 +86,8 @@ namespace MyClasses.UI
             {
                 mButtonClose.OnEventPointerClick.AddListener(_OnClickClose);
             }
-            mButtonMain.OnEventPointerClick.AddListener(_OnClickMain);
+            mButtonLeft.OnEventPointerClick.AddListener(_OnClickLeft);
+            mButtonRight.OnEventPointerClick.AddListener(_OnClickRight);
         }
 
         /// <summary>
@@ -89,7 +95,7 @@ namespace MyClasses.UI
         /// </summary>
         public override bool OnUGUIVisible()
         {
-            return base.OnUGUIVisible();
+            return base.OnUGUIInvisible();
         }
 
         /// <summary>
@@ -109,12 +115,14 @@ namespace MyClasses.UI
 
             if (mButtonClose != null)
             {
-                mButtonClose.OnEventPointerClick.RemoveAllListeners();
+                mButtonClose.onClick.RemoveAllListeners();
             }
-            mButtonMain.OnEventPointerClick.RemoveAllListeners();
+            mButtonLeft.onClick.RemoveAllListeners();
+            mButtonRight.onClick.RemoveAllListeners();
 
             mActionClose = null;
-            mActionMain = null;
+            mActionLeft = null;
+            mActionRight = null;
         }
 
         /// <summary>
@@ -130,7 +138,7 @@ namespace MyClasses.UI
         #region ----- Button Event -----
 
         /// <summary>
-        /// Click on close button.
+        /// Click on button close.
         /// </summary>
         private void _OnClickClose(PointerEventData arg0)
         {
@@ -143,13 +151,29 @@ namespace MyClasses.UI
         }
 
         /// <summary>
-        /// Click on main button.
+        /// Click on button left.
         /// </summary>
-        private void _OnClickMain(PointerEventData arg0)
+        private void _OnClickLeft(PointerEventData arg0)
         {
-            if (mActionMain != null)
+            if (mActionLeft != null)
             {
-                mActionMain(AttachedData);
+                mActionLeft(AttachedData);
+            }
+
+            if (mIsAutoHideWhenClickButton)
+            {
+                Hide();
+            }
+        }
+
+        /// <summary>
+        /// Click on button right.
+        /// </summary>
+        private void _OnClickRight(PointerEventData arg0)
+        {
+            if (mActionRight != null)
+            {
+                mActionRight(AttachedData);
             }
 
             if (mIsAutoHideWhenClickButton)
@@ -165,41 +189,41 @@ namespace MyClasses.UI
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string title, string content, string mainButton, Action<object> actionMain, Action<object> actionClose, bool isAutoHideWhenClickButton = true)
+        public void SetData(string title, string content, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, Action<object> actionClose, bool isAutoHideWhenClickButton = true)
         {
-            _SetData(title, content, mainButton, actionMain, true, actionClose, isAutoHideWhenClickButton);
+            _SetData(title, content, buttonLeft, actionLeft, buttonRight, actionRight, true, actionClose, isAutoHideWhenClickButton);
         }
 
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string title, string content, string mainButton, Action<object> actionMain, bool isAutoHideWhenClickButton = true)
+        public void SetData(string title, string content, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, bool isAutoHideWhenClickButton = true)
         {
-            _SetData(title, content, mainButton, actionMain, false, null, isAutoHideWhenClickButton);
+            _SetData(title, content, buttonLeft, actionLeft, buttonRight, actionRight, false, null, isAutoHideWhenClickButton);
         }
 
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string content, string mainButton, Action<object> actionMain, Action<object> actionClose, bool isAutoHideWhenClickButton = true)
+        public void SetData(string content, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, Action<object> actionClose, bool isAutoHideWhenClickButton = true)
         {
-            _SetData(string.Empty, content, mainButton, actionMain, true, actionClose, isAutoHideWhenClickButton);
+            _SetData(string.Empty, content, buttonLeft, actionLeft, buttonRight, actionRight, true, actionClose, isAutoHideWhenClickButton);
         }
 
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string content, string buttonMain, Action<object> actionMain, bool isAutoHideWhenClickButton = true)
+        public void SetData(string content, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, bool isAutoHideWhenClickButton = true)
         {
-            _SetData(string.Empty, content, buttonMain, actionMain, false, null, isAutoHideWhenClickButton);
+            _SetData(string.Empty, content, buttonLeft, actionLeft, buttonRight, actionRight, false, null, isAutoHideWhenClickButton);
         }
 
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string content, string buttonMain, bool isShowCloseButton = false, bool isAutoHideWhenClickButton = true)
+        public void SetData(string content, string buttonLeft, string buttonRight, bool isShowCloseButton = false, bool isAutoHideWhenClickButton = true)
         {
-            _SetData(string.Empty, content, buttonMain, null, isShowCloseButton, null, isAutoHideWhenClickButton);
+            _SetData(string.Empty, content, buttonLeft, null, buttonRight, null, isShowCloseButton, null, isAutoHideWhenClickButton);
         }
 
         #endregion
@@ -209,7 +233,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Set data.
         /// </summary>
-        private void _SetData(string title, string body, string buttonMain, Action<object> actionMain, bool isShowButtonClose, Action<object> actionClose, bool isAutoHideWhenClickButton)
+        private void _SetData(string title, string body, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, bool isShowButtonClose, Action<object> actionClose, bool isAutoHideWhenClickButton)
         {
             if (mTitle != null)
             {
@@ -224,8 +248,11 @@ namespace MyClasses.UI
             }
             mActionClose = actionClose;
 
-            mButtonMain.SetText(buttonMain);
-            mActionMain = actionMain;
+            mButtonLeft.SetText(buttonLeft);
+            mActionLeft = actionLeft;
+
+            mButtonRight.SetText(buttonRight);
+            mActionRight = actionRight;
 
             mIsAutoHideWhenClickButton = isAutoHideWhenClickButton;
         }
@@ -235,9 +262,9 @@ namespace MyClasses.UI
         /// <summary>
         /// Check existence of prefab.
         /// </summary>
-        private static bool _CheckPrefab(string subfixName = "")
+        private static bool _CheckPrefab()
         {
-            string filePath = "Assets/Resources/" + MyUGUIManager.POPUP_DIRECTORY + "Dialog1ButtonPopup" + subfixName + ".prefab";
+            string filePath = "Assets/Resources/" + MyUGUIManager.POPUP_DIRECTORY + "Dialog2ButtonsPopup.prefab";
             return System.IO.File.Exists(filePath);
         }
 
@@ -246,7 +273,7 @@ namespace MyClasses.UI
         /// </summary>
         private static void _CreatePrefab(string subfixName = "")
         {
-            string prefabName = "Dialog1ButtonPopup" + subfixName;
+            string prefabName = "Dialog2ButtonsPopup" + subfixName;
 
             GameObject prefab = new GameObject(prefabName);
 
@@ -319,30 +346,55 @@ namespace MyClasses.UI
 
             buttonClose.AddComponent<MyUGUIButton>();
 
-            GameObject buttonMain = new GameObject("ButtonMain");
-            buttonMain.transform.SetParent(container.transform, false);
+            GameObject buttonLeft = new GameObject("ButtonLeft");
+            buttonLeft.transform.SetParent(container.transform, false);
 
-            RectTransform buttonMain_rect = buttonMain.AddComponent<RectTransform>();
-            MyUtilities.Anchor(ref buttonMain_rect, MyUtilities.EAnchorPreset.BottomCenter, MyUtilities.EAnchorPivot.BottomCenter, 300, 100, 0, 20);
+            RectTransform buttonLeft_rect = buttonLeft.AddComponent<RectTransform>();
+            MyUtilities.Anchor(ref buttonLeft_rect, MyUtilities.EAnchorPreset.BottomCenter, MyUtilities.EAnchorPivot.BottomCenter, 300, 100, -200, 20);
 
-            Image buttonMain_image = buttonMain.AddComponent<Image>();
-            buttonMain_image.color = Color.green;
-            buttonMain_image.raycastTarget = true;
+            Image buttonLeft_image = buttonLeft.AddComponent<Image>();
+            buttonLeft_image.color = Color.green;
+            buttonLeft_image.raycastTarget = true;
 
-            buttonMain.AddComponent<MyUGUIButton>();
+            buttonLeft.AddComponent<MyUGUIButton>();
 
-            GameObject buttonMainText = new GameObject("Text");
-            buttonMainText.transform.SetParent(buttonMain.transform, false);
+            GameObject buttonLeftText = new GameObject("Text");
+            buttonLeftText.transform.SetParent(buttonLeft.transform, false);
 
-            Text buttonMainText_text = buttonMainText.AddComponent<Text>();
-            buttonMainText_text.text = "Main Button";
-            buttonMainText_text.color = Color.black;
-            buttonMainText_text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            buttonMainText_text.fontSize = 40;
-            buttonMainText_text.alignment = TextAnchor.MiddleCenter;
-            buttonMainText_text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            buttonMainText_text.verticalOverflow = VerticalWrapMode.Overflow;
-            buttonMainText_text.raycastTarget = false;
+            Text buttonLeftText_text = buttonLeftText.AddComponent<Text>();
+            buttonLeftText_text.text = "Left Button";
+            buttonLeftText_text.color = Color.black;
+            buttonLeftText_text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            buttonLeftText_text.fontSize = 40;
+            buttonLeftText_text.alignment = TextAnchor.MiddleCenter;
+            buttonLeftText_text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            buttonLeftText_text.verticalOverflow = VerticalWrapMode.Overflow;
+            buttonLeftText_text.raycastTarget = false;
+
+            GameObject buttonRight = new GameObject("ButtonRight");
+            buttonRight.transform.SetParent(container.transform, false);
+
+            RectTransform buttonRight_rect = buttonRight.AddComponent<RectTransform>();
+            MyUtilities.Anchor(ref buttonRight_rect, MyUtilities.EAnchorPreset.BottomCenter, MyUtilities.EAnchorPivot.BottomCenter, 300, 100, 200, 20);
+
+            Image buttonRight_image = buttonRight.AddComponent<Image>();
+            buttonRight_image.color = Color.green;
+            buttonRight_image.raycastTarget = true;
+
+            buttonRight.AddComponent<MyUGUIButton>();
+
+            GameObject buttonRightText = new GameObject("Text");
+            buttonRightText.transform.SetParent(buttonRight.transform, false);
+
+            Text buttonRightText_text = buttonRightText.AddComponent<Text>();
+            buttonRightText_text.text = "Right Button";
+            buttonRightText_text.color = Color.black;
+            buttonRightText_text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            buttonRightText_text.fontSize = 40;
+            buttonRightText_text.alignment = TextAnchor.MiddleCenter;
+            buttonRightText_text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            buttonRightText_text.verticalOverflow = VerticalWrapMode.Overflow;
+            buttonRightText_text.raycastTarget = false;
 
             string folderPath = "Assets/Resources/" + MyUGUIManager.POPUP_DIRECTORY;
             if (!System.IO.Directory.Exists(folderPath))
