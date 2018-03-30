@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup0Button (version 2.2)
+ * Class:       MyUGUIPopup0Button (version 2.6)
  */
 
 using UnityEngine;
@@ -97,6 +97,8 @@ namespace MyClasses.UI
             {
                 mButtonClose.onClick.RemoveAllListeners();
             }
+
+            mActionClose = null;
         }
 
         /// <summary>
@@ -116,26 +118,17 @@ namespace MyClasses.UI
         /// </summary>
         private void _OnClickClose(PointerEventData arg0)
         {
+            if (mActionClose != null)
+            {
+                mActionClose(AttachedData);
+            }
+
             Hide();
         }
 
         #endregion
 
         #region ----- Public Method -----
-
-        /// <summary>
-        /// Hide popup.
-        /// </summary>
-        public override void Hide()
-        {
-            if (mActionClose != null)
-            {
-                mActionClose(AttachedData);
-                mActionClose = null;
-            }
-
-            base.Hide();
-        }
 
         /// <summary>
         /// Set data.
