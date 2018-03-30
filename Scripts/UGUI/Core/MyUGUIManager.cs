@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.5)
+ * Class:       MyUGUIManager (version 2.6)
  */
 
 #pragma warning disable 0162
@@ -566,6 +566,7 @@ namespace MyClasses.UI
                     }
                 }
             }
+
             if (isHideFloatPopup)
             {
                 foreach (MyUGUIPopup popup in mListFloatPopup)
@@ -1498,7 +1499,7 @@ namespace MyClasses.UI
                         {
                             mCurrentScene.OnUGUIUpdate(deltaTime);
 
-#if UNITY_EDITOR || UNITY_ANDROID
+#if !UNITY_IOS
                             if (mCurrentPopup == null && Input.GetKeyDown(KeyCode.Escape))
                             {
 #if DEBUG_MY_UI
@@ -1676,7 +1677,7 @@ namespace MyClasses.UI
                     {
                         popup.OnUGUIUpdate(deltaTime);
 
-#if UNITY_EDITOR || UNITY_ANDROID
+#if !UNITY_IOS
                         if (popup == mCurrentPopup && Input.GetKeyDown(KeyCode.Escape))
                         {
 #if DEBUG_MY_UI
