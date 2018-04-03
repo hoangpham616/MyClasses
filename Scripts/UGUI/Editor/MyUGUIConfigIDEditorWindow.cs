@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
  * Class:       MyUGUIConfigIDEditor (version 2.1)
@@ -205,9 +205,9 @@ namespace MyClasses.UI.Tool
             string[] paths = new string[] { "Assets/MyClasses", "Assets/Core/MyClasses", "Assets/Plugin/MyClasses", "Assets/Plugins/MyClasses", "Assets/Framework/MyClasses", "Assets/Frameworks/MyClasses" };
             for (int i = 0; i < paths.Length; i++)
             {
-                if (System.IO.Directory.Exists(paths[i]))
+                if (Directory.Exists(paths[i]))
                 {
-                    System.IO.File.WriteAllText(paths[i] + "/Scripts/UGUI/Core/MyUGUIConfigID.cs", content);
+                    File.WriteAllText(paths[i] + "/Scripts/UGUI/Core/MyUGUIConfigID.cs", content);
                     Debug.Log("[MyClasses] MyUGUIConfigID was created. Please refresh editor!");
                     return;
                 }
