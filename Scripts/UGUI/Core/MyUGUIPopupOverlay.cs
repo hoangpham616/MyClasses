@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
  * Class:       MyUGUIPopupOverlay (version 2.1)
@@ -175,9 +175,9 @@ namespace MyClasses.UI
             return obj;
         }
 
-#endregion
+        #endregion
 
-#region ----- Private Method -----
+        #region ----- Private Method -----
 
 #if UNITY_EDITOR
 
@@ -211,6 +211,6 @@ namespace MyClasses.UI
 
 #endif
 
-#endregion
+        #endregion
     }
 }
