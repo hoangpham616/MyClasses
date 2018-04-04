@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPieChart (version 2.0)
+ * Class:       MyUGUIPieChart (version 2.6)
  */
 
 #pragma warning disable 0114
@@ -38,7 +38,7 @@ namespace MyClasses.UI
         private bool mIsTransparency = false;
         [HideInInspector]
         [SerializeField]
-        private List<Piece> mListPiece = new List<Piece>(){ new Piece(0.3f, Color.red), new Piece(0.4f, Color.green), new Piece(0.3f, Color.blue) };
+        private List<Piece> mListPiece = new List<Piece>() { new Piece(0.3f, Color.red), new Piece(0.4f, Color.green), new Piece(0.3f, Color.blue) };
 
         #endregion
 
@@ -48,7 +48,7 @@ namespace MyClasses.UI
         {
             get { return mRadius; }
             set
-            { 
+            {
                 mRadius = value;
                 SetAllDirty();
             }
@@ -58,7 +58,7 @@ namespace MyClasses.UI
         {
             get { return mRotation; }
             set
-            { 
+            {
                 mRotation = Mathf.Clamp(value, 0, 360);
                 SetAllDirty();
             }
@@ -68,7 +68,7 @@ namespace MyClasses.UI
         {
             get { return mFill; }
             set
-            { 
+            {
                 mFill = Mathf.Clamp(value, 0, 100);
                 SetAllDirty();
             }
@@ -156,6 +156,29 @@ namespace MyClasses.UI
             SetAllDirty();
         }
 
+#if UNITY_EDITOR
+
+        /// <summary>
+        /// Create a template.
+        /// </summary>
+        public static void CreateTemplate()
+        {
+            GameObject canvas = MyUtilities.FindObjectInRoot("Canvas");
+
+            GameObject obj = new GameObject("PieChart");
+            if (canvas != null)
+            {
+                obj.transform.SetParent(canvas.transform, false);
+            }
+
+            obj.AddComponent<MyUGUIPieChart>();
+
+            EditorGUIUtility.PingObject(obj);
+            Selection.activeGameObject = obj.gameObject;
+        }
+
+#endif
+
         #endregion
 
         #region ----- Private Method -----
@@ -175,7 +198,7 @@ namespace MyClasses.UI
             prevPos = pos1;
 
             UIVertex[] VBOs = new UIVertex[4];
-            Vector2[] vertices = mIsTransparency ? new Vector2[]{ pos0, pos1 } : new Vector2[]{ pos0, pos1, Vector2.zero };
+            Vector2[] vertices = mIsTransparency ? new Vector2[] { pos0, pos1 } : new Vector2[] { pos0, pos1, Vector2.zero };
             for (int i = 0; i < vertices.Length; i++)
             {
                 UIVertex vert = UIVertex.simpleVert;
