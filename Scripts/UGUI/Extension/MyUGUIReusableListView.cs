@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIReusableListView (version 2.0)
+ * Class:       MyUGUIReusableListView (version 2.6)
  */
 
 #if UNITY_EDITOR
@@ -223,6 +223,51 @@ namespace MyClasses.UI
 
             mContentItemQuantity = itemQuantity;
         }
+
+#if UNITY_EDITOR
+
+        /// <summary>
+        /// Create a template.
+        /// </summary>
+        public static void CreateTemplate()
+        {
+            GameObject canvas = MyUtilities.FindObjectInRoot("Canvas");
+
+            GameObject obj = new GameObject("ReusableListView");
+            if (canvas != null)
+            {
+                obj.transform.SetParent(canvas.transform, false);
+            }
+
+            GameObject viewport = new GameObject("Viewport");
+            viewport.transform.SetParent(obj.transform, false);
+
+            GameObject content = new GameObject("Content");
+            content.transform.SetParent(viewport.transform, false);
+
+            RectTransform contentRectTransform = content.AddComponent<RectTransform>();
+            MyUtilities.Anchor(ref contentRectTransform, MyUtilities.EAnchorPreset.DualStretch, MyUtilities.EAnchorPivot.MiddleCenter, Vector2.zero, Vector2.zero);
+
+            RectTransform viewportRectTransform = viewport.AddComponent<RectTransform>();
+            MyUtilities.Anchor(ref viewportRectTransform, MyUtilities.EAnchorPreset.DualStretch, MyUtilities.EAnchorPivot.MiddleCenter, Vector2.zero, Vector2.zero);
+            viewport.AddComponent<Mask>();
+            Image viewportImage = viewport.AddComponent<Image>();
+            viewportImage.color = new Color(0, 0, 0, 100f / 255f);
+
+            RectTransform objRectTransform = obj.AddComponent<RectTransform>();
+            MyUtilities.Anchor(ref objRectTransform, MyUtilities.EAnchorPreset.MiddleCenter, MyUtilities.EAnchorPivot.MiddleCenter, 600, 400, 0, 0);
+            ScrollRect scrollRect = obj.AddComponent<ScrollRect>();
+            scrollRect.content = contentRectTransform;
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.viewport = viewportRectTransform;
+            obj.AddComponent<MyUGUIReusableListView>();
+
+            EditorGUIUtility.PingObject(obj);
+            Selection.activeGameObject = obj.gameObject;
+        }
+
+#endif
 
         #endregion
 
