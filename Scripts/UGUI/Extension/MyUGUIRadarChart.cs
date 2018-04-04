@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIRadarChart (version 2.0)
+ * Class:       MyUGUIRadarChart (version 2.6)
  */
 
 #pragma warning disable 0114
@@ -117,6 +117,29 @@ namespace MyClasses.UI
         {
             SetAllDirty();
         }
+
+#if UNITY_EDITOR
+
+        /// <summary>
+        /// Create a template.
+        /// </summary>
+        public static void CreateTemplate()
+        {
+            GameObject canvas = MyUtilities.FindObjectInRoot("Canvas");
+
+            GameObject obj = new GameObject("RadarChart");
+            if (canvas != null)
+            {
+                obj.transform.SetParent(canvas.transform, false);
+            }
+
+            obj.AddComponent<MyUGUIRadarChart>();
+
+            EditorGUIUtility.PingObject(obj);
+            Selection.activeGameObject = obj.gameObject;
+        }
+
+#endif
 
         #endregion
     }
