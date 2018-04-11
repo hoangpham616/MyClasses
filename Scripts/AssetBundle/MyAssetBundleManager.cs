@@ -26,7 +26,9 @@ namespace MyClasses
 
         #region ----- Variable -----
 
+#if DEBUG_MY_ASSET_BUNDLE
         private static string COLOR = "red";
+#endif
 
         private static Dictionary<string, MyAssetBundle> mDictBundle = new Dictionary<string, MyAssetBundle>();
 
@@ -86,7 +88,7 @@ namespace MyClasses
                 }
             }
 
-            MyCoroutiner.StartCoroutine(_DoLoadAssetBundle(url, version, onLoadComplete, cacheMode));
+            MyCoroutiner.Start(_DoLoadAssetBundle(url, version, onLoadComplete, cacheMode));
         }
 
         /// <summary>
