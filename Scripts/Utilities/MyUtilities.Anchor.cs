@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUtilities.Anchor (version 1.0)
+ * Class:       MyUtilities.Anchor (version 1.1)
  */
 
 using UnityEngine;
@@ -11,58 +11,6 @@ namespace MyClasses
     public static partial class MyUtilities
     {
         #region ----- Public Method -----
-
-        /// <summary>
-        /// Anchor.
-        /// </summary>
-        /// <param name="minOffset">the offset of the lower left corner of the rectangle relative to the lower left anchor</param>
-        /// <param name="maxOffset">the offset of the upper right corner of the rectangle relative to the upper right anchor</param>
-        public static void Anchor(ref RectTransform rectTrans, EAnchorPreset anchorPreset, EAnchorPivot anchorPivot, Vector2 minOffset, Vector2 maxOffset)
-        {
-            _SetAnchorPreset(ref rectTrans, anchorPreset);
-            _SetAnchorPivot(ref rectTrans, anchorPivot);
-            
-            rectTrans.offsetMin = minOffset;
-            rectTrans.offsetMax = maxOffset;
-        }
-
-        /// <summary>
-        /// Anchor.
-        /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="offsetX">anchored position x</param>
-        /// <param name="offsetY">anchored position y</param>
-        public static void Anchor(ref RectTransform rectTrans, EAnchorPreset anchorPreset, EAnchorPivot anchorPivot, int width, int height, int offsetX, int offsetY)
-        {
-            _SetAnchorPreset(ref rectTrans, anchorPreset);
-            _SetAnchorPivot(ref rectTrans, anchorPivot);
-
-            rectTrans.anchoredPosition = new Vector2(offsetX, offsetY);
-            rectTrans.sizeDelta = new Vector2(width, height);
-        }
-
-        /// <summary>
-        /// Anchor.
-        /// </summary>
-        /// <param name="offsetX">anchored position x</param>
-        /// <param name="offsetY">anchored position y</param>
-        public static void Anchor(ref RectTransform rectTrans, EAnchorPreset anchorPreset, EAnchorPivot anchorPivot, int offsetX, int offsetY)
-        {
-            _SetAnchorPreset(ref rectTrans, anchorPreset);
-            _SetAnchorPivot(ref rectTrans, anchorPivot);
-
-            rectTrans.anchoredPosition = new Vector2(offsetX, offsetY);
-        }
-
-        /// <summary>
-        /// Anchor.
-        /// </summary>
-        public static void Anchor(ref RectTransform rectTrans, EAnchorPreset anchorPreset, EAnchorPivot anchorPivot)
-        {
-            _SetAnchorPreset(ref rectTrans, anchorPreset);
-            _SetAnchorPivot(ref rectTrans, anchorPivot);
-        }
 
         /// <summary>
         /// Anchor.
@@ -78,6 +26,70 @@ namespace MyClasses
         public static void Anchor(ref RectTransform rectTrans, EAnchorPivot anchorPivot)
         {
             _SetAnchorPivot(ref rectTrans, anchorPivot);
+        }
+
+        /// <summary>
+        /// Anchor.
+        /// </summary>
+        public static void Anchor(ref RectTransform rectTrans, EAnchorPreset anchorPreset, EAnchorPivot anchorPivot)
+        {
+            _SetAnchorPreset(ref rectTrans, anchorPreset);
+            _SetAnchorPivot(ref rectTrans, anchorPivot);
+        }
+
+        /// <summary>
+        /// Anchor.
+        /// </summary>
+        /// <param name="offsetX">anchored position x</param>
+        /// <param name="offsetY">anchored position y</param>
+        public static void Anchor(ref RectTransform rectTrans, EAnchorPreset anchorPreset, EAnchorPivot anchorPivot, float offsetX, float offsetY)
+        {
+            _SetAnchorPreset(ref rectTrans, anchorPreset);
+            _SetAnchorPivot(ref rectTrans, anchorPivot);
+
+            rectTrans.anchoredPosition = new Vector2(offsetX, offsetY);
+        }
+
+        /// <summary>
+        /// Anchor.
+        /// </summary>
+        /// <param name="offsetX">anchored position x</param>
+        /// <param name="offsetY">anchored position y</param>
+        public static void Anchor(ref RectTransform rectTrans, EAnchorPreset anchorPreset, EAnchorPivot anchorPivot, float width, float height, float offsetX, float offsetY)
+        {
+            _SetAnchorPreset(ref rectTrans, anchorPreset);
+            _SetAnchorPivot(ref rectTrans, anchorPivot);
+
+            rectTrans.anchoredPosition = new Vector2(offsetX, offsetY);
+            rectTrans.sizeDelta = new Vector2(width, height);
+        }
+
+        /// <summary>
+        /// Anchor.
+        /// </summary>
+        /// <param name="minOffset">the offset of the lower left corner of the rectangle relative to the lower left anchor</param>
+        /// <param name="maxOffset">the offset of the upper right corner of the rectangle relative to the upper right anchor</param>
+        public static void Anchor(ref RectTransform rectTrans, EAnchorPreset anchorPreset, EAnchorPivot anchorPivot, Vector2 minOffset, Vector2 maxOffset)
+        {
+            _SetAnchorPreset(ref rectTrans, anchorPreset);
+            _SetAnchorPivot(ref rectTrans, anchorPivot);
+
+            rectTrans.offsetMin = minOffset;
+            rectTrans.offsetMax = maxOffset;
+        }
+
+        /// <summary>
+        /// Anchor.
+        /// </summary>
+        /// <param name="minOffset">the offset of the lower left corner of the rectangle relative to the lower left anchor</param>
+        /// <param name="maxOffset">the offset of the upper right corner of the rectangle relative to the upper right anchor</param>
+        public static void Anchor(ref GameObject gameObject, EAnchorPreset anchorPreset, EAnchorPivot anchorPivot, Vector2 minOffset, Vector2 maxOffset)
+        {
+            RectTransform rectTrans = gameObject.GetComponent<RectTransform>();
+            if (rectTrans != null)
+            {
+                Anchor(ref rectTrans, anchorPreset, anchorPivot, minOffset, maxOffset);
+            }
         }
 
         #endregion
