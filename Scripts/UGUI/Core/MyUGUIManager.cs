@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.6)
+ * Class:       MyUGUIManager (version 2.7)
  */
 
 #pragma warning disable 0162
@@ -80,6 +80,7 @@ namespace MyClasses.UI
 
         private Action mOnScenePreEnterCallback;
         private Action mOnScenePostEnterCallback;
+        private Action mOnScenePostVisibleCallback;
 
         private bool mIsClosePopupByClickingOutside;
         private bool mIsHideRunningTextWhenSwitchingScene;
@@ -428,7 +429,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Show a scene.
         /// </summary>
-        public void ShowScene(ESceneID sceneID, bool isHideRunningTextWhenSwitchingScene = false, bool isHideToastWhenSwitchingScene = true, Action preEnterCallback = null, Action postEnterCallback = null)
+        public void ShowScene(ESceneID sceneID, bool isHideRunningTextWhenSwitchingScene = false, bool isHideToastWhenSwitchingScene = true, Action onPreEnterCallback = null, Action onPostEnterCallback = null, Action onPostVisibleCallback = null)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowScene()</color>: " + sceneID);
@@ -442,8 +443,9 @@ namespace MyClasses.UI
                     mIsHideRunningTextWhenSwitchingScene = isHideRunningTextWhenSwitchingScene;
                     mIsHideToastWhenSwitchingScene = isHideToastWhenSwitchingScene;
 
-                    mOnScenePreEnterCallback = preEnterCallback;
-                    mOnScenePostEnterCallback = postEnterCallback;
+                    mOnScenePreEnterCallback = onPreEnterCallback;
+                    mOnScenePostEnterCallback = onPostEnterCallback;
+                    mOnScenePostVisibleCallback = onPostVisibleCallback;
 
                     if (mCurrentScene == null)
                     {
@@ -1483,6 +1485,12 @@ namespace MyClasses.UI
                     {
                         if (mCurrentScene.OnUGUIVisible())
                         {
+                            if (mOnScenePostVisibleCallback != null)
+                            {
+                                mOnScenePostVisibleCallback();
+                                mOnScenePostVisibleCallback = null;
+                            }
+
                             mCurrentScene.State = EBaseState.Update;
                             _UpdateScene(deltaTime);
                         }
