@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIReusableListView (version 2.6)
+ * Class:       MyUGUIReusableListView (version 2.7)
  */
 
 #if UNITY_EDITOR
@@ -23,11 +23,17 @@ namespace MyClasses.UI
         private GameObject mItemPrefab;
         [HideInInspector]
         [SerializeField]
-        private int mItemSize = 100;
+        private Vector2 mItemSize = new Vector2(100, 100);
         [HideInInspector]
         [SerializeField]
-        private int mItemSpacing;
+        private Vector2 mItemSpacing = Vector2.zero;
+        [HideInInspector]
+        [SerializeField]
+        private int mItemFixedLine = 1;
 
+        [HideInInspector]
+        [SerializeField]
+        private int mContentRealDisplayItemQuantity;
         [HideInInspector]
         [SerializeField]
         private int mContentRealItemQuantity;
@@ -53,11 +59,14 @@ namespace MyClasses.UI
         private RectTransform mContentParent;
         private RectTransform mContent;
         private RectTransform mContentHeadItem;
+        private RectTransform mContentNextHeadItem;
+        private RectTransform mContentPrevTailItem;
         private RectTransform mContentTailItem;
         private Vector2 mContentLastPosition;
         private Vector2 mContentZone;
         private MyUGUIReusableListItem[] mContentItems;
         private bool mIsHorizontalMode;
+        private bool mIsInitialized;
 
         #endregion
 
@@ -96,10 +105,11 @@ namespace MyClasses.UI
         /// <summary>
         /// Initialize.
         /// </summary>
-        public void Initialize(int itemSize, int itemSpacing)
+        public void Initialize(Vector2 itemSize, Vector2 itemSpacing, int itemFixedLine)
         {
             mItemSize = itemSize;
             mItemSpacing = itemSpacing;
+            mItemFixedLine = itemFixedLine;
             Initialize();
         }
 
@@ -108,6 +118,11 @@ namespace MyClasses.UI
         /// </summary>
         public void Initialize()
         {
+            if (mIsInitialized)
+            {
+                return;
+            }
+
             if (mItemPrefab == null)
             {
                 Debug.LogError("[" + typeof(MyUGUIReusableListView).Name + "] Initialize(): Please set the value for \"Item Prefab\".");
@@ -132,11 +147,32 @@ namespace MyClasses.UI
             mCanvas = transform.GetComponentInParent<Canvas>().transform;
 
             mContent = mScrollRect.content.GetComponent<RectTransform>();
+            if (mIsHorizontalMode)
+            {
+                MyUtilities.Anchor(ref mContent, MyUtilities.EAnchorPreset.VerticalStretchLeft, MyUtilities.EAnchorPivot.MiddleLeft, Vector2.zero, Vector2.zero);
+            }
+            else
+            {
+                MyUtilities.Anchor(ref mContent, MyUtilities.EAnchorPreset.HorizontalStretchTop, MyUtilities.EAnchorPivot.TopCenter, Vector2.zero, Vector2.zero);
+            }
             mContentParent = mContent.parent.GetComponent<RectTransform>();
             mContentLastPosition = mContent.position;
             mContentZone = Vector2.zero;
 
-            mContentRealItemQuantity = (int)((mIsHorizontalMode ? GetComponent<RectTransform>().rect.width : GetComponent<RectTransform>().rect.height) / (mItemSize + mItemSpacing)) + 3;
+            if (mIsHorizontalMode)
+            {
+                int rowDisplayItemQuantity = (int)((GetComponent<RectTransform>().rect.width / (mItemSize.x + mItemSpacing.x)) + 0.5f);
+                int col = mItemFixedLine;
+                mContentRealDisplayItemQuantity = rowDisplayItemQuantity * col;
+                mContentRealItemQuantity = (rowDisplayItemQuantity + 2) * col;
+            }
+            else
+            {
+                int colDisplayItemQuantity = (int)((GetComponent<RectTransform>().rect.height / (mItemSize.y + mItemSpacing.y)) + 0.5f);
+                int row = mItemFixedLine;
+                mContentRealDisplayItemQuantity = colDisplayItemQuantity * row;
+                mContentRealItemQuantity = (colDisplayItemQuantity + 2) * row;
+            }
             mContentRealHeadIndex = 0;
             mContentRealTailIndex = mContentRealItemQuantity;
 
@@ -158,7 +194,9 @@ namespace MyClasses.UI
                 GameObject item = Instantiate(mItemPrefab);
                 item.SetActive(false);
                 item.transform.SetParent(mContent.transform, false);
+#if UNITY_EDITOR
                 item.name = mItemPrefab.name + " (" + i + ")";
+#endif
                 mContentItems[i] = item.GetComponent<MyUGUIReusableListItem>();
             }
             for (int i = mContentItems.Length; i < countExistedItem; i++)
@@ -171,53 +209,63 @@ namespace MyClasses.UI
                 Debug.LogError("[" + typeof(MyUGUIReusableListView).Name + "] Initialize(): Could not find component \"" + typeof(MyUGUIReusableListItem).Name + "\" in \"Item Prefab\".");
                 return;
             }
+
+            mContentNextHeadItem = null;
+            mContentPrevTailItem = null;
+            if (mContentRealItemQuantity > (mItemFixedLine * 2) + 1)
+            {
+                mContentNextHeadItem = mContentItems[mItemFixedLine].GetComponent<RectTransform>();
+                mContentPrevTailItem = mContentItems[mContentItems.Length - mItemFixedLine].GetComponent<RectTransform>();
+            }
+
+            mIsInitialized = true;
         }
 
         /// <summary>
-        /// Reload list view.
+        /// Reload.
         /// </summary>
-        /// <param name="isKeepCurrentItems">keep current items at same position</param>
-        public void Reload(int itemQuantity, bool isKeepCurrentItems = true)
+        /// <param name="isTryToKeepItemsPosition">try to keep current items at same position</param>
+        public void Reload(int itemQuantity, bool isTryToKeepItemsPosition = true)
         {
             if (mContent == null)
             {
                 return;
             }
 
-            if (mContentTailIndex >= itemQuantity || mContentHeadItem == null || mContentTailItem == null)
+            if (mContentHeadItem == null || mContentTailItem == null)
             {
-                isKeepCurrentItems = false;
+                isTryToKeepItemsPosition = false;
             }
 
-            if (mContentItemQuantity != itemQuantity || !isKeepCurrentItems)
+            if (isTryToKeepItemsPosition && itemQuantity == mContentItemQuantity)
             {
-                _ResizeAndReposition(itemQuantity, isKeepCurrentItems);
+                _KeepPositionAndReload();
             }
-
-            if (!isKeepCurrentItems)
+            else
             {
-                mContentRealHeadIndex = 0;
-                mContentRealTailIndex = mContentRealItemQuantity - 1;
-                mContentHeadIndex = mContentRealHeadIndex;
-                mContentTailIndex = mContentRealTailIndex;
-            }
+                float size = mIsHorizontalMode ? mItemSize.x : mItemSize.y;
+                float spacing = mIsHorizontalMode ? mItemSpacing.x : mItemSpacing.y;
+                float line = (itemQuantity / mItemFixedLine) + (itemQuantity % mItemFixedLine == 0 ? 0 : 1);
+                float contentSize = Mathf.Max(mContentParent.rect.height, (line * (size + spacing)) - spacing);
 
-            for (int i = 0; i < mContentRealItemQuantity; i++)
-            {
-                GameObject item = mContentItems[i].gameObject;
-                if (i < itemQuantity)
+                if (isTryToKeepItemsPosition && itemQuantity > mContentRealDisplayItemQuantity && mContentItemQuantity > mContentRealDisplayItemQuantity)
                 {
-                    int realIndex = -1;
-                    if (!item.activeSelf || !isKeepCurrentItems)
+                    if (mContentTailIndex < itemQuantity)
                     {
-                        realIndex = mContentTailIndex - mContentRealTailIndex + i;
+                        _KeepPositionAndReload(itemQuantity, contentSize);
                     }
-                    item.SetActive(true);
-                    _ReloadItem(item, realIndex);
+                    else if (itemQuantity < mContentTailIndex)
+                    {
+                        _MoveToTopAndReload(itemQuantity, contentSize);
+                    }
+                    else
+                    {
+                        _MoveToBotAndReload(itemQuantity, contentSize);
+                    }
                 }
                 else
                 {
-                    item.SetActive(false);
+                    _MoveToTopAndReload(itemQuantity, contentSize);
                 }
             }
 
@@ -260,7 +308,9 @@ namespace MyClasses.UI
             scrollRect.content = contentRectTransform;
             scrollRect.horizontal = false;
             scrollRect.vertical = true;
+            scrollRect.decelerationRate = 0.1f;
             scrollRect.viewport = viewportRectTransform;
+
             obj.AddComponent<MyUGUIReusableListView>();
 
             EditorGUIUtility.PingObject(obj);
@@ -274,183 +324,338 @@ namespace MyClasses.UI
         #region ----- Private Method -----
 
         /// <summary>
-        /// Resize the content panel and reposition its items.
+        /// Keep content panel size, keep the current position and reload.
         /// </summary>
-        /// <param name="isKeepCurrentItems">keep current items at same position</param>
-        private void _ResizeAndReposition(int realNumItem, bool isKeepCurrentItems = false)
+        private void _KeepPositionAndReload()
         {
-            float contentSize = Mathf.Max(mContentParent.rect.height, (realNumItem * (mItemSize + mItemSpacing)) - mItemSpacing);
-
-            if (isKeepCurrentItems)
+            for (int i = 0; i < mContentRealItemQuantity; i++)
             {
-                Vector3 contentPosition = mContent.position;
-                Vector3[] itemPositions = new Vector3[mContentRealItemQuantity];
-                for (int i = 0; i < mContentRealItemQuantity; i++)
+                MyUGUIReusableListItem item = mContentItems[i];
+                if (item.gameObject.activeSelf)
                 {
-                    itemPositions[i] = mContentItems[i].transform.position;
+                    item.OnReload();
                 }
+            }
+        }
 
-                mContent.SetInsetAndSizeFromParentEdge(mIsHorizontalMode ? RectTransform.Edge.Left : RectTransform.Edge.Top, 0, contentSize);
+        /// <summary>
+        /// Resize content panel, move to top and reload.
+        /// </summary>
+        private void _MoveToTopAndReload(int itemQuantity, float contentSize)
+        {
+            mScrollRect.StopMovement();
 
-                if (mContentRealItemQuantity >= 2 && mContentTailIndex == mContentItemQuantity - 1)
+            mContent.SetInsetAndSizeFromParentEdge(mIsHorizontalMode ? RectTransform.Edge.Left : RectTransform.Edge.Top, 0, contentSize);
+
+            mContentRealHeadIndex = 0;
+            mContentRealTailIndex = itemQuantity < mContentRealDisplayItemQuantity ? itemQuantity - 1 : mContentRealItemQuantity - 1;
+            mContentHeadIndex = mContentRealHeadIndex;
+            mContentTailIndex = mContentRealTailIndex;
+
+            for (int i = 0; i < mContentRealItemQuantity; i++)
+            {
+                MyUGUIReusableListItem item = mContentItems[i];
+
+                int row = mIsHorizontalMode ? i % mItemFixedLine : i / mItemFixedLine;
+                int col = mIsHorizontalMode ? i / mItemFixedLine : i % mItemFixedLine;
+                Vector2 pos = Vector2.zero;
+                pos.x = (col * mItemSize.x) + (col * mItemSpacing.x);
+                pos.y = -((row * mItemSize.y) + (row * mItemSpacing.y));
+                RectTransform itemRect = item.GetComponent<RectTransform>();
+                MyUtilities.Anchor(ref itemRect, MyUtilities.EAnchorPreset.TopLeft, MyUtilities.EAnchorPivot.TopLeft, mItemSize.x, mItemSize.y, pos.x, pos.y);
+
+                item.Index = i;
+                if (i < itemQuantity)
                 {
-                    Vector3 offset = itemPositions[1] - itemPositions[0];
-                    mContent.position = contentPosition + offset;
-                    for (int i = 0; i < mContentRealItemQuantity; i++)
-                    {
-                        mContentItems[i].transform.position = itemPositions[i] + offset;
-                        mContentItems[i].Index++;
-                    }
+                    item.gameObject.SetActive(true);
+                    item.OnReload();
                 }
                 else
                 {
-                    mContent.position = contentPosition;
-                    for (int i = 0; i < mContentRealItemQuantity; i++)
-                    {
-                        mContentItems[i].transform.position = itemPositions[i];
-                    }
+                    item.gameObject.SetActive(false);
                 }
             }
-            else
-            {
-                mScrollRect.StopMovement();
 
-                mContent.SetInsetAndSizeFromParentEdge(mIsHorizontalMode ? RectTransform.Edge.Left : RectTransform.Edge.Top, 0, contentSize);
-
-                float contentItemStartPos = 0f;
-                for (int i = 0; i < mContentRealItemQuantity; i++)
-                {
-                    RectTransform itemRect = mContentItems[i].GetComponent<RectTransform>();
-                    if (mIsHorizontalMode)
-                    {
-                        itemRect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, contentItemStartPos, mItemSize);
-                        itemRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, mContent.rect.height);
-                    }
-                    else
-                    {
-
-                        itemRect.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, contentItemStartPos, mItemSize);
-                        itemRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, mContent.rect.width);
-                    }
-                    contentItemStartPos += (mItemSize + mItemSpacing);
-                }
-
-                mContentHeadItem = mContentItems[0].GetComponent<RectTransform>();
-                mContentTailItem = mContentItems[mContentRealItemQuantity - 1].GetComponent<RectTransform>();
-            }
+            mContentHeadItem = mContentItems[mContentRealHeadIndex].GetComponent<RectTransform>();
+            mContentTailItem = mContentItems[mContentRealTailIndex].GetComponent<RectTransform>();
 
             if (mIsHorizontalMode)
             {
-                mContentZone.x = mCanvas.InverseTransformPoint(mContentHeadItem.position).x - (mItemSpacing + mItemSize) * 1.5f;
+                mContentZone.x = mCanvas.InverseTransformPoint(mContentHeadItem.position).x - (mItemSize.x + mItemSpacing.x) * 1.5f;
                 mContentZone.y = mCanvas.InverseTransformPoint(mContentTailItem.position).x;
             }
             else
             {
-                mContentZone.x = mCanvas.InverseTransformPoint(mContentHeadItem.position).y + (mItemSpacing + mItemSize) * 1.5f;
+                mContentZone.x = mCanvas.InverseTransformPoint(mContentHeadItem.position).y + (mItemSize.y + mItemSpacing.y) * 1.5f;
                 mContentZone.y = mCanvas.InverseTransformPoint(mContentTailItem.position).y;
             }
         }
 
         /// <summary>
-        /// Update content panel items for horizontal scroll mode.
+        /// Resize content panel, keep the current position and reload.
+        /// </summary>
+        private void _KeepPositionAndReload(int itemQuantity, float contentSize)
+        {
+            Vector3[] itemPositions = new Vector3[mContentRealItemQuantity];
+            for (int i = 0; i < mContentRealItemQuantity; i++)
+            {
+                itemPositions[i] = mContentItems[i].transform.position;
+            }
+
+            Vector3 contentPosition = mContent.position;
+            mContent.SetInsetAndSizeFromParentEdge(mIsHorizontalMode ? RectTransform.Edge.Left : RectTransform.Edge.Top, 0, contentSize);
+            mContent.position = contentPosition;
+
+            for (int i = 0; i < mContentRealItemQuantity; i++)
+            {
+                MyUGUIReusableListItem item = mContentItems[i];
+                item.transform.position = itemPositions[i];
+                if (item.Index < itemQuantity)
+                {
+                    item.gameObject.SetActive(true);
+                    item.OnReload();
+                }
+                else
+                {
+                    item.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Resize content panel, move to bot and reload.
+        /// </summary>
+        private void _MoveToBotAndReload(int itemQuantity, float contentSize)
+        {
+            Vector3 contentPosition = mContent.position;
+            mContent.SetInsetAndSizeFromParentEdge(mIsHorizontalMode ? RectTransform.Edge.Left : RectTransform.Edge.Top, 0, contentSize);
+            contentPosition.y = contentSize - mContentParent.rect.height;
+            mContent.position = contentPosition;
+            mContentLastPosition = contentPosition;
+
+            int realTailIndex = mContentRealTailIndex;
+            int index = mContentTailIndex;
+            for (int i = 0; i < mContentRealItemQuantity; i++)
+            {
+                int realIndex = (realTailIndex - i + mContentRealItemQuantity) % mContentRealItemQuantity;
+
+                MyUGUIReusableListItem item = mContentItems[realIndex];
+
+                int row = mIsHorizontalMode ? index % mItemFixedLine : index / mItemFixedLine;
+                int col = mIsHorizontalMode ? index / mItemFixedLine : index % mItemFixedLine;
+                Vector2 pos = Vector2.zero;
+                pos.x = (col * mItemSize.x) + (col * mItemSpacing.x);
+                pos.y = -((row * mItemSize.y) + (row * mItemSpacing.y));
+                RectTransform itemRect = item.GetComponent<RectTransform>();
+                MyUtilities.Anchor(ref itemRect, MyUtilities.EAnchorPreset.TopLeft, MyUtilities.EAnchorPivot.TopLeft, mItemSize.x, mItemSize.y, pos.x, pos.y);
+
+                mContentHeadIndex = index;
+                item.Index = index;
+                if (index < itemQuantity)
+                {
+                    item.gameObject.SetActive(true);
+                    item.OnReload();
+                }
+                else
+                {
+                    item.gameObject.SetActive(false);
+                }
+
+                index--;
+                if (index < 0)
+                {
+                    index += mContentRealItemQuantity;
+                }
+            }
+
+            mContentHeadItem = mContentItems[mContentRealHeadIndex].GetComponent<RectTransform>();
+            mContentTailItem = mContentItems[mContentRealTailIndex].GetComponent<RectTransform>();
+        }
+
+        /// <summary>
+        /// Update content panel for horizontal scroll mode.
         /// </summary>
         private void _ProcessHorizontalScrolling()
         {
-            if (mContent.position.x < mContentLastPosition.x)
+            // move to left
+            if (mContent.position.x > mContentLastPosition.x)
             {
-                if (mContentTailIndex >= mContentItemQuantity - 1 || mCanvas.InverseTransformPoint(mContentHeadItem.position).x >= mContentZone.x)
+                if (mContentTailIndex <= mContentRealItemQuantity - 1 || mContentTailItem == null || mCanvas.InverseTransformPoint(mContentTailItem.position).x <= mContentZone.y)
                 {
                     return;
                 }
 
-                mContentHeadItem.anchoredPosition = mContentTailItem.anchoredPosition + new Vector2(mItemSize + mItemSpacing, 0);
-                mContentTailItem = mContentHeadItem;
-                mContentTailIndex++;
-                mContentHeadIndex++;
-                mContentRealTailIndex = mContentRealHeadIndex;
-                mContentRealHeadIndex++;
-                if (mContentRealHeadIndex >= mContentRealItemQuantity)
+                for (int i = 0; i < mItemFixedLine; i++)
                 {
-                    mContentRealHeadIndex = 0;
-                }
-                mContentHeadItem = mContent.GetChild(mContentRealHeadIndex).GetComponent<RectTransform>();
+                    int index = mContentHeadIndex - 1;
+                    if (index < 0)
+                    {
+                        break;
+                    }
 
-                _ReloadItem(mContentTailItem.gameObject, mContentTailIndex);
+                    int row = index % mItemFixedLine;
+                    int col = index / mItemFixedLine;
+                    Vector2 pos = Vector2.zero;
+                    pos.x = (col * mItemSize.x) + (col * mItemSpacing.x);
+                    pos.y = -((row * mItemSize.y) + (row * mItemSpacing.y));
+                    MyUtilities.Anchor(ref mContentTailItem, MyUtilities.EAnchorPreset.TopLeft, MyUtilities.EAnchorPivot.TopLeft, mItemSize.x, mItemSize.y, pos.x, pos.y);
+
+                    mContentHeadItem = mContentTailItem;
+                    mContentTailIndex--;
+                    mContentHeadIndex--;
+                    mContentRealHeadIndex = mContentRealTailIndex;
+                    mContentRealTailIndex--;
+                    if (mContentRealTailIndex < 0)
+                    {
+                        mContentRealTailIndex = mContentRealItemQuantity - 1;
+                    }
+                    mContentTailItem = mContent.GetChild(mContentRealTailIndex).GetComponent<RectTransform>();
+
+                    _ReloadItem(mContentHeadItem.gameObject, mContentTailIndex - mContentRealItemQuantity + 1);
+                }
+
+                if (mContentPrevTailItem != null && !RectTransformUtility.RectangleContainsScreenPoint(mScrollRect.viewport, mContentPrevTailItem.position))
+                {
+                    _OnScrollList(Vector2.zero);
+                }
             }
+            // move to right
             else
             {
-                if (mContentTailIndex <= mContentRealItemQuantity - 1 || mCanvas.InverseTransformPoint(mContentTailItem.position).x <= mContentZone.y)
+                if (mContentTailIndex >= mContentItemQuantity - 1 || mContentHeadItem == null || mCanvas.InverseTransformPoint(mContentHeadItem.position).x >= mContentZone.x)
                 {
                     return;
                 }
 
-                mContentTailItem.anchoredPosition = mContentHeadItem.anchoredPosition - new Vector2(mItemSize + mItemSpacing, 0);
-                mContentHeadItem = mContentTailItem;
-                mContentTailIndex--;
-                mContentHeadIndex--;
-                mContentRealHeadIndex = mContentRealTailIndex;
-                mContentRealTailIndex--;
-                if (mContentRealTailIndex < 0)
+                for (int i = 0; i < mItemFixedLine; i++)
                 {
-                    mContentRealTailIndex = mContentRealItemQuantity - 1;
-                }
-                mContentTailItem = mContent.GetChild(mContentRealTailIndex).GetComponent<RectTransform>();
+                    int index = mContentTailIndex + 1;
+                    if (index >= mContentItemQuantity)
+                    {
+                        break;
+                    }
 
-                _ReloadItem(mContentHeadItem.gameObject, mContentTailIndex - mContentRealItemQuantity + 1);
+                    int row = index % mItemFixedLine;
+                    int col = index / mItemFixedLine;
+                    Vector2 pos = Vector2.zero;
+                    pos.x = (col * mItemSize.x) + (col * mItemSpacing.x);
+                    pos.y = -((row * mItemSize.y) + (row * mItemSpacing.y));
+                    MyUtilities.Anchor(ref mContentHeadItem, MyUtilities.EAnchorPreset.TopLeft, MyUtilities.EAnchorPivot.TopLeft, mItemSize.x, mItemSize.y, pos.x, pos.y);
+
+                    mContentTailItem = mContentHeadItem;
+                    mContentTailIndex++;
+                    mContentHeadIndex++;
+                    mContentRealTailIndex = mContentRealHeadIndex;
+                    mContentRealHeadIndex++;
+                    if (mContentRealHeadIndex >= mContentRealItemQuantity)
+                    {
+                        mContentRealHeadIndex = 0;
+                    }
+                    mContentHeadItem = mContent.GetChild(mContentRealHeadIndex).GetComponent<RectTransform>();
+
+                    _ReloadItem(mContentTailItem.gameObject, mContentTailIndex);
+                }
+
+                if (mContentNextHeadItem != null && !RectTransformUtility.RectangleContainsScreenPoint(mScrollRect.viewport, mContentNextHeadItem.position))
+                {
+                    _OnScrollList(Vector2.zero);
+                }
             }
         }
 
         /// <summary>
-        /// Update content panel items for vertical scroll mode.
+        /// Update content panel for vertical scroll mode.
         /// </summary>
         private void _ProcessVerticalScrolling()
         {
+            // move down
             if (mContent.position.y > mContentLastPosition.y)
             {
-                if (mContentTailIndex >= mContentItemQuantity - 1 || mCanvas.InverseTransformPoint(mContentHeadItem.position).y <= mContentZone.x)
+                if (mContentTailIndex >= mContentItemQuantity - 1 || mContentHeadItem == null || mCanvas.InverseTransformPoint(mContentHeadItem.position).y <= mContentZone.x)
                 {
                     return;
                 }
 
-                mContentHeadItem.anchoredPosition = mContentTailItem.anchoredPosition - new Vector2(0, mItemSize + mItemSpacing);
-                mContentTailItem = mContentHeadItem;
-                mContentTailIndex++;
-                mContentHeadIndex++;
-                mContentRealTailIndex = mContentRealHeadIndex;
-                mContentRealHeadIndex++;
-                if (mContentRealHeadIndex >= mContentRealItemQuantity)
+                for (int i = 0; i < mItemFixedLine; i++)
                 {
-                    mContentRealHeadIndex = 0;
-                }
-                mContentHeadItem = mContent.GetChild(mContentRealHeadIndex).GetComponent<RectTransform>();
+                    int index = mContentTailIndex + 1;
+                    if (index >= mContentItemQuantity)
+                    {
+                        break;
+                    }
 
-                _ReloadItem(mContentTailItem.gameObject, mContentTailIndex);
+                    int row = index / mItemFixedLine;
+                    int col = index % mItemFixedLine;
+                    Vector2 pos = Vector2.zero;
+                    pos.x = (col * mItemSize.x) + (col * mItemSpacing.x);
+                    pos.y = -((row * mItemSize.y) + (row * mItemSpacing.y));
+                    MyUtilities.Anchor(ref mContentHeadItem, MyUtilities.EAnchorPreset.TopLeft, MyUtilities.EAnchorPivot.TopLeft, mItemSize.x, mItemSize.y, pos.x, pos.y);
+
+                    mContentTailItem = mContentHeadItem;
+                    mContentTailIndex++;
+                    mContentHeadIndex++;
+                    mContentRealTailIndex = mContentRealHeadIndex;
+                    mContentRealHeadIndex++;
+                    if (mContentRealHeadIndex >= mContentRealItemQuantity)
+                    {
+                        mContentRealHeadIndex = 0;
+                    }
+                    mContentHeadItem = mContent.GetChild(mContentRealHeadIndex).GetComponent<RectTransform>();
+
+                    _ReloadItem(mContentTailItem.gameObject, mContentTailIndex);
+                }
+
+                if (mContentNextHeadItem != null && !RectTransformUtility.RectangleContainsScreenPoint(mScrollRect.viewport, mContentNextHeadItem.position))
+                {
+                    _OnScrollList(Vector2.zero);
+                }
             }
+            // move up
             else
             {
-                if (mContentTailIndex <= mContentRealItemQuantity - 1 || mCanvas.InverseTransformPoint(mContentTailItem.position).y >= mContentZone.y)
+                if (mContentTailIndex <= mContentRealItemQuantity - 1 || mContentTailItem == null || mCanvas.InverseTransformPoint(mContentTailItem.position).y >= mContentZone.y)
                 {
                     return;
                 }
 
-                mContentTailItem.anchoredPosition = mContentHeadItem.anchoredPosition + new Vector2(0, mItemSize + mItemSpacing);
-                mContentHeadItem = mContentTailItem;
-                mContentTailIndex--;
-                mContentHeadIndex--;
-                mContentRealHeadIndex = mContentRealTailIndex;
-                mContentRealTailIndex--;
-                if (mContentRealTailIndex < 0)
+                for (int i = 0; i < mItemFixedLine; i++)
                 {
-                    mContentRealTailIndex = mContentRealItemQuantity - 1;
-                }
-                mContentTailItem = mContent.GetChild(mContentRealTailIndex).GetComponent<RectTransform>();
+                    int index = mContentHeadIndex - 1;
+                    if (index < 0)
+                    {
+                        break;
+                    }
 
-                _ReloadItem(mContentHeadItem.gameObject, mContentTailIndex - mContentRealItemQuantity + 1);
+                    int row = index / mItemFixedLine;
+                    int col = index % mItemFixedLine;
+                    Vector2 pos = Vector2.zero;
+                    pos.x = (col * mItemSize.x) + (col * mItemSpacing.x);
+                    pos.y = -((row * mItemSize.y) + (row * mItemSpacing.y));
+                    MyUtilities.Anchor(ref mContentTailItem, MyUtilities.EAnchorPreset.TopLeft, MyUtilities.EAnchorPivot.TopLeft, mItemSize.x, mItemSize.y, pos.x, pos.y);
+
+                    mContentHeadItem = mContentTailItem;
+                    mContentTailIndex--;
+                    mContentHeadIndex--;
+                    mContentRealHeadIndex = mContentRealTailIndex;
+                    mContentRealTailIndex--;
+                    if (mContentRealTailIndex < 0)
+                    {
+                        mContentRealTailIndex = mContentRealItemQuantity - 1;
+                    }
+                    mContentTailItem = mContent.GetChild(mContentRealTailIndex).GetComponent<RectTransform>();
+
+                    _ReloadItem(mContentHeadItem.gameObject, mContentTailIndex - mContentRealItemQuantity + 1);
+                }
+
+                if (mContentPrevTailItem != null && !RectTransformUtility.RectangleContainsScreenPoint(mScrollRect.viewport, mContentPrevTailItem.position))
+                {
+                    _OnScrollList(Vector2.zero);
+                }
             }
         }
 
         /// <summary>
-        /// Update content panel item.
+        /// Reload item.
         /// </summary>
         private void _ReloadItem(GameObject item, int realIndex = -1)
         {
@@ -474,6 +679,8 @@ namespace MyClasses.UI
         private SerializedProperty mItemPrefab;
         private SerializedProperty mItemSize;
         private SerializedProperty mItemSpacing;
+        private SerializedProperty mItemFixedLine;
+        private SerializedProperty mContentRealDisplayItemQuantity;
         private SerializedProperty mContentRealItemQuantity;
         private SerializedProperty mContentRealHeadIndex;
         private SerializedProperty mContentRealTailIndex;
@@ -493,6 +700,8 @@ namespace MyClasses.UI
             mItemPrefab = serializedObject.FindProperty("mItemPrefab");
             mItemSize = serializedObject.FindProperty("mItemSize");
             mItemSpacing = serializedObject.FindProperty("mItemSpacing");
+            mItemFixedLine = serializedObject.FindProperty("mItemFixedLine");
+            mContentRealDisplayItemQuantity = serializedObject.FindProperty("mContentRealDisplayItemQuantity");
             mContentRealItemQuantity = serializedObject.FindProperty("mContentRealItemQuantity");
             mContentRealHeadIndex = serializedObject.FindProperty("mContentRealHeadIndex");
             mContentRealTailIndex = serializedObject.FindProperty("mContentRealTailIndex");
@@ -514,20 +723,27 @@ namespace MyClasses.UI
 
             serializedObject.Update();
             EditorGUILayout.Space();
-            mItemPrefab.objectReferenceValue = EditorGUILayout.ObjectField("Item Prefab", mItemPrefab.objectReferenceValue, typeof(GameObject), false);
-            mItemSize.intValue = EditorGUILayout.IntField("Item Size", mItemSize.intValue);
-            mItemSpacing.intValue = EditorGUILayout.IntField("Item Spacing", mItemSpacing.intValue);
+            EditorGUILayout.LabelField("Item", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            mItemPrefab.objectReferenceValue = EditorGUILayout.ObjectField("Prefab", mItemPrefab.objectReferenceValue, typeof(GameObject), false);
+            mItemSize.vector2Value = EditorGUILayout.Vector2Field("Size", mItemSize.vector2Value);
+            mItemSpacing.vector2Value = EditorGUILayout.Vector2Field("Spacing", mItemSpacing.vector2Value);
+            mItemFixedLine.intValue = EditorGUILayout.IntField(mIsScrollRectHorizontal ? "Fixed Row" : "Fixed Column", mItemFixedLine.intValue);
+            EditorGUI.indentLevel--;
             serializedObject.ApplyModifiedProperties();
 
             EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            EditorGUILayout.LabelField("Real Display Item Quantity", mContentRealDisplayItemQuantity.intValue.ToString());
             EditorGUILayout.LabelField("Real Item Quantity", mContentRealItemQuantity.intValue.ToString());
             EditorGUILayout.LabelField("Real Head Index", mContentRealHeadIndex.intValue.ToString());
             EditorGUILayout.LabelField("Real Tail Index", mContentRealTailIndex.intValue.ToString());
-
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Item Quantity", mContentItemQuantity.intValue.ToString());
             EditorGUILayout.LabelField("Head Index", mContentHeadIndex.intValue.ToString());
             EditorGUILayout.LabelField("Tail Index", mContentTailIndex.intValue.ToString());
+            EditorGUI.indentLevel--;
 
             if ((mIsScrollRectHorizontal && mScrollRect.vertical) || (!mIsScrollRectHorizontal && mScrollRect.horizontal))
             {
