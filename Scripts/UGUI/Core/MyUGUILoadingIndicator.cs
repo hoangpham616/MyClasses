@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUILoadingIndicator (version 2.4)
+ * Class:       MyUGUILoadingIndicator (version 2.5)
 */
 
 using UnityEngine;
@@ -80,7 +80,7 @@ namespace MyClasses.UI
                 if (timeOut > 0)
                 {
                     string coroutineKey = typeof(MyUGUILoadingIndicator).Name + "_Hide" + loadingID;
-                    MyCoroutiner.StartCoroutine(coroutineKey, _ProcessHide(loadingID, timeOut, timeOutCallback));
+                    MyCoroutiner.Start(coroutineKey, _ProcessHide(loadingID, timeOut, timeOutCallback));
                 }
 
                 return loadingID;
@@ -104,8 +104,8 @@ namespace MyClasses.UI
                     {
                         float delayTime = minLiveTime - displayedTime;
                         string coroutineKey = typeof(MyUGUILoadingIndicator).Name + "_Hide";
-                        MyCoroutiner.StopCoroutine(coroutineKey);
-                        MyCoroutiner.StartCoroutine(coroutineKey, _ProcessHide(delayTime));
+                        MyCoroutiner.Stop(coroutineKey);
+                        MyCoroutiner.Start(coroutineKey, _ProcessHide(delayTime));
                         return;
                     }
                 }
@@ -128,7 +128,7 @@ namespace MyClasses.UI
                 }
 
                 string coroutineKey = typeof(MyUGUILoadingIndicator).Name + "_Hide" + loadingID;
-                MyCoroutiner.StopCoroutine(coroutineKey);
+                MyCoroutiner.Stop(coroutineKey);
 
                 if (minLiveTime > 0)
                 {
@@ -136,7 +136,7 @@ namespace MyClasses.UI
                     if (displayedTime < minLiveTime)
                     {
                         float delayTime = minLiveTime - displayedTime;
-                        MyCoroutiner.StartCoroutine(coroutineKey, _ProcessHide(loadingID, delayTime));
+                        MyCoroutiner.Start(coroutineKey, _ProcessHide(loadingID, delayTime));
                         return;
                     }
                 }
