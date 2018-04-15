@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIConfigPopupEditorWindow (version 2.1)
+ * Class:       MyUGUIConfigPopupEditorWindow (version 2.7)
  */
 
 using UnityEngine;
@@ -281,7 +281,11 @@ namespace MyClasses.UI.Tool
                           || scriptName.StartsWith("Assets/Framework", StringComparison.Ordinal)
                           || scriptName.StartsWith("Assets/Plugin", StringComparison.Ordinal)))
                     {
+#if UNITY_EDITOR_WIN
+                        listScriptNames.Add(scriptName.Substring(scriptName.LastIndexOf('\\') + 1));
+#else
                         listScriptNames.Add(scriptName.Substring(scriptName.LastIndexOf('/') + 1));
+#endif
                     }
                 }
             }
