@@ -14,13 +14,13 @@ namespace MyClasses
         /// </summary>
         public static void RotatePointAroundAnother(this Vector2 point, Vector2 centerPoint, float angle)
         {
-            point = MyUtilities.RotatePointAroundAnother(point, centerPoint, angle);
+            point = MyUtilities.RotatePointAroundAnotherPoint(point, centerPoint, angle);
         }
 
         /// <summary>
         /// Rotate the specified point around a pivot.
         /// </summary>
-        public static void RotateAroundPivot(this Vector3 point, Vector3 pivot, Euler euler)
+        public static void RotateAroundPivot(this Vector3 point, Vector3 pivot, Vector3 euler)
         {
             point = MyUtilities.RotatePointAroundPivot(point, pivot, euler);
         }
@@ -28,9 +28,9 @@ namespace MyClasses
         /// <summary>
         /// Rotate the specified point around a pivot.
         /// </summary>
-        public static void RotateAroundPivot(this Vector3 point, Vector3 pivot, Quaternion quaternion)
+        public static void RotateAroundPivot(this Vector3 point, Vector3 pivot, Quaternion angle)
         {
-            point = MyUtilities.RotatePointAroundPivot(point, pivot, quaternion);
+            point = MyUtilities.RotatePointAroundPivot(point, pivot, angle);
         }
     }
 }
