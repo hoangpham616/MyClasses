@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIButton (version 2.0)
+ * Class:       MyUGUIButton (version 2.6)
  */
 
 #if UNITY_EDITOR
@@ -287,9 +287,9 @@ namespace MyClasses.UI
         /// <summary>
         /// Set dark.
         /// </summary>
-        public void SetDark(bool isDim)
+        public void SetDark(bool isDark)
         {
-            if (isDim)
+            if (isDark)
             {
                 Darken();
             }
@@ -388,6 +388,45 @@ namespace MyClasses.UI
             mEffectType = effectType;
         }
 
+#if UNITY_EDITOR
+
+        /// <summary>
+        /// Create a template.
+        /// </summary>
+        public static void CreateTemplate()
+        {
+            GameObject canvas = MyUtilities.FindObjectInRoot("Canvas");
+
+            GameObject obj = new GameObject("Button");
+            if (canvas != null)
+            {
+                obj.transform.SetParent(canvas.transform, false);
+            }
+
+            RectTransform contentRectTransform = obj.AddComponent<RectTransform>();
+            MyUtilities.Anchor(ref contentRectTransform, MyUtilities.EAnchorPreset.MiddleCenter, MyUtilities.EAnchorPivot.MiddleCenter, 300, 100, 0, 0);
+            obj.AddComponent<Image>();
+            obj.AddComponent<MyUGUIButton>();
+
+            GameObject text = new GameObject("Text");
+            text.transform.SetParent(obj.transform, false);
+
+            RectTransform textRectTransform = text.AddComponent<RectTransform>();
+            MyUtilities.Anchor(ref textRectTransform, MyUtilities.EAnchorPreset.DualStretch, MyUtilities.EAnchorPivot.MiddleCenter, Vector2.zero, Vector2.zero);
+            Text textText = text.AddComponent<Text>();
+            textText.text = "Button";
+            textText.fontSize = 40;
+            textText.supportRichText = false;
+            textText.alignment = TextAnchor.MiddleCenter;
+            textText.color = Color.black;
+            textText.raycastTarget = false;
+
+            EditorGUIUtility.PingObject(obj);
+            Selection.activeGameObject = obj.gameObject;
+        }
+
+#endif
+
         #endregion
 
         #region ----- Private Method -----
@@ -463,7 +502,7 @@ namespace MyClasses.UI
         {
             mScript = (MyUGUIButton)target;
         }
-        
+
         /// <summary>
         /// OnInspectorGUI.
         /// </summary>
