@@ -14,7 +14,9 @@ namespace MyClasses
         /// </summary>
         public static void RotatePointAroundAnother(this Vector2 point, Vector2 centerPoint, float angle)
         {
-            point = MyUtilities.RotatePointAroundAnotherPoint(point, centerPoint, angle);
+            Vector3 euler = Vector3.zero;
+            euler.z = angle;
+            point = MyUtilities.RotatePointAroundPivot(point, centerPoint, euler);
         }
 
         /// <summary>

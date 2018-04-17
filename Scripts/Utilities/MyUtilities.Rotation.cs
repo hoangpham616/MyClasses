@@ -5,21 +5,12 @@
  */
 
 using UnityEngine;
+using System;
 
 namespace MyClasses
 {
     public static partial class MyUtilities
     {
-        /// <summary>
-        /// Rotate a point around another point.
-        /// </summary>
-        public static Vector3 RotatePointAroundAnotherPoint(Vector2 point, Vector2 centerPoint, float angle)
-        {
-            Vector3 euler = Vector3.zero;
-            euler.z = angle;
-            return RotatePointAroundPivot(point, centerPoint, Quaternion.Euler(euler));
-        }
-
         /// <summary>
         /// Rotate a point around pivot.
         /// </summary>
