@@ -1,7 +1,7 @@
-/*
+﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup1Button (version 2.6)
+ * Class:       MyUGUIPopup1Button (version 2.7)
  */
 
 using UnityEngine;
@@ -173,7 +173,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string title, string content, string mainButton, Action<object> actionMain, bool isAutoHideWhenClickButton = true)
+        public void SetData(string title, string content, string mainButton, Action<object> actionMain = null, bool isAutoHideWhenClickButton = true)
         {
             _SetData(title, content, mainButton, actionMain, false, null, isAutoHideWhenClickButton);
         }
