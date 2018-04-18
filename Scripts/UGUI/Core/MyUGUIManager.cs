@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
  * Class:       MyUGUIManager (version 2.7)
@@ -627,7 +627,7 @@ namespace MyClasses.UI
         /// Hide loading indicator.
         /// </summary>
         /// <param name="minLiveTime">minimum seconds have to show before hiding</param>
-        public void HideLoadingIndicator(float minLiveTime = 0.1f)
+        public void HideLoadingIndicator(float minLiveTime = 0.2f)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>HideLoadingIndicator()</color>: minLiveTime=" + minLiveTime);
