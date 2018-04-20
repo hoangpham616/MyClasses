@@ -1,7 +1,7 @@
-/*
+﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUILoadingIndicator (version 2.5)
+ * Class:       MyUGUILoadingIndicator (version 2.4)
 */
 
 using UnityEngine;
@@ -166,7 +166,6 @@ namespace MyClasses.UI
 
                 if (child.name == ELoadingIndicatorID.Circle.ToString())
                 {
-                    Animator root_animator = child.AddComponent<Animator>();
 
                     GameObject imageBG = new GameObject("ImageBackground");
                     imageBG.transform.SetParent(child.transform, false);
@@ -194,6 +193,7 @@ namespace MyClasses.UI
                     {
                         if (System.IO.File.Exists(paths[j] + "/Animations/my_animator_loading_indicator_circle.controller"))
                         {
+                            Animator root_animator = child.AddComponent<Animator>();
                             root_animator.runtimeAnimatorController = (RuntimeAnimatorController)UnityEditor.AssetDatabase.LoadAssetAtPath(paths[j] + "/Animations/my_animator_loading_indicator_circle.controller", typeof(RuntimeAnimatorController));
                             if (System.IO.File.Exists(paths[j] + "/Images/my_loading_indicator_circle_bg.png"))
                             {

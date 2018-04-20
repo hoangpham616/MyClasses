@@ -4,6 +4,8 @@
  * Class:       MyUGUIAspectRatioAnchor (version 2.0)
  */
 
+#pragma warning disable 0414
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
