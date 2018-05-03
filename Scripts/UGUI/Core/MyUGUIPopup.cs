@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup (version 2.3)
+ * Class:       MyUGUIPopup (version 2.8)
  */
 
 using UnityEngine;
@@ -82,19 +82,19 @@ namespace MyClasses.UI
                     }
                     else
                     {
-                        Root = GameObject.Instantiate(Bundle.LoadAsset(PrefabName) as GameObject);
+                        GameObject = GameObject.Instantiate(Bundle.LoadAsset(PrefabName) as GameObject);
                     }
                 }
                 else
                 {
-                    Root = GameObject.Instantiate(Resources.Load(MyUGUIManager.POPUP_DIRECTORY + PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
+                    GameObject = GameObject.Instantiate(Resources.Load(MyUGUIManager.POPUP_DIRECTORY + PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
                 }
-                Root.name = PrefabName + "_Reaptable (" + Random.Range(0, int.MaxValue) + ")";
+                GameObject.name = PrefabName + "_Reaptable (" + Random.Range(0, int.MaxValue) + ")";
             }
             else
             {
-                Root = MyUtilities.FindObjectInFirstLayer(parent, PrefabName);
-                if (Root == null)
+                GameObject = MyUtilities.FindObjectInFirstLayer(parent, PrefabName);
+                if (GameObject == null)
                 {
                     if (IsUseAssetBundle)
                     {
@@ -104,18 +104,18 @@ namespace MyClasses.UI
                         }
                         else
                         {
-                            Root = GameObject.Instantiate(Bundle.LoadAsset(PrefabName) as GameObject);
+                            GameObject = GameObject.Instantiate(Bundle.LoadAsset(PrefabName) as GameObject);
                         }
                     }
                     else
                     {
-                        Root = GameObject.Instantiate(Resources.Load(MyUGUIManager.POPUP_DIRECTORY + PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
-                        Root.name = PrefabName;
+                        GameObject = GameObject.Instantiate(Resources.Load(MyUGUIManager.POPUP_DIRECTORY + PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
+                        GameObject.name = PrefabName;
                     }
                 }
             }
 
-            Root.transform.SetParent(parent.transform, false);
+            GameObject.transform.SetParent(parent.transform, false);
         }
 
         /// <summary>
@@ -125,9 +125,9 @@ namespace MyClasses.UI
         {
             base.OnUGUIEnter();
 
-            Root.transform.SetAsLastSibling();
+            GameObject.transform.SetAsLastSibling();
 
-            mAnimator = Root.GetComponent<Animator>();
+            mAnimator = GameObject.GetComponent<Animator>();
             if (mAnimator != null)
             {
                 mAnimator.Play("Show");

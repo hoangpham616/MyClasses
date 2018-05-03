@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIRunningText (version 2.1)
+ * Class:       MyUGUIRunningText (version 2.8)
  */
 
 using UnityEngine;
@@ -17,7 +17,7 @@ namespace MyClasses.UI
 
         private Text mText;
 
-        private GameObject mRoot;
+        private GameObject mGameObject;
         private GameObject mContainer;
         private RectTransform mMask;
         private Vector3 mCurPos;
@@ -32,20 +32,20 @@ namespace MyClasses.UI
 
         #region ----- Property -----
 
-        public GameObject Root
+        public GameObject GameObject
         {
-            get { return mRoot; }
-            set { mRoot = value; }
+            get { return mGameObject; }
+            set { mGameObject = value; }
         }
 
         public Transform Transform
         {
-            get { return mRoot != null ? mRoot.transform : null; }
+            get { return mGameObject != null ? mGameObject.transform : null; }
         }
 
         public bool IsShow
         {
-            get { return mRoot != null && mRoot.activeSelf; }
+            get { return mGameObject != null && mGameObject.activeSelf; }
         }
 
         #endregion
@@ -74,7 +74,7 @@ namespace MyClasses.UI
         /// </summary>
         public void Show(string content, float minSpeed, float maxSpeed)
         {
-            if (mRoot != null)
+            if (mGameObject != null)
             {
                 _Init();
 
@@ -91,7 +91,7 @@ namespace MyClasses.UI
         /// </summary>
         public void Hide()
         {
-            if (mRoot != null)
+            if (mGameObject != null)
             {
                 _Init();
 
@@ -113,13 +113,13 @@ namespace MyClasses.UI
             {
                 case EState.Show:
                     {
-                        if (!mRoot.activeSelf)
+                        if (!mGameObject.activeSelf)
                         {
                             Color colorAlpha0 = mText.color;
                             colorAlpha0.a = 0;
                             mText.color = colorAlpha0;
 
-                            mRoot.SetActive(true);
+                            mGameObject.SetActive(true);
                         }
                         else
                         {
@@ -154,7 +154,7 @@ namespace MyClasses.UI
                     {
                         mCurPos.x = (mMask.rect.width / 2) + mText.rectTransform.rect.width;
                         mText.rectTransform.localPosition = mCurPos;
-                        mRoot.SetActive(false);
+                        mGameObject.SetActive(false);
 
                         mState = EState.Idle;
                     }
@@ -227,13 +227,13 @@ namespace MyClasses.UI
         /// </summary>
         private void _Init()
         {
-            if (mRoot != null)
+            if (mGameObject != null)
             {
                 if (mContainer == null || mMask == null || mText == null)
                 {
-                    mRoot.SetActive(false);
+                    mGameObject.SetActive(false);
 
-                    mContainer = MyUtilities.FindObjectInFirstLayer(mRoot, "Container");
+                    mContainer = MyUtilities.FindObjectInFirstLayer(mGameObject, "Container");
                     mMask = MyUtilities.FindObjectInFirstLayer(mContainer.gameObject, "Mask").GetComponent<RectTransform>();
                     mText = MyUtilities.FindObjectInFirstLayer(mMask.gameObject, "Text").GetComponent<Text>();
                     mTextOriginalColor = mText.color;

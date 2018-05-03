@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIBase (version 2.1)
+ * Class:       MyUGUIBase (version 2.8)
  */
 
 using UnityEngine;
@@ -13,7 +13,7 @@ namespace MyClasses.UI
         #region ----- Variable -----
 
         private EBaseState mState;
-        private GameObject mRoot;
+        private GameObject mGameObject;
         private AssetBundle mAssetBundle;
         private string mAssetBundleURL;
         private string mPrefabName;
@@ -42,15 +42,15 @@ namespace MyClasses.UI
             get { return mPrefabName; }
         }
 
-        public GameObject Root
+        public GameObject GameObject
         {
-            get { return mRoot; }
-            protected set { mRoot = value; }
+            get { return mGameObject; }
+            protected set { mGameObject = value; }
         }
 
         public Transform Transform
         {
-            get { return mRoot != null ? mRoot.transform : null; }
+            get { return mGameObject != null ? mGameObject.transform : null; }
         }
 
         public AssetBundle Bundle
@@ -60,7 +60,7 @@ namespace MyClasses.UI
 
         public bool IsActive
         {
-            get { return mRoot != null && mRoot.activeSelf; }
+            get { return mGameObject != null && mGameObject.activeSelf; }
         }
 
         public bool IsLoaded
@@ -119,9 +119,9 @@ namespace MyClasses.UI
         /// </summary>
         public virtual void OnUGUIEnter()
         {
-            if (mRoot != null)
+            if (mGameObject != null)
             {
-                mRoot.SetActive(true);
+                mGameObject.SetActive(true);
             }
         }
 

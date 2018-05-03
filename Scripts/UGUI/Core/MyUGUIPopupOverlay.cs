@@ -1,7 +1,7 @@
-/*
+﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopupOverlay (version 2.1)
+ * Class:       MyUGUIPopupOverlay (version 2.8)
  */
 
 using UnityEngine;
@@ -16,7 +16,7 @@ namespace MyClasses.UI
 
         public const string PREFAB_NAME = "PopupOverlay";
 
-        private GameObject mRoot;
+        private GameObject mGameObject;
         private Animator mAnimator;
         private MyUGUIButton mButton;
 
@@ -24,15 +24,15 @@ namespace MyClasses.UI
 
         #region ----- Property -----
 
-        public GameObject Root
+        public GameObject GameObject
         {
-            get { return mRoot; }
-            set { mRoot = value; }
+            get { return mGameObject; }
+            set { mGameObject = value; }
         }
 
         public Transform Transform
         {
-            get { return mRoot != null ? mRoot.transform : null; }
+            get { return mGameObject != null ? mGameObject.transform : null; }
         }
 
         #endregion
@@ -87,13 +87,13 @@ namespace MyClasses.UI
         /// </summary>
         public void Show()
         {
-            if (mRoot != null)
+            if (mGameObject != null)
             {
-                mRoot.SetActive(true);
+                mGameObject.SetActive(true);
 
                 if (mAnimator == null)
                 {
-                    mAnimator = mRoot.GetComponent<Animator>();
+                    mAnimator = mGameObject.GetComponent<Animator>();
                 }
                 if (mAnimator != null)
                 {
@@ -102,10 +102,10 @@ namespace MyClasses.UI
 
                 if (mButton == null)
                 {
-                    mButton = mRoot.GetComponent<MyUGUIButton>();
+                    mButton = mGameObject.GetComponent<MyUGUIButton>();
                     if (mButton == null)
                     {
-                        mButton = mRoot.AddComponent<MyUGUIButton>();
+                        mButton = mGameObject.AddComponent<MyUGUIButton>();
                     }
                 }
                 mButton.OnEventPointerClick.RemoveAllListeners();
@@ -118,11 +118,11 @@ namespace MyClasses.UI
         /// </summary>
         public void Hide()
         {
-            if (mRoot != null)
+            if (mGameObject != null)
             {
                 if (mAnimator == null)
                 {
-                    mAnimator = mRoot.GetComponent<Animator>();
+                    mAnimator = mGameObject.GetComponent<Animator>();
                 }
                 if (mAnimator != null)
                 {
@@ -130,7 +130,7 @@ namespace MyClasses.UI
                     return;
                 }
 
-                mRoot.SetActive(false);
+                mGameObject.SetActive(false);
             }
         }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
  * Class:       MyUGUIPopup2Buttons (version 2.6)
@@ -57,12 +57,12 @@ namespace MyClasses.UI
         {
             base.OnUGUIInit();
 
-            GameObject _container = MyUtilities.FindObjectInAllLayers(Root, "Container");
+            GameObject _container = MyUtilities.FindObjectInAllLayers(GameObject, "Container");
             mBody = MyUtilities.FindObjectInFirstLayer(_container, "Body").GetComponent<Text>();
             mButtonLeft = MyUtilities.FindObjectInFirstLayer(_container, "ButtonLeft").GetComponent<MyUGUIButton>();
             mButtonRight = MyUtilities.FindObjectInFirstLayer(_container, "ButtonRight").GetComponent<MyUGUIButton>();
 
-            GameObject _title = MyUtilities.FindObjectInAllLayers(Root, "Title");
+            GameObject _title = MyUtilities.FindObjectInAllLayers(GameObject, "Title");
             if (_title != null)
             {
                 mTitle = _title.GetComponent<Text>();

@@ -31,14 +31,14 @@ namespace MyClasses.UI
         {
             base.OnUGUIInit();
 
-            Root = MyUtilities.FindObjectInFirstLayer(MyUGUIManager.Instance.CanvasOnTopHUD, PrefabName);
-            if (Root == null)
+            GameObject = MyUtilities.FindObjectInFirstLayer(MyUGUIManager.Instance.CanvasOnTopHUD, PrefabName);
+            if (GameObject == null)
             {
-                Root = GameObject.Instantiate(Resources.Load(MyUGUIManager.HUD_DIRECTORY + PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
-                Root.name = PrefabName;
-                Root.transform.SetParent(MyUGUIManager.Instance.CanvasOnTopHUD.transform, false);
+                GameObject = GameObject.Instantiate(Resources.Load(MyUGUIManager.HUD_DIRECTORY + PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
+                GameObject.name = PrefabName;
+                GameObject.transform.SetParent(MyUGUIManager.Instance.CanvasOnTopHUD.transform, false);
             }
-            Root.SetActive(false);
+            GameObject.SetActive(false);
         }
 
         /// <summary>

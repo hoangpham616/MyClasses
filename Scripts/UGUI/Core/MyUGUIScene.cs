@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIScene (version 2.3)
+ * Class:       MyUGUIScene (version 2.8)
  */
 
 using UnityEngine;
@@ -72,8 +72,8 @@ namespace MyClasses.UI
         {
             base.OnUGUIInit();
 
-            Root = MyUtilities.FindObjectInFirstLayer(MyUGUIManager.Instance.Canvas, PrefabName);
-            if (Root == null)
+            GameObject = MyUtilities.FindObjectInFirstLayer(MyUGUIManager.Instance.Canvas, PrefabName);
+            if (GameObject == null)
             {
                 if (IsUseAssetBundle)
                 {
@@ -81,7 +81,7 @@ namespace MyClasses.UI
                     {
                         Debug.LogError("[" + typeof(MyUGUIScene).Name + "] OnUGUIInit(): Asset bundle null.");
                     }
-                    Root = GameObject.Instantiate(Bundle.LoadAsset(PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
+                    GameObject = GameObject.Instantiate(Bundle.LoadAsset(PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
                 }
                 else
                 {
@@ -91,12 +91,12 @@ namespace MyClasses.UI
                     {
                         Debug.LogError("[" + typeof(MyUGUIScene).Name + "] OnUGUIInit(): Could not find file \"" + path + "\".");
                     }
-                    Root = GameObject.Instantiate(template, Vector3.zero, Quaternion.identity) as GameObject;
+                    GameObject = GameObject.Instantiate(template, Vector3.zero, Quaternion.identity) as GameObject;
                 }
-                Root.name = PrefabName;
-                Root.transform.SetParent(MyUGUIManager.Instance.Canvas.transform, false);
+                GameObject.name = PrefabName;
+                GameObject.transform.SetParent(MyUGUIManager.Instance.Canvas.transform, false);
             }
-            Root.SetActive(false);
+            GameObject.SetActive(false);
         }
 
         /// <summary>

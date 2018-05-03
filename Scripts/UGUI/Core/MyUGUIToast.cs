@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIToast (version 2.1)
+ * Class:       MyUGUIToast (version 2.8)
  */
 
 using UnityEngine;
@@ -17,7 +17,7 @@ namespace MyClasses.UI
 
         private Text mText;
 
-        private GameObject mRoot;
+        private GameObject mGameObject;
         private Animator mAnimator;
         private MyTimer mTimer;
 
@@ -27,15 +27,15 @@ namespace MyClasses.UI
 
         #region ----- Property -----
 
-        public GameObject Root
+        public GameObject GameObject
         {
-            get { return mRoot; }
-            set { mRoot = value; }
+            get { return mGameObject; }
+            set { mGameObject = value; }
         }
 
         public Transform Transform
         {
-            get { return mRoot != null ? mRoot.transform : null; }
+            get { return mGameObject != null ? mGameObject.transform : null; }
         }
 
         #endregion
@@ -64,11 +64,11 @@ namespace MyClasses.UI
         /// </summary>
         public void Show(string content, float duration)
         {
-            if (mRoot != null)
+            if (mGameObject != null)
             {
                 if (mText == null)
                 {
-                    mText = MyUtilities.FindObjectInAllLayers(mRoot, "Text").GetComponent<Text>();
+                    mText = MyUtilities.FindObjectInAllLayers(mGameObject, "Text").GetComponent<Text>();
                     if (mText == null)
                     {
                         Debug.LogError("[" + typeof(MyUGUIToast).Name + "] Show(): Could not find Text component.");
@@ -87,13 +87,13 @@ namespace MyClasses.UI
 
                 mTimer = new MyTimer(duration);
 
-                mRoot.SetActive(true);
+                mGameObject.SetActive(true);
 
                 mText.text = content;
 
                 if (mAnimator == null)
                 {
-                    mAnimator = mRoot.GetComponent<Animator>();
+                    mAnimator = mGameObject.GetComponent<Animator>();
                 }
                 if (mAnimator != null)
                 {
@@ -109,7 +109,7 @@ namespace MyClasses.UI
         /// </summary>
         public void Hide()
         {
-            if (mRoot != null)
+            if (mGameObject != null)
             {
                 mTimer = null;
 
@@ -119,7 +119,7 @@ namespace MyClasses.UI
                     return;
                 }
 
-                mRoot.SetActive(false);
+                mGameObject.SetActive(false);
             }
         }
 
@@ -132,7 +132,7 @@ namespace MyClasses.UI
             {
                 if (mNumFrameNeedResize > 0)
                 {
-                    if (mRoot != null && mText.transform.parent != null)
+                    if (mGameObject != null && mText.transform.parent != null)
                     {
                         CanvasScaler canvasScaler = MyUGUIManager.Instance.CanvasOnTop.GetComponent<CanvasScaler>();
                         RectTransform rectTransform = mText.transform.parent.GetComponent<RectTransform>();

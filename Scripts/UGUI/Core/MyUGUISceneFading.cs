@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISceneFading (version 2.5)
+ * Class:       MyUGUISceneFading (version 2.8)
  */
 
 using UnityEngine;
@@ -16,7 +16,7 @@ namespace MyClasses.UI
 
         public const string PREFAB_NAME = "SceneFading";
 
-        private GameObject mRoot;
+        private GameObject mGameObject;
         private Image mImage;
         private EState mState;
         private float mBeginTime;
@@ -27,15 +27,15 @@ namespace MyClasses.UI
 
         #region ----- Property -----
 
-        public GameObject Root
+        public GameObject GameObject
         {
-            get { return mRoot; }
-            set { mRoot = value; }
+            get { return mGameObject; }
+            set { mGameObject = value; }
         }
 
         public Transform Transform
         {
-            get { return mRoot != null ? mRoot.transform : null; }
+            get { return mGameObject != null ? mGameObject.transform : null; }
         }
 
         public bool IsFading
@@ -154,7 +154,7 @@ namespace MyClasses.UI
         {
             if (mImage == null)
             {
-                mImage = mRoot.GetComponent<Image>();
+                mImage = mGameObject.GetComponent<Image>();
             }
             mImage.raycastTarget = true;
             mImage.enabled = false;

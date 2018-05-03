@@ -40,8 +40,6 @@ namespace MyClasses.UI
         private float mDelayTimeOnDevice = 0;
         [SerializeField]
         private UnityEventAction mOnInit;
-        [SerializeField]
-        private UnityEventAction mOnSetupAssetBundle;
 
         private static bool mIsBooted = false;
 
@@ -190,7 +188,7 @@ namespace MyClasses.UI
                 case MyUGUIBooter.EBootMode.WaitForInitializing:
                     {
                         EditorGUI.BeginChangeCheck();
-                        EditorGUILayout.PropertyField(mOnInit, new GUIContent("On Init (Action)"));
+                        EditorGUILayout.PropertyField(mOnInit, new GUIContent("On Init"));
                         if (EditorGUI.EndChangeCheck())
                         {
                             serializedObject.ApplyModifiedProperties();

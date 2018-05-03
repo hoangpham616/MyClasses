@@ -53,7 +53,7 @@ namespace MyClasses.UI
         {
             base.OnUGUIInit();
 
-            GameObject _container = MyUtilities.FindObjectInAllLayers(Root, "Container");
+            GameObject _container = MyUtilities.FindObjectInAllLayers(GameObject, "Container");
             mBody = MyUtilities.FindObjectInFirstLayer(_container, "Body").GetComponent<Text>();
             mButtonMain = MyUtilities.FindObjectInFirstLayer(_container, "ButtonMain").GetComponent<MyUGUIButton>();
 

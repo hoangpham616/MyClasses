@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.7)
+ * Class:       MyUGUIManager (version 2.8)
  */
 
 #pragma warning disable 0162
@@ -582,9 +582,9 @@ namespace MyClasses.UI
         }
 
         /// <summary>
-        /// Show loading indicator and return loading id.
+        /// Hide current tips loading indicator, show simple loading indicator and return loading id.
         /// </summary>
-        public int ShowLoadingIndicator(ELoadingIndicatorID popupID = ELoadingIndicatorID.Circle)
+        public int ShowLoadingIndicator()
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowLoadingIndicator()</color>");
@@ -592,13 +592,13 @@ namespace MyClasses.UI
 
             _InitLoadingIndicator();
 
-            return mCurrentLoadingIndicator.Show(popupID);
+            return mCurrentLoadingIndicator.ShowSimple();
         }
 
         /// <summary>
-        /// Show loading indicator and return loading id.
+        /// Hide current tips loading indicator, show simple loading indicator and return loading id.
         /// </summary>
-        public int ShowLoadingIndicator(ELoadingIndicatorID popupID, float timeOut, Action timeOutCallback = null)
+        public int ShowLoadingIndicator(float timeOut, Action timeOutCallback = null)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowLoadingIndicator()</color>: timeOut=" + timeOut);
@@ -606,28 +606,42 @@ namespace MyClasses.UI
 
             _InitLoadingIndicator();
 
-            return mCurrentLoadingIndicator.Show(popupID, timeOut, timeOutCallback);
+            return mCurrentLoadingIndicator.ShowSimple(timeOut, timeOutCallback);
         }
 
         /// <summary>
-        /// Show loading indicator and return loading id.
+        /// Hide current simple loading indicator and show tips loading indicator.
         /// </summary>
-        public int ShowLoadingIndicator(float timeOut, Action timeOutCallback = null, ELoadingIndicatorID popupID = ELoadingIndicatorID.Circle)
+        public void ShowLoadingIndicatorWithTips(string tips, string description, bool isThreeDots, Action cancelCallback = null)
         {
 #if DEBUG_MY_UI
-            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowLoadingIndicator()</color>: timeOut=" + timeOut);
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowLoadingIndicatorWithTips()</color>: tips=" + tips + " | description=" + description + " | isThreeDots=" + isThreeDots);
 #endif
 
             _InitLoadingIndicator();
 
-            return mCurrentLoadingIndicator.Show(popupID, timeOut, timeOutCallback);
+            mCurrentLoadingIndicator.ShowTips(tips, description, isThreeDots, -1, null, cancelCallback);
+        }
+
+        /// <summary>
+        /// Hide current simple loading indicator and show tips loading indicator.
+        /// </summary>
+        public void ShowLoadingIndicatorWithTips(string tips, string description, bool isThreeDots, float timeOut, Action timeOutCallback = null, Action cancelCallback = null)
+        {
+#if DEBUG_MY_UI
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowLoadingIndicatorWithTips()</color>: tips=" + tips + " | description=" + description + " | isThreeDots=" + isThreeDots + " | timeOut=" + timeOut);
+#endif
+
+            _InitLoadingIndicator();
+
+            mCurrentLoadingIndicator.ShowTips(tips, description, isThreeDots, timeOut, timeOutCallback, cancelCallback);
         }
 
         /// <summary>
         /// Hide loading indicator.
         /// </summary>
         /// <param name="minLiveTime">minimum seconds have to show before hiding</param>
-        public void HideLoadingIndicator(float minLiveTime = 0.2f)
+        public void HideLoadingIndicator(float minLiveTime = 0.15f)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>HideLoadingIndicator()</color>: minLiveTime=" + minLiveTime);
@@ -643,7 +657,7 @@ namespace MyClasses.UI
         /// Hide loading indicator by loading id.
         /// </summary>
         /// <param name="minLiveTime">minimum seconds have to show before hiding</param>
-        public void HideLoadingIndicator(int loadingID, float minLiveTime = 0.1f)
+        public void HideLoadingIndicator(int loadingID, float minLiveTime = 0.15f)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>HideLoadingIndicator()</color>: loadingID=" + loadingID + " minLiveTime=" + minLiveTime);
@@ -651,7 +665,7 @@ namespace MyClasses.UI
 
             if (mCurrentLoadingIndicator != null)
             {
-                mCurrentLoadingIndicator.Hide(loadingID, minLiveTime);
+                mCurrentLoadingIndicator.HideSimple(loadingID, minLiveTime);
             }
         }
 
@@ -956,12 +970,12 @@ namespace MyClasses.UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitSceneFading()</color>");
 #endif
 
-            if (mCurrentSceneFading == null || mCurrentSceneFading.Root == null)
+            if (mCurrentSceneFading == null || mCurrentSceneFading.GameObject == null)
             {
                 mCurrentSceneFading = new MyUGUISceneFading();
-                mCurrentSceneFading.Root = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUISceneFading.PREFAB_NAME);
+                mCurrentSceneFading.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUISceneFading.PREFAB_NAME);
 
-                if (mCurrentSceneFading.Root == null)
+                if (mCurrentSceneFading.GameObject == null)
                 {
                     if (mCoreAssetBundleConfig != null && !string.IsNullOrEmpty(mCoreAssetBundleConfig.URL))
                     {
@@ -969,20 +983,20 @@ namespace MyClasses.UI
                         if (bundle == null)
                         {
                             Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitSceneFading(): Could not get asset bundle which contains Scene Fading. A template was created instead.");
-                            mCurrentSceneFading.Root = MyUGUISceneFading.CreateTemplate();
+                            mCurrentSceneFading.GameObject = MyUGUISceneFading.CreateTemplate();
                         }
                         else
                         {
-                            mCurrentSceneFading.Root = Instantiate(bundle.LoadAsset(MyUGUISceneFading.PREFAB_NAME) as GameObject);
+                            mCurrentSceneFading.GameObject = Instantiate(bundle.LoadAsset(MyUGUISceneFading.PREFAB_NAME) as GameObject);
                         }
                     }
                     else
                     {
-                        mCurrentSceneFading.Root = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUISceneFading.PREFAB_NAME) as GameObject);
+                        mCurrentSceneFading.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUISceneFading.PREFAB_NAME) as GameObject);
                     }
                 }
 
-                mCurrentSceneFading.Root.name = MyUGUISceneFading.PREFAB_NAME;
+                mCurrentSceneFading.GameObject.name = MyUGUISceneFading.PREFAB_NAME;
                 mCurrentSceneFading.Transform.SetParent(mCanvasSceneFading.transform, false);
                 mCurrentSceneFading.TurnOnFading();
             }
@@ -997,12 +1011,12 @@ namespace MyClasses.UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitPopupOverlay()</color>");
 #endif
 
-            if (mCurrentPopupOverlay == null || mCurrentPopupOverlay.Root == null)
+            if (mCurrentPopupOverlay == null || mCurrentPopupOverlay.GameObject == null)
             {
                 mCurrentPopupOverlay = new MyUGUIPopupOverlay();
-                mCurrentPopupOverlay.Root = MyUtilities.FindObjectInFirstLayer(mCanvasOnTopPopup, MyUGUIPopupOverlay.PREFAB_NAME);
+                mCurrentPopupOverlay.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTopPopup, MyUGUIPopupOverlay.PREFAB_NAME);
 
-                if (mCurrentPopupOverlay.Root == null)
+                if (mCurrentPopupOverlay.GameObject == null)
                 {
                     if (mCoreAssetBundleConfig != null && !string.IsNullOrEmpty(mCoreAssetBundleConfig.URL))
                     {
@@ -1010,21 +1024,21 @@ namespace MyClasses.UI
                         if (bundle == null)
                         {
                             Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitPopupOverlay(): Could not get asset bundle which contains Popup Overlay. A template was created instead.");
-                            mCurrentPopupOverlay.Root = MyUGUIPopupOverlay.CreateTemplate();
+                            mCurrentPopupOverlay.GameObject = MyUGUIPopupOverlay.CreateTemplate();
                         }
                         else
                         {
-                            mCurrentPopupOverlay.Root = Instantiate(bundle.LoadAsset(MyUGUIPopupOverlay.PREFAB_NAME) as GameObject);
+                            mCurrentPopupOverlay.GameObject = Instantiate(bundle.LoadAsset(MyUGUIPopupOverlay.PREFAB_NAME) as GameObject);
                         }
                     }
                     else
                     {
-                        mCurrentPopupOverlay.Root = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIPopupOverlay.PREFAB_NAME) as GameObject);
+                        mCurrentPopupOverlay.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIPopupOverlay.PREFAB_NAME) as GameObject);
                     }
                 }
 
-                mCurrentPopupOverlay.Root.name = MyUGUIPopupOverlay.PREFAB_NAME;
-                mCurrentPopupOverlay.Root.SetActive(false);
+                mCurrentPopupOverlay.GameObject.name = MyUGUIPopupOverlay.PREFAB_NAME;
+                mCurrentPopupOverlay.GameObject.SetActive(false);
                 mCurrentPopupOverlay.Transform.SetParent(mCanvasOnTopPopup.transform, false);
             }
         }
@@ -1038,12 +1052,12 @@ namespace MyClasses.UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitLoadingIndicator()</color>");
 #endif
 
-            if (mCurrentLoadingIndicator == null || mCurrentLoadingIndicator.Root == null)
+            if (mCurrentLoadingIndicator == null || mCurrentLoadingIndicator.GameObject == null)
             {
                 mCurrentLoadingIndicator = new MyUGUILoadingIndicator();
-                mCurrentLoadingIndicator.Root = MyUtilities.FindObjectInFirstLayer(mCanvasOnTopLoadingIndicator, MyUGUILoadingIndicator.PREFAB_NAME);
+                GameObject go = MyUtilities.FindObjectInFirstLayer(mCanvasOnTopLoadingIndicator, MyUGUILoadingIndicator.PREFAB_NAME);
 
-                if (mCurrentLoadingIndicator.Root == null)
+                if (mCurrentLoadingIndicator.GameObject == null)
                 {
                     if (mCoreAssetBundleConfig != null && !string.IsNullOrEmpty(mCoreAssetBundleConfig.URL))
                     {
@@ -1051,21 +1065,22 @@ namespace MyClasses.UI
                         if (bundle == null)
                         {
                             Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitLoadingIndicator(): Could not get asset bundle which contains Loading Indicator. A template was created instead.");
-                            mCurrentLoadingIndicator.Root = MyUGUILoadingIndicator.CreateTemplate();
+                            go = MyUGUILoadingIndicator.CreateTemplate();
                         }
                         else
                         {
-                            mCurrentLoadingIndicator.Root = Instantiate(bundle.LoadAsset(MyUGUILoadingIndicator.PREFAB_NAME) as GameObject);
+                            go = Instantiate(bundle.LoadAsset(MyUGUILoadingIndicator.PREFAB_NAME) as GameObject);
                         }
                     }
                     else
                     {
-                        mCurrentLoadingIndicator.Root = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUILoadingIndicator.PREFAB_NAME) as GameObject);
+                        go = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUILoadingIndicator.PREFAB_NAME) as GameObject);
                     }
                 }
 
-                mCurrentLoadingIndicator.Root.name = MyUGUILoadingIndicator.PREFAB_NAME;
-                mCurrentLoadingIndicator.Root.SetActive(false);
+                mCurrentLoadingIndicator.Initialize(go);
+                mCurrentLoadingIndicator.GameObject.name = MyUGUILoadingIndicator.PREFAB_NAME;
+                mCurrentLoadingIndicator.GameObject.SetActive(false);
                 mCurrentLoadingIndicator.Transform.SetParent(mCanvasOnTopLoadingIndicator.transform, false);
             }
         }
@@ -1079,12 +1094,12 @@ namespace MyClasses.UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitRunningText()</color>");
 #endif
 
-            if (mCurrentRunningText == null || mCurrentRunningText.Root == null)
+            if (mCurrentRunningText == null || mCurrentRunningText.GameObject == null)
             {
                 mCurrentRunningText = new MyUGUIRunningText();
-                mCurrentRunningText.Root = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUIRunningText.PREFAB_NAME);
+                mCurrentRunningText.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUIRunningText.PREFAB_NAME);
 
-                if (mCurrentRunningText.Root == null)
+                if (mCurrentRunningText.GameObject == null)
                 {
                     if (mCoreAssetBundleConfig != null && !string.IsNullOrEmpty(mCoreAssetBundleConfig.URL))
                     {
@@ -1092,21 +1107,21 @@ namespace MyClasses.UI
                         if (bundle == null)
                         {
                             Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitRunningText(): Could not get asset bundle which contains Running Text. A template was created instead.");
-                            mCurrentRunningText.Root = MyUGUIRunningText.CreateTemplate();
+                            mCurrentRunningText.GameObject = MyUGUIRunningText.CreateTemplate();
                         }
                         else
                         {
-                            mCurrentRunningText.Root = Instantiate(bundle.LoadAsset(MyUGUIRunningText.PREFAB_NAME) as GameObject);
+                            mCurrentRunningText.GameObject = Instantiate(bundle.LoadAsset(MyUGUIRunningText.PREFAB_NAME) as GameObject);
                         }
                     }
                     else
                     {
-                        mCurrentRunningText.Root = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIRunningText.PREFAB_NAME) as GameObject);
+                        mCurrentRunningText.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIRunningText.PREFAB_NAME) as GameObject);
                     }
                 }
 
-                mCurrentRunningText.Root.name = MyUGUIRunningText.PREFAB_NAME;
-                mCurrentRunningText.Root.SetActive(false);
+                mCurrentRunningText.GameObject.name = MyUGUIRunningText.PREFAB_NAME;
+                mCurrentRunningText.GameObject.SetActive(false);
                 mCurrentRunningText.Transform.SetParent(mCanvasOnTop.transform, false);
             }
 
@@ -1122,12 +1137,12 @@ namespace MyClasses.UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitToast()</color>");
 #endif
 
-            if (mCurrentToast == null || mCurrentToast.Root == null)
+            if (mCurrentToast == null || mCurrentToast.GameObject == null)
             {
                 mCurrentToast = new MyUGUIToast();
-                mCurrentToast.Root = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUIToast.PREFAB_NAME);
+                mCurrentToast.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUIToast.PREFAB_NAME);
 
-                if (mCurrentToast.Root == null)
+                if (mCurrentToast.GameObject == null)
                 {
                     if (mCoreAssetBundleConfig != null && !string.IsNullOrEmpty(mCoreAssetBundleConfig.URL))
                     {
@@ -1135,21 +1150,21 @@ namespace MyClasses.UI
                         if (bundle == null)
                         {
                             Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitToast(): Could not get asset bundle which contains Toast. A template was created instead.");
-                            mCurrentToast.Root = MyUGUIToast.CreateTemplate();
+                            mCurrentToast.GameObject = MyUGUIToast.CreateTemplate();
                         }
                         else
                         {
-                            mCurrentToast.Root = Instantiate(bundle.LoadAsset(MyUGUIToast.PREFAB_NAME) as GameObject);
+                            mCurrentToast.GameObject = Instantiate(bundle.LoadAsset(MyUGUIToast.PREFAB_NAME) as GameObject);
                         }
                     }
                     else
                     {
-                        mCurrentToast.Root = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIToast.PREFAB_NAME) as GameObject);
+                        mCurrentToast.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIToast.PREFAB_NAME) as GameObject);
                     }
                 }
 
-                mCurrentToast.Root.name = MyUGUIToast.PREFAB_NAME;
-                mCurrentToast.Root.SetActive(false);
+                mCurrentToast.GameObject.name = MyUGUIToast.PREFAB_NAME;
+                mCurrentToast.GameObject.SetActive(false);
                 mCurrentToast.Transform.SetParent(mCanvasOnTop.transform, false);
             }
 
@@ -1422,7 +1437,7 @@ namespace MyClasses.UI
 
                         if (mCurrentUnityScene.HUD != null)
                         {
-                            if ((mCurrentUnityScene.HUD.Root == null) || (!mCurrentUnityScene.HUD.IsLoaded && !mCurrentScene.IsHideHUD))
+                            if ((mCurrentUnityScene.HUD.GameObject == null) || (!mCurrentUnityScene.HUD.IsLoaded && !mCurrentScene.IsHideHUD))
                             {
                                 mCurrentUnityScene.HUD.State = EBaseState.LoadAssetBundle;
                             }
@@ -1449,9 +1464,9 @@ namespace MyClasses.UI
 
                         if (mPreviousScene != null)
                         {
-                            if (mPreviousScene.Root != null)
+                            if (mPreviousScene.GameObject != null)
                             {
-                                mPreviousScene.Root.SetActive(false);
+                                mPreviousScene.GameObject.SetActive(false);
                             }
                         }
 
@@ -1471,7 +1486,7 @@ namespace MyClasses.UI
 
                         if (mCurrentUnityScene.HUD != null && mCurrentUnityScene.HUD.State == EBaseState.Update)
                         {
-                            mCurrentUnityScene.HUD.Root.SetActive(!mCurrentScene.IsHideHUD);
+                            mCurrentUnityScene.HUD.GameObject.SetActive(!mCurrentScene.IsHideHUD);
                             if (mCurrentUnityScene.HUD.IsActive)
                             {
                                 mCurrentUnityScene.HUD.OnUGUISceneSwitch(mCurrentScene);
@@ -1529,9 +1544,9 @@ namespace MyClasses.UI
                     {
                         if (mCurrentScene.OnUGUIInvisible())
                         {
-                            if (mNextScene == null && mCurrentScene.Root != null)
+                            if (mNextScene == null && mCurrentScene.GameObject != null)
                             {
-                                mCurrentScene.Root.SetActive(false);
+                                mCurrentScene.GameObject.SetActive(false);
                             }
 
                             if (mIsHideRunningTextWhenSwitchingScene)
@@ -1590,7 +1605,7 @@ namespace MyClasses.UI
                     break;
                 case EBaseState.Init:
                     {
-                        if (mCurrentUnityScene.HUD.Root == null || !mCurrentUnityScene.HUD.IsLoaded)
+                        if (mCurrentUnityScene.HUD.GameObject == null || !mCurrentUnityScene.HUD.IsLoaded)
                         {
                             mCurrentUnityScene.HUD.OnUGUIInit();
                             mCurrentUnityScene.HUD.State = EBaseState.Enter;
@@ -1711,9 +1726,9 @@ namespace MyClasses.UI
                                 mCurrentPopup = null;
                             }
 
-                            if (popup.Root != null)
+                            if (popup.GameObject != null)
                             {
-                                popup.Root.SetActive(false);
+                                popup.GameObject.SetActive(false);
                             }
                             popup = null;
                         }
@@ -1794,9 +1809,9 @@ namespace MyClasses.UI
                                 mCurrentFloatPopup = null;
                             }
 
-                            if (popup.Root != null)
+                            if (popup.GameObject != null)
                             {
-                                popup.Root.SetActive(false);
+                                popup.GameObject.SetActive(false);
                             }
                             popup = null;
                         }
@@ -1823,7 +1838,7 @@ namespace MyClasses.UI
                 for (int i = mCanvasOnTopPopup.transform.childCount - 1; i >= 0; i--)
                 {
                     GameObject popup = mCanvasOnTopPopup.transform.GetChild(i).gameObject;
-                    if (popup.activeSelf && !popup.name.Equals(mCurrentPopupOverlay.Root.name))
+                    if (popup.activeSelf && !popup.name.Equals(mCurrentPopupOverlay.GameObject.name))
                     {
                         mCurrentPopupOverlay.Transform.SetSiblingIndex(i - 1);
                         mCurrentPopupOverlay.Show();
@@ -1858,7 +1873,7 @@ namespace MyClasses.UI
                     for (int i = mCanvasOnTopPopup.transform.childCount - 1; i >= 0; i--)
                     {
                         GameObject popup = mCanvasOnTopPopup.transform.GetChild(i).gameObject;
-                        if (popup.activeSelf && !popup.name.Equals(mCurrentPopupOverlay.Root.name))
+                        if (popup.activeSelf && !popup.name.Equals(mCurrentPopupOverlay.GameObject.name))
                         {
                             if (i == 0)
                             {

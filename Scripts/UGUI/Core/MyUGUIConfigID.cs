@@ -6,31 +6,24 @@
 
 namespace MyClasses.UI
 {
-	public enum EUnitySceneID
-	{
-		LoginUnityScene,
-		MainMenuUnityScene,
-		GameplayUnityScene,
-	}
+    public enum EUnitySceneID
+    {
+        StartupUnityScene,
+        MainMenuUnityScene,
+        GameplayUnityScene,
+    }
 
-	public enum ESceneID
-	{
-		LoginScene,
-		BoardListScene,
-		TLMNScene,
-	}
+    public enum ESceneID
+    {
+        LoginScene,
+        MainMenuScene,
+        GameplayScene,
+    }
 
-	public enum EPopupID
-	{
-		Dialog0ButtonPopup,
-		Dialog1ButtonPopup,
-		Dialog2ButtonsPopup,
-	}
-
-	public enum ELoadingIndicatorID
-	{
-		ThreeDots,
-		Circle,
-		Search,
-	}
+    public enum EPopupID
+    {
+        Dialog0ButtonPopup,
+        Dialog1ButtonPopup,
+        Dialog2ButtonsPopup,
+    }
 }

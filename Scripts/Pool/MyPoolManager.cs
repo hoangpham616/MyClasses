@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyPoolManager (version 2.0)
+ * Class:       MyPoolManager (version 2.8)
  */
 
 using UnityEngine;
@@ -117,8 +117,8 @@ namespace MyClasses
         private string mPath;
         private string mObjectName;
         private GameObject mTemplate;
-        private GameObject mRootFree;
-        private GameObject mRootOccupied;
+        private GameObject mFree;
+        private GameObject mOccupied;
         private List<GameObject> mListFreeObject;
         private List<GameObject> mListOccupiedObject;
 
@@ -142,8 +142,8 @@ namespace MyClasses
         {
             mPath = path;
             mObjectName = path.Substring(path.LastIndexOf("/") + 1);
-            mRootFree = rootFree;
-            mRootOccupied = rootOccupied;
+            mFree = rootFree;
+            mOccupied = rootOccupied;
             mListFreeObject = new List<GameObject>();
             mListOccupiedObject = new List<GameObject>();
         }
@@ -167,7 +167,7 @@ namespace MyClasses
                     oldObj = mListFreeObject[i];
                     if (!oldObj.activeInHierarchy)
                     {
-                        oldObj.transform.SetParent(mRootOccupied.transform, false);
+                        oldObj.transform.SetParent(mOccupied.transform, false);
                         oldObj.SetActive(false);
 
                         if (!mListOccupiedObject.Contains(oldObj))
@@ -192,7 +192,7 @@ namespace MyClasses
         {
             if (obj != null)
             {
-                obj.transform.SetParent(mRootFree.transform, false);
+                obj.transform.SetParent(mFree.transform, false);
                 obj.SetActive(false);
 
                 if (!mListFreeObject.Contains(obj))
@@ -222,7 +222,7 @@ namespace MyClasses
             GameObject newObj = GameObject.Instantiate(mTemplate);
             newObj.SetActive(false);
             newObj.name = mObjectName;
-            newObj.transform.SetParent(mRootOccupied.transform, false);
+            newObj.transform.SetParent(mOccupied.transform, false);
 
             MyPooledObject poolObject = newObj.GetComponent<MyPooledObject>();
             if (poolObject == null)
