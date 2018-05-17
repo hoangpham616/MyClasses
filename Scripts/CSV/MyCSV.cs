@@ -1,9 +1,9 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyCSV (version 1.2)
+ * Class:       MyCSV (version 1.3)
  */
- 
+
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -24,7 +24,7 @@ namespace MyClasses
         {
             Dictionary<string, string[]> dictionary = new Dictionary<string, string[]>();
 
-            using (Stream stream = MyUtilities.ConvertStringToStream(input))
+            using (Stream stream = _ConvertStringToStream(input))
             {
                 bool isFirstRowRead = !isIgnoreFirstRow;
 
@@ -62,7 +62,7 @@ namespace MyClasses
         {
             List<string[]> listRow = new List<string[]>();
 
-            using (Stream stream = MyUtilities.ConvertStringToStream(input))
+            using (Stream stream = _ConvertStringToStream(input))
             {
                 bool isFirstRowRead = !isIgnoreFirstRow;
 
@@ -94,7 +94,7 @@ namespace MyClasses
         {
             List<string> listCell = new List<string>();
 
-            using (Stream stream = MyUtilities.ConvertStringToStream(input))
+            using (Stream stream = _ConvertStringToStream(input))
             {
                 bool isFirstRowRead = !isIgnoreFirstRow;
 
@@ -148,6 +148,19 @@ namespace MyClasses
             listCell.Add(stringBuilder.ToString().Replace(charCarriageReturnInCell, "\n"));
 
             return listCell;
+        }
+
+        /// <summary>
+        /// Convert string to Stream.
+        /// </summary>
+        private static Stream _ConvertStringToStream(string content)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            StreamWriter streamWriter = new StreamWriter(memoryStream);
+            streamWriter.Write(content);
+            streamWriter.Flush();
+            memoryStream.Position = 0;
+            return memoryStream;
         }
 
         #endregion
