@@ -131,7 +131,7 @@ namespace MyClasses
 
             foreach (char c in input.ToCharArray())
             {
-                if ((c == charComma && !isQuote))
+                if (c == charComma && !isQuote)
                 {
                     listCell.Add(stringBuilder.ToString().Replace(charCarriageReturnInCell, "\n"));
                     stringBuilder.Length = 0;
