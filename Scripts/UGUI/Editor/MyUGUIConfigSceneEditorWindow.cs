@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIConfigSceneEditorWindow (version 2.7)
+ * Class:       MyUGUIConfigSceneEditorWindow (version 2.8)
  */
 
 using UnityEngine;
@@ -91,7 +91,7 @@ namespace MyClasses.UI.Tool
                             IsFoldOut = true,
                             IsInitWhenLoadUnityScene = false,
                             IsHideHUD = false,
-                            FadeInDuration = 0.3f,
+                            FadeInDuration = 0.2f,
                             FadeOutDuration = 0.2f,
                         });
                     }
