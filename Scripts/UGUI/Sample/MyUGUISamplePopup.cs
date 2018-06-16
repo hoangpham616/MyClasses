@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISamplePopup (version 2.3)
+ * Class:       MyUGUISamplePopup (version 2.8)
  */
 
 using UnityEngine;
@@ -33,7 +33,7 @@ public class MyUGUISamplePopup : MyUGUIPopup
     {
         base.OnUGUIInit();
 
-        //_btnClose = MyUtilities.FindObjectInAllLayers(Root, "ButtonClose").GetComponent<MyUGUIButton>();
+        //_btnClose = MyUtilities.FindObjectInAllLayers(GameObject, "ButtonClose").GetComponent<MyUGUIButton>();
     }
 
     public override void OnUGUIEnter()

@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISampleScene (version 2.3)
+ * Class:       MyUGUISampleScene (version 2.8)
  */
 
 using UnityEngine;
@@ -33,7 +33,7 @@ public class MyUGUISampleScene : MyUGUIScene
     {
         base.OnUGUIInit();
 
-        //_btnTest = MyUtilities.FindObjectInAllLayers(Root, "ButtonTest").GetComponent<MyUGUIButton>();
+        //_btnTest = MyUtilities.FindObjectInAllLayers(GameObject, "ButtonTest").GetComponent<MyUGUIButton>();
     }
 
     public override void OnUGUIEnter()

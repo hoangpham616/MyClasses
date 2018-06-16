@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISampleHUD (version 2.3)
+ * Class:       MyUGUISampleHUD (version 2.8)
  */
 
 using UnityEngine;
@@ -33,7 +33,7 @@ public class MyUGUISampleHUD : MyUGUIHUD
     {
         base.OnUGUIInit();
 
-        //_btnBack = MyUtilities.FindObjectInAllLayers(Root, "ButtonBack").GetComponent<MyUGUIButton>();
+        //_btnBack = MyUtilities.FindObjectInAllLayers(GameObject, "ButtonBack").GetComponent<MyUGUIButton>();
     }
 
     public override void OnUGUIEnter()
