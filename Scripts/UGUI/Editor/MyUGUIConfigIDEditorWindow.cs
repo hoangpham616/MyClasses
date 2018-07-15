@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIConfigIDEditor (version 2.1)
+ * Class:       MyUGUIConfigIDEditor (version 2.2)
  */
 
 using UnityEngine;
@@ -141,7 +141,7 @@ namespace MyClasses.UI.Tool
                     IsFoldOut = true,
                     Name = "EUnitySceneID",
                     NumDefault = 0,
-                    ListID = new List<string>() { "StartupScene", "MainScene", "GameplayScene" }
+                    ListID = new List<string>() { "StartupUnityScene", "MainUnityScene", "GameplayUnityScene" }
                 });
                 mGroups.ListGroup.Add(new MyUGUIConfigGroup()
                 {
