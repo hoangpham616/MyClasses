@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISampleHUD (version 2.8)
+ * Class:       MyUGUISampleHUD (version 2.9)
  */
 
 using UnityEngine;
@@ -40,7 +40,7 @@ public class MyUGUISampleHUD : MyUGUIHUD
     {
         base.OnUGUIEnter();
 
-        //_btnBack.OnEventPointerClick.AddListener(_OnClickBack());
+        //_btnBack.OnEventPointerClick.AddListener(_OnClickBack);
     }
 
     public override void OnUGUIUpdate(float deltaTime)

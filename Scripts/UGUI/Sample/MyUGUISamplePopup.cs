@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISamplePopup (version 2.8)
+ * Class:       MyUGUISamplePopup (version 2.9)
  */
 
 using UnityEngine;
@@ -40,7 +40,7 @@ public class MyUGUISamplePopup : MyUGUIPopup
     {
         base.OnUGUIEnter();
 
-        //_btnClose.OnEventPointerClick.AddListener(_OnClickClose());
+        //_btnClose.OnEventPointerClick.AddListener(_OnClickClose);
     }
 
     public override bool OnUGUIVisible()

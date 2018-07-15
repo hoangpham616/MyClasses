@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISampleScene (version 2.8)
+ * Class:       MyUGUISampleScene (version 2.9)
  */
 
 using UnityEngine;
@@ -40,7 +40,7 @@ public class MyUGUISampleScene : MyUGUIScene
     {
         base.OnUGUIEnter();
 
-        //_btnTest.OnEventPointerClick.AddListener(_OnClickTest());
+        //_btnTest.OnEventPointerClick.AddListener(_OnClickTest);
     }
 
     public override bool OnUGUIVisible()
