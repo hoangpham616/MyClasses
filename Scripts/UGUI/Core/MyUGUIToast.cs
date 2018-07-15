@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIToast (version 2.8)
+ * Class:       MyUGUIToast (version 2.9)
  */
 
 using UnityEngine;
@@ -181,6 +181,10 @@ namespace MyClasses.UI
                 if (System.IO.File.Exists(paths[i] + "/Animations/my_animator_toast.controller"))
                 {
                     root_animator.runtimeAnimatorController = (RuntimeAnimatorController)UnityEditor.AssetDatabase.LoadAssetAtPath(paths[i] + "/Animations/my_animator_toast.controller", typeof(RuntimeAnimatorController));
+                    Debug.LogError("[" + typeof(MyUGUIToast).Name + "] CreateTemplate(): please setup \"my_animator_toast\" controller.");
+                    Debug.LogError("[" + typeof(MyUGUIToast).Name + "] CreateTemplate(): mapping \"my_animation_toast_show\" motion for \"Show\" state.");
+                    Debug.LogError("[" + typeof(MyUGUIToast).Name + "] CreateTemplate(): mapping \"my_animation_toast_idle\" motion for \"Idle\" state.");
+                    Debug.LogError("[" + typeof(MyUGUIToast).Name + "] CreateTemplate(): mapping \"my_animation_toast_hide\" motion for \"Hide\" state.");
                     break;
                 }
             }
@@ -232,9 +236,9 @@ namespace MyClasses.UI
             return obj;
         }
 
-#endregion
+        #endregion
 
-#region ----- Private Method -----
+        #region ----- Private Method -----
 
 #if UNITY_EDITOR
 
@@ -268,6 +272,6 @@ namespace MyClasses.UI
 
 #endif
 
-#endregion
+        #endregion
     }
 }

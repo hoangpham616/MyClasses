@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup0Button (version 2.6)
+ * Class:       MyUGUIPopup0Button (version 2.9)
  */
 
 using UnityEngine;
@@ -212,6 +212,9 @@ namespace MyClasses.UI
                 if (System.IO.File.Exists(paths[i] + "/Animations/my_animator_dialog.controller"))
                 {
                     root_animator.runtimeAnimatorController = (RuntimeAnimatorController)UnityEditor.AssetDatabase.LoadAssetAtPath(paths[i] + "/Animations/my_animator_dialog.controller", typeof(RuntimeAnimatorController));
+                    Debug.LogError("[" + typeof(MyUGUIPopup0Button).Name + "] CreateTemplate(): please setup \"my_animator_dialog\" controller.");
+                    Debug.LogError("[" + typeof(MyUGUIPopup0Button).Name + "] CreateTemplate(): mapping \"my_animation_dialog_show\" motion for \"Show\" state.");
+                    Debug.LogError("[" + typeof(MyUGUIPopup0Button).Name + "] CreateTemplate(): mapping \"my_animation_dialog_hide\" motion for \"Hide\" state.");
                     break;
                 }
             }

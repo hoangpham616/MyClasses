@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopupOverlay (version 2.8)
+ * Class:       MyUGUIPopupOverlay (version 2.9)
  */
 
 using UnityEngine;
@@ -149,6 +149,9 @@ namespace MyClasses.UI
                 if (System.IO.File.Exists(paths[i] + "/Animations/my_animator_popup_overlay.controller"))
                 {
                     root_animator.runtimeAnimatorController = (RuntimeAnimatorController)UnityEditor.AssetDatabase.LoadAssetAtPath(paths[i] + "/Animations/my_animator_popup_overlay.controller", typeof(RuntimeAnimatorController));
+                    Debug.LogError("[" + typeof(MyUGUIPopupOverlay).Name + "] CreateTemplate(): please setup \"my_animator_popup_overlay\" controller.");
+                    Debug.LogError("[" + typeof(MyUGUIPopupOverlay).Name + "] CreateTemplate(): mapping \"my_animation_popup_overlay_show\" motion for \"Show\" state.");
+                    Debug.LogError("[" + typeof(MyUGUIPopupOverlay).Name + "] CreateTemplate(): mapping \"my_animation_popup_overlay_hide\" motion for \"Hide\" state.");
                     break;
                 }
             }

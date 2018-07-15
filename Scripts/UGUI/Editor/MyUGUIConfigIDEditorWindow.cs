@@ -141,7 +141,7 @@ namespace MyClasses.UI.Tool
                     IsFoldOut = true,
                     Name = "EUnitySceneID",
                     NumDefault = 0,
-                    ListID = new List<string>() { "StartupUnityScene", "MainUnityScene", "GameplayUnityScene" }
+                    ListID = new List<string>() { "StartupUnityScene", "MainUnityScene", "GameUnityScene" }
                 });
                 mGroups.ListGroup.Add(new MyUGUIConfigGroup()
                 {

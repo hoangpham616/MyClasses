@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIToolEditor (version 2.6)
+ * Class:       MyUGUIToolEditor (version 2.9)
  */
 
 using UnityEditor;
@@ -42,9 +42,92 @@ namespace MyClasses.UI.Tool
         }
 
         /// <summary>
+        /// Create a game object with Event System attached.
+        /// </summary>
+        [MenuItem("MyClasses/UGUI/Config/Create EventSystem (Menu Bar->GameObject->UI->EventSystem)", false, 24)]
+        public static void CreateEventSystem()
+        {
+            Debug.Log("[MyClasses] Menu Bar -> GameObject -> UI -> EventSystem.");
+        }
+
+        /// <summary>
+        /// Create portrait Canvases.
+        /// </summary>
+        [MenuItem("MyClasses/UGUI/Config/Create Canvases (Portrait)", false, 25)]
+        public static void CreatePortraitCanvases()
+        {
+            GameObject goCanvas = new GameObject("Canvas");
+            goCanvas.layer = LayerMask.NameToLayer("UI");
+            Canvas canvasCanvas = goCanvas.AddComponent<Canvas>();
+            canvasCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvasCanvas.sortingOrder = -1000;
+            CanvasScaler canvasCanvasScaler = goCanvas.AddComponent<CanvasScaler>();
+            canvasCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            canvasCanvasScaler.referenceResolution = new Vector2(1080, 1920);
+            canvasCanvasScaler.matchWidthOrHeight = 1;
+            GraphicRaycaster canvasGraphicRaycaster = goCanvas.AddComponent<GraphicRaycaster>();
+            canvasGraphicRaycaster.ignoreReversedGraphics = true;
+            canvasGraphicRaycaster.blockingObjects = GraphicRaycaster.BlockingObjects.None;
+
+            GameObject goCanvasOnTop = GameObject.Instantiate(goCanvas);
+            goCanvasOnTop.name = "CanvasOnTop";
+            Canvas canvasOnTopCanvas = goCanvasOnTop.GetComponent<Canvas>();
+            canvasOnTopCanvas.sortingOrder = 1000;
+
+            GameObject goCanvasSceneFading = GameObject.Instantiate(goCanvas);
+            goCanvasSceneFading.name = "CanvasSceneFading";
+            Canvas canvasSceneFadingCanvas = goCanvasSceneFading.GetComponent<Canvas>();
+            canvasSceneFadingCanvas.sortingOrder = 10000;
+            CanvasScaler canvasSceneFadingCanvasScaler = goCanvasSceneFading.GetComponent<CanvasScaler>();
+            canvasSceneFadingCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
+
+            EditorGUIUtility.PingObject(goCanvas);
+            Selection.activeGameObject = goCanvas.gameObject;
+
+            Debug.Log("[MyClasses] Portrait Canvases was created.");
+        }
+
+        /// <summary>
+        /// Create landscape Canvases.
+        /// </summary>
+        [MenuItem("MyClasses/UGUI/Config/Create Canvases (Landscape)", false, 26)]
+        public static void CreateLandscapeCanvases()
+        {
+            GameObject goCanvas = new GameObject("Canvas", typeof(Canvas));
+            goCanvas.layer = LayerMask.NameToLayer("UI");
+            Canvas canvasCanvas = goCanvas.AddComponent<Canvas>();
+            canvasCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvasCanvas.sortingOrder = -1000;
+            CanvasScaler canvasCanvasScaler = goCanvas.AddComponent<CanvasScaler>();
+            canvasCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            canvasCanvasScaler.referenceResolution = new Vector2(1920, 1080);
+            canvasCanvasScaler.matchWidthOrHeight = 1;
+            GraphicRaycaster canvasGraphicRaycaster = goCanvas.AddComponent<GraphicRaycaster>();
+            canvasGraphicRaycaster.ignoreReversedGraphics = true;
+            canvasGraphicRaycaster.blockingObjects = GraphicRaycaster.BlockingObjects.None;
+
+            GameObject goCanvasOnTop = GameObject.Instantiate(goCanvas);
+            goCanvasOnTop.name = "CanvasOnTop";
+            Canvas canvasOnTopCanvas = goCanvasOnTop.GetComponent<Canvas>();
+            canvasOnTopCanvas.sortingOrder = 1000;
+
+            GameObject goCanvasSceneFading = GameObject.Instantiate(goCanvas);
+            goCanvasSceneFading.name = "CanvasSceneFading";
+            Canvas canvasSceneFadingCanvas = goCanvasSceneFading.GetComponent<Canvas>();
+            canvasSceneFadingCanvas.sortingOrder = 10000;
+            CanvasScaler canvasSceneFadingCanvasScaler = goCanvasSceneFading.GetComponent<CanvasScaler>();
+            canvasSceneFadingCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
+
+            EditorGUIUtility.PingObject(goCanvas);
+            Selection.activeGameObject = goCanvas.gameObject;
+
+            Debug.Log("[MyClasses] Landscape Canvases was created.");
+        }
+
+        /// <summary>
         /// Create a game object with MyUGUIBooter attached.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Config/Create MyUGUIBooter", false, 24)]
+        [MenuItem("MyClasses/UGUI/Config/Create MyUGUIBooter", false, 27)]
         public static void CreateMyUGUIConfig()
         {
             GameObject obj = new GameObject("MyUGUIBooter");

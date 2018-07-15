@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.8)
+ * Class:       MyUGUIManager (version 2.9)
  */
 
 #pragma warning disable 0162
@@ -829,7 +829,7 @@ namespace MyClasses.UI
             }
             if (mCanvas != null)
             {
-                mCanvas.GetComponent<Canvas>().sortingOrder = -100;
+                mCanvas.GetComponent<Canvas>().sortingOrder = -1000;
             }
 
             mCanvasOnTop = GameObject.Find("CanvasOnTop");
@@ -839,7 +839,7 @@ namespace MyClasses.UI
             }
             if (mCanvasOnTop != null)
             {
-                mCanvasOnTop.GetComponent<Canvas>().sortingOrder = 100;
+                mCanvasOnTop.GetComponent<Canvas>().sortingOrder = 1000;
 
                 if (mCurrentUnityScene.HUD != null)
                 {
@@ -927,7 +927,7 @@ namespace MyClasses.UI
                 }
                 Canvas canvas = mCanvasSceneFading.GetComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvas.sortingOrder = 1000;
+                canvas.sortingOrder = 10000;
                 DontDestroyOnLoad(mCanvasSceneFading);
             }
         }

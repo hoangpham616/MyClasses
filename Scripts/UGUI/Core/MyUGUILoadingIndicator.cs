@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUILoadingIndicator (version 2.8)
+ * Class:       MyUGUILoadingIndicator (version 2.9)
 */
 
 using UnityEngine;
@@ -320,6 +320,8 @@ namespace MyClasses.UI
                             {
                                 image_image.sprite = (Sprite)UnityEditor.AssetDatabase.LoadAssetAtPath(paths[j] + "/Images/my_loading_indicator_circle.png", typeof(Sprite));
                             }
+                            Debug.LogError("[" + typeof(MyUGUILoadingIndicator).Name + "] CreateTemplate(): please setup \"my_animator_loading_indicator_circle\" controller.");
+                            Debug.LogError("[" + typeof(MyUGUILoadingIndicator).Name + "] CreateTemplate(): mapping \"my_animation_loading_indicator_circle\" motion for \"Circle\" state.");
                             break;
                         }
                     }
