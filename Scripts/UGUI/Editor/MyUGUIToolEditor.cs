@@ -12,39 +12,12 @@ namespace MyClasses.UI.Tool
 {
     public class MyUGUIToolEditor
     {
-        #region ----- Config -----
-
-        /// <summary>
-        /// Open UI Config ID.
-        /// </summary>
-        [MenuItem("MyClasses/UGUI/Config/Config ID", false, 1)]
-        public static void OpenConfigID()
-        {
-            EditorWindow.GetWindow(typeof(MyUGUIConfigIDEditorWindow));
-        }
-
-        /// <summary>
-        /// Open UI Config Scene.
-        /// </summary>
-        [MenuItem("MyClasses/UGUI/Config/Config Scene", false, 12)]
-        public static void OpenConfigScene()
-        {
-            EditorWindow.GetWindow(typeof(MyUGUIConfigSceneEditorWindow));
-        }
-
-        /// <summary>
-        /// Open UI Config Popup.
-        /// </summary>
-        [MenuItem("MyClasses/UGUI/Config/Config Popup", false, 13)]
-        public static void OpenConfigPopup()
-        {
-            EditorWindow.GetWindow(typeof(MyUGUIConfigPopupEditorWindow));
-        }
+        #region ----- Setup -----
 
         /// <summary>
         /// Create a game object with Event System attached.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Config/Create EventSystem (Menu Bar->GameObject->UI->EventSystem)", false, 24)]
+        [MenuItem("MyClasses/UGUI/Setup/Create EventSystem (Menu Bar->GameObject->UI->EventSystem)", false, 1)]
         public static void CreateEventSystem()
         {
             Debug.Log("[MyClasses] Menu Bar -> GameObject -> UI -> EventSystem.");
@@ -53,7 +26,7 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Create portrait Canvases.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Config/Create Canvases (Portrait)", false, 25)]
+        [MenuItem("MyClasses/UGUI/Setup/Create Canvases (Portrait)", false, 2)]
         public static void CreatePortraitCanvases()
         {
             GameObject goCanvas = new GameObject("Canvas");
@@ -90,7 +63,7 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Create landscape Canvases.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Config/Create Canvases (Landscape)", false, 26)]
+        [MenuItem("MyClasses/UGUI/Setup/Create Canvases (Landscape)", false, 3)]
         public static void CreateLandscapeCanvases()
         {
             GameObject goCanvas = new GameObject("Canvas", typeof(Canvas));
@@ -125,9 +98,36 @@ namespace MyClasses.UI.Tool
         }
 
         /// <summary>
+        /// Open UI Config ID.
+        /// </summary>
+        [MenuItem("MyClasses/UGUI/Setup/Config ID", false, 14)]
+        public static void OpenConfigID()
+        {
+            EditorWindow.GetWindow(typeof(MyUGUIConfigIDEditorWindow));
+        }
+
+        /// <summary>
+        /// Open UI Config Scene.
+        /// </summary>
+        [MenuItem("MyClasses/UGUI/Setup/Config Scene", false, 15)]
+        public static void OpenConfigScene()
+        {
+            EditorWindow.GetWindow(typeof(MyUGUIConfigSceneEditorWindow));
+        }
+
+        /// <summary>
+        /// Open UI Config Popup.
+        /// </summary>
+        [MenuItem("MyClasses/UGUI/Setup/Config Popup", false, 16)]
+        public static void OpenConfigPopup()
+        {
+            EditorWindow.GetWindow(typeof(MyUGUIConfigPopupEditorWindow));
+        }
+
+        /// <summary>
         /// Create a game object with MyUGUIBooter attached.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Config/Create MyUGUIBooter", false, 27)]
+        [MenuItem("MyClasses/UGUI/Setup/Create MyUGUIBooter", false, 27)]
         public static void CreateMyUGUIConfig()
         {
             GameObject obj = new GameObject("MyUGUIBooter");
