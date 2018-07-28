@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIConfig (version 2.0)
+ * Class:       MyUGUIConfig (version 2.9)
  */
 
 #pragma warning disable 0414
@@ -23,6 +23,8 @@ namespace MyClasses.UI
 
         [Serializable]
         public class UnityEventAction : UnityEvent<Action> { }
+        [Serializable]
+        public class UnityEventVoid : UnityEvent { }
 
         #endregion
 
@@ -39,7 +41,9 @@ namespace MyClasses.UI
         [SerializeField]
         private float mDelayTimeOnDevice = 0;
         [SerializeField]
-        private UnityEventAction mOnInit;
+        private UnityEventAction mOnPreLoad;
+        [SerializeField]
+        private UnityEventVoid mOnPostLoad;
 
         private static bool mIsBooted = false;
 
@@ -85,9 +89,9 @@ namespace MyClasses.UI
                     break;
                 case EBootMode.WaitForInitializing:
                     {
-                        if (mOnInit != null)
+                        if (mOnPreLoad != null)
                         {
-                            mOnInit.Invoke(_ShowDefaultScene);
+                            mOnPreLoad.Invoke(_ShowDefaultScene);
                         }
                         else
                         {
@@ -118,6 +122,11 @@ namespace MyClasses.UI
         {
             MyUGUIManager.Instance.ShowUnityScene(mDefaultUnitySceneID, mDefaultSceneID);
             mIsBooted = true;
+
+            if (mOnPostLoad != null)
+            {
+                mOnPostLoad.Invoke();
+            }
         }
 
         #endregion
@@ -145,7 +154,8 @@ namespace MyClasses.UI
         private SerializedProperty mBootMode;
         private SerializedProperty mDelayTimeOnEditor;
         private SerializedProperty mDelayTimeOnDevice;
-        private SerializedProperty mOnInit;
+        private SerializedProperty mOnPreLoad;
+        private SerializedProperty mOnPostLoad;
 
         /// <summary>
         /// OnEnable.
@@ -158,7 +168,8 @@ namespace MyClasses.UI
             mBootMode = serializedObject.FindProperty("mBootMode");
             mDelayTimeOnEditor = serializedObject.FindProperty("mDelayTimeOnEditor");
             mDelayTimeOnDevice = serializedObject.FindProperty("mDelayTimeOnDevice");
-            mOnInit = serializedObject.FindProperty("mOnInit");
+            mOnPreLoad = serializedObject.FindProperty("mOnPreLoad");
+            mOnPostLoad = serializedObject.FindProperty("mOnPostLoad");
         }
 
         /// <summary>
@@ -188,13 +199,19 @@ namespace MyClasses.UI
                 case MyUGUIBooter.EBootMode.WaitForInitializing:
                     {
                         EditorGUI.BeginChangeCheck();
-                        EditorGUILayout.PropertyField(mOnInit, new GUIContent("On Init"));
+                        EditorGUILayout.PropertyField(mOnPreLoad, new GUIContent("On Pre Load"));
                         if (EditorGUI.EndChangeCheck())
                         {
                             serializedObject.ApplyModifiedProperties();
                         }
                     }
                     break;
+            }
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(mOnPostLoad, new GUIContent("On Post Load"));
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
             }
 
             serializedObject.ApplyModifiedProperties();
