@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIDragHandler (version 2.0)
+ * Class:       MyUGUIDragHandler (version 2.9)
  */
 
 #if UNITY_EDITOR
@@ -35,8 +35,9 @@ namespace MyClasses.UI
         private bool mIsResetPositionAfterDragging;
 
         [SerializeField]
-        private bool mIsAlwaysRefindCanvasScaler;
+        private bool mIsAlwaysRefindCanvas;
 
+        private Canvas mCanvas;
         private CanvasScaler mCanvasScaler;
         private CanvasGroup mCanvasGroup;
         private RectTransform mRectTransform;
@@ -92,10 +93,10 @@ namespace MyClasses.UI
             set { mIsResetPositionAfterDragging = value; }
         }
 
-        public bool IsAlwaysRefindCanvasScaler
+        public bool IsAlwaysRefindCanvas
         {
-            get { return mIsAlwaysRefindCanvasScaler; }
-            set { mIsAlwaysRefindCanvasScaler = value; }
+            get { return mIsAlwaysRefindCanvas; }
+            set { mIsAlwaysRefindCanvas = value; }
         }
 
         public bool IsDragging
@@ -139,11 +140,12 @@ namespace MyClasses.UI
         {
             Item = gameObject;
 
-            if (mCanvasScaler == null || mIsAlwaysRefindCanvasScaler)
+            if (mCanvas == null || mCanvasScaler == null || mIsAlwaysRefindCanvas)
             {
                 Transform parent = transform.parent;
-                while (parent != null && mCanvasScaler == null)
+                while (parent != null && mCanvas == null)
                 {
+                    mCanvas = parent.GetComponent<Canvas>();
                     mCanvasScaler = parent.GetComponent<CanvasScaler>();
                     parent = parent.parent;
                 }
@@ -172,7 +174,12 @@ namespace MyClasses.UI
             mOriginalSizeDelta = transform.GetComponent<RectTransform>().sizeDelta;
             mOriginalIndex = transform.GetSiblingIndex();
 
-            mTouchOffsetDistance = transform.position - Input.mousePosition;
+            Vector3 screenPoint = eventData.position;
+            screenPoint.z = -mCanvas.planeDistance;
+            Vector3 worldPoint = mCanvas.worldCamera.ScreenToWorldPoint(screenPoint);
+            worldPoint.z = 0;
+            mTouchOffsetDistance = transform.position - worldPoint;
+            mTouchOffsetDistance.z = 0;
 
             if (mParentObjectForDragging != null)
             {
@@ -187,11 +194,17 @@ namespace MyClasses.UI
         {
             mIsDragging = true;
 
-            transform.position = eventData.position;
+            Vector3 screenPoint = eventData.position;
+            screenPoint.z = -mCanvas.planeDistance;
+            Vector3 worldPoint = mCanvas.worldCamera.ScreenToWorldPoint(screenPoint);
+            worldPoint.z = 0;
+            transform.position = worldPoint;
+
             if (mIsApplyTouchOffset)
             {
-                transform.position = transform.position + mTouchOffsetDistance;
+                transform.position += mTouchOffsetDistance;
             }
+
             if (mBoundary != null)
             {
                 float halfWidth = RectTransform.rect.width * mScreenCanvasRatio.x / 2;
@@ -310,7 +323,7 @@ namespace MyClasses.UI
             mScript.ParentOjectWhenDragging = (Transform)EditorGUILayout.ObjectField("Parent Object For Dragging", mScript.ParentOjectWhenDragging, typeof(Transform), true);
             mScript.IsApplyTouchOffset = EditorGUILayout.Toggle("Is Apply Touch Offset", mScript.IsApplyTouchOffset);
             mScript.IsResetPositionAfterDragging = EditorGUILayout.Toggle("Is Reset Position After Dragging", mScript.IsResetPositionAfterDragging);
-            mScript.IsAlwaysRefindCanvasScaler = EditorGUILayout.Toggle("Is Always Re-Find Canvas Scaler", mScript.IsAlwaysRefindCanvasScaler);
+            mScript.IsAlwaysRefindCanvas = EditorGUILayout.Toggle("Is Always Re-Find Canvas", mScript.IsAlwaysRefindCanvas);
         }
     }
 
