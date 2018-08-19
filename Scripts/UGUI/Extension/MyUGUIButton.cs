@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIButton (version 2.6)
+ * Class:       MyUGUIButton (version 2.10)
  */
 
 #if UNITY_EDITOR
@@ -274,6 +274,37 @@ namespace MyClasses.UI
         public void Normalize()
         {
             SetEffect(EEffectType.None);
+            SetOpacity(1);
+        }
+
+        /// <summary>
+        /// Opacity.
+        /// </summary>
+        public void Opacity()
+        {
+            SetOpacity(0.6f);
+        }
+
+        /// <summary>
+        /// Set opacity.
+        /// </summary>
+        public void SetOpacity(float alpha)
+        {
+            _InitImage();
+            _InitText();
+
+            if (mImage != null)
+            {
+                Color color = mImage.color;
+                color.a = alpha;
+                mImage.color = color;
+            }
+            if (mText != null)
+            {
+                Color color = mText.color;
+                color.a = alpha;
+                mText.color = color;
+            }
         }
 
         /// <summary>
