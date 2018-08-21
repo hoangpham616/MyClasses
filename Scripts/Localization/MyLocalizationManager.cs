@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyLocalizationManager (version 2.0)
+ * Class:       MyLocalizationManager (version 2.10)
  */
 
 #pragma warning disable 0162
@@ -44,6 +44,36 @@ namespace MyClasses
 
         #region ----- Property -----
 
+        public string PathPersistent
+        {
+            get { return mPathPersistent; }
+            set { mPathPersistent = value; }
+        }
+
+        public string PathResources
+        {
+            get { return mPathResources; }
+            set { mPathResources = value; }
+        }
+
+        public EPath Path
+        {
+            get { return mPath; }
+            set { mPath = value; }
+        }
+
+        public EMode Mode
+        {
+            get { return mMode; }
+            set { mMode = value; }
+        }
+
+        public ELanguage DefaultLanguage
+        {
+            get { return mDefaultLanguage; }
+            set { mDefaultLanguage = value; }
+        }
+
         public ELanguage Language
         {
             get
@@ -79,40 +109,6 @@ namespace MyClasses
                 PlayerPrefs.Save();
             }
         }
-
-#if UNITY_EDITOR
-
-        public string PathPersistent
-        {
-            get { return mPathPersistent; }
-            set { mPathPersistent = value; }
-        }
-
-        public string PathResources
-        {
-            get { return mPathResources; }
-            set { mPathResources = value; }
-        }
-
-        public EPath Path
-        {
-            get { return mPath; }
-            set { mPath = value; }
-        }
-
-        public EMode Mode
-        {
-            get { return mMode; }
-            set { mMode = value; }
-        }
-
-        public ELanguage DefaultLanguage
-        {
-            get { return mDefaultLanguage; }
-            set { mDefaultLanguage = value; }
-        }
-
-#endif
 
         #endregion
 

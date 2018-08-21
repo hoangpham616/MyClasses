@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIConfig (version 2.9)
+ * Class:       MyUGUIConfig (version 2.10)
  */
 
 #pragma warning disable 0414
@@ -41,7 +41,9 @@ namespace MyClasses.UI
         [SerializeField]
         private float mDelayTimeOnDevice = 0;
         [SerializeField]
-        private UnityEventAction mOnPreLoad;
+        private UnityEventAction mOnPreLoadSync;
+        [SerializeField]
+        private UnityEventVoid mOnPreLoad;
         [SerializeField]
         private UnityEventVoid mOnPostLoad;
 
@@ -65,11 +67,21 @@ namespace MyClasses.UI
             {
                 case EBootMode.Instant:
                     {
+                        if (mOnPreLoad != null)
+                        {
+                            mOnPreLoad.Invoke();
+                        }
+
                         _ShowDefaultScene();
                     }
                     break;
                 case EBootMode.FixedTimeDelay:
                     {
+                        if (mOnPreLoad != null)
+                        {
+                            mOnPreLoad.Invoke();
+                        }
+
 #if UNITY_EDITOR
                         if (mDelayTimeOnEditor > 0)
                         {
@@ -89,9 +101,9 @@ namespace MyClasses.UI
                     break;
                 case EBootMode.WaitForInitializing:
                     {
-                        if (mOnPreLoad != null)
+                        if (mOnPreLoadSync != null)
                         {
-                            mOnPreLoad.Invoke(_ShowDefaultScene);
+                            mOnPreLoadSync.Invoke(_ShowDefaultScene);
                         }
                         else
                         {
@@ -154,6 +166,7 @@ namespace MyClasses.UI
         private SerializedProperty mBootMode;
         private SerializedProperty mDelayTimeOnEditor;
         private SerializedProperty mDelayTimeOnDevice;
+        private SerializedProperty mOnPreLoadSync;
         private SerializedProperty mOnPreLoad;
         private SerializedProperty mOnPostLoad;
 
@@ -168,6 +181,7 @@ namespace MyClasses.UI
             mBootMode = serializedObject.FindProperty("mBootMode");
             mDelayTimeOnEditor = serializedObject.FindProperty("mDelayTimeOnEditor");
             mDelayTimeOnDevice = serializedObject.FindProperty("mDelayTimeOnDevice");
+            mOnPreLoadSync = serializedObject.FindProperty("mOnPreLoadSync");
             mOnPreLoad = serializedObject.FindProperty("mOnPreLoad");
             mOnPostLoad = serializedObject.FindProperty("mOnPostLoad");
         }
@@ -188,18 +202,30 @@ namespace MyClasses.UI
             {
                 case MyUGUIBooter.EBootMode.Instant:
                     {
+                        EditorGUI.BeginChangeCheck();
+                        EditorGUILayout.PropertyField(mOnPreLoad, new GUIContent("On Pre Load"));
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            serializedObject.ApplyModifiedProperties();
+                        }
                     }
                     break;
                 case MyUGUIBooter.EBootMode.FixedTimeDelay:
                     {
                         mDelayTimeOnEditor.floatValue = EditorGUILayout.FloatField("Delay Second (On Editor)", mDelayTimeOnEditor.floatValue);
                         mDelayTimeOnDevice.floatValue = EditorGUILayout.FloatField("Delay Second (On Device)", mDelayTimeOnDevice.floatValue);
+                        EditorGUI.BeginChangeCheck();
+                        EditorGUILayout.PropertyField(mOnPreLoad, new GUIContent("On Pre Load"));
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            serializedObject.ApplyModifiedProperties();
+                        }
                     }
                     break;
                 case MyUGUIBooter.EBootMode.WaitForInitializing:
                     {
                         EditorGUI.BeginChangeCheck();
-                        EditorGUILayout.PropertyField(mOnPreLoad, new GUIContent("On Pre Load"));
+                        EditorGUILayout.PropertyField(mOnPreLoadSync, new GUIContent("On Pre Load"));
                         if (EditorGUI.EndChangeCheck())
                         {
                             serializedObject.ApplyModifiedProperties();
