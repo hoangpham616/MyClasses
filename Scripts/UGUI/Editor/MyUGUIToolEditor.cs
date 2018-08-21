@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIToolEditor (version 2.9)
+ * Class:       MyUGUIToolEditor (version 2.10)
  */
 
 using UnityEditor;
@@ -24,14 +24,32 @@ namespace MyClasses.UI.Tool
         }
 
         /// <summary>
+        /// Create a game object with Camera attached.
+        /// </summary>
+        [MenuItem("MyClasses/UGUI/Setup/Create UICamera", false, 2)]
+        public static void CreateUICamera()
+        {
+            GameObject goCamera = new GameObject("UICamera", typeof(Camera));
+            goCamera.AddComponent<Camera>();
+            goCamera.transform.localPosition = new Vector3(0, 1, -10);
+            Camera camera = goCamera.GetComponent<Camera>();
+            camera.clearFlags = CameraClearFlags.Nothing;
+            camera.cullingMask |= LayerMask.GetMask("UI");
+            goCamera.AddComponent<AudioListener>();
+
+            EditorGUIUtility.PingObject(goCamera);
+            Selection.activeGameObject = goCamera;
+        }
+
+        /// <summary>
         /// Create portrait Canvases.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Setup/Create Canvases (Portrait)", false, 2)]
+        [MenuItem("MyClasses/UGUI/Setup/Create Canvases (Portrait)", false, 3)]
         public static void CreatePortraitCanvases()
         {
-            GameObject goCanvas = new GameObject("Canvas");
+            GameObject goCanvas = new GameObject("Canvas", typeof(Canvas));
             goCanvas.layer = LayerMask.NameToLayer("UI");
-            Canvas canvasCanvas = goCanvas.AddComponent<Canvas>();
+            Canvas canvasCanvas = goCanvas.GetComponent<Canvas>();
             canvasCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvasCanvas.sortingOrder = -1000;
             CanvasScaler canvasCanvasScaler = goCanvas.AddComponent<CanvasScaler>();
@@ -63,12 +81,12 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Create landscape Canvases.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Setup/Create Canvases (Landscape)", false, 3)]
+        [MenuItem("MyClasses/UGUI/Setup/Create Canvases (Landscape)", false, 4)]
         public static void CreateLandscapeCanvases()
         {
             GameObject goCanvas = new GameObject("Canvas", typeof(Canvas));
             goCanvas.layer = LayerMask.NameToLayer("UI");
-            Canvas canvasCanvas = goCanvas.AddComponent<Canvas>();
+            Canvas canvasCanvas = goCanvas.GetComponent<Canvas>();
             canvasCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvasCanvas.sortingOrder = -1000;
             CanvasScaler canvasCanvasScaler = goCanvas.AddComponent<CanvasScaler>();
@@ -100,7 +118,7 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Open UI Config ID.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Setup/Config ID", false, 14)]
+        [MenuItem("MyClasses/UGUI/Setup/Config ID", false, 15)]
         public static void OpenConfigID()
         {
             EditorWindow.GetWindow(typeof(MyUGUIConfigIDEditorWindow));
@@ -109,7 +127,7 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Open UI Config Scene.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Setup/Config Scene", false, 15)]
+        [MenuItem("MyClasses/UGUI/Setup/Config Scene", false, 16)]
         public static void OpenConfigScene()
         {
             EditorWindow.GetWindow(typeof(MyUGUIConfigSceneEditorWindow));
@@ -118,7 +136,7 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Open UI Config Popup.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Setup/Config Popup", false, 16)]
+        [MenuItem("MyClasses/UGUI/Setup/Config Popup", false, 17)]
         public static void OpenConfigPopup()
         {
             EditorWindow.GetWindow(typeof(MyUGUIConfigPopupEditorWindow));
@@ -127,7 +145,7 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Create a game object with MyUGUIBooter attached.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/Setup/Create MyUGUIBooter", false, 27)]
+        [MenuItem("MyClasses/UGUI/Setup/Create MyUGUIBooter", false, 28)]
         public static void CreateMyUGUIConfig()
         {
             GameObject obj = new GameObject("MyUGUIBooter");
