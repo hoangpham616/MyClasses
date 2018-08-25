@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIAspectRatioAnchor (version 2.0)
+ * Class:       MyUGUIAspectRatioAnchor (version 2.10)
  */
 
 #pragma warning disable 0414
@@ -24,10 +24,10 @@ namespace MyClasses.UI
         [SerializeField]
         private EAnchorFrequency mAnchorFrequency = EAnchorFrequency.OneTimeOnly;
         [SerializeField]
-        private ERoundingRatio mRoundingRatio = ERoundingRatio.OneDigit;
+        private ERoundingRatio mRoundingRatio = ERoundingRatio.TwoDigits;
 
         [SerializeField]
-        private Vector2 mHighestRatio = new Vector2(18.5f, 9);
+        private Vector2 mHighestRatio = new Vector2(19, 9);
         [SerializeField]
         private Vector2 mHighestPivot;
         [SerializeField]
@@ -53,9 +53,9 @@ namespace MyClasses.UI
         private Vector2 mHighOffsetMax;
 
         [SerializeField]
-        private Vector2 mDefaultHighRatio = new Vector2(16.3f, 9);
+        private Vector2 mDefaultHighRatio = new Vector2(16.4f, 9);
         [SerializeField]
-        private Vector2 mDefaultLowRatio = new Vector2(15.7f, 9);
+        private Vector2 mDefaultLowRatio = new Vector2(15.6f, 9);
         [SerializeField]
         private Vector2 mDefaultPivot;
         [SerializeField]
@@ -94,13 +94,11 @@ namespace MyClasses.UI
         private Vector2 mLowestOffsetMax;
 
         [SerializeField]
-        private bool mIsInit = false;
+        private bool mIsCurrentAnchorLoaded = false;
 
         #endregion
 
         #region ----- Property -----
-
-#if UNITY_EDITOR
 
         public EAnchorLevel AnchorLevel
         {
@@ -120,196 +118,12 @@ namespace MyClasses.UI
             set { mRoundingRatio = value; }
         }
 
-        public Vector2 HighestRatio
-        {
-            get { return mHighestRatio; }
-            set { mHighestRatio = value; }
-        }
+#if UNITY_EDITOR
 
-        public Vector2 HighestPivot
+        public bool IsCurrentAnchorLoaded
         {
-            get { return mHighestPivot; }
-            set { mHighestPivot = value; }
-        }
-
-        public Vector2 HighestAnchorMin
-        {
-            get { return mHighestAnchorMin; }
-            set { mHighestAnchorMin = value; }
-        }
-
-        public Vector2 HighestAnchorMax
-        {
-            get { return mHighestAnchorMax; }
-            set { mHighestAnchorMax = value; }
-        }
-
-        public Vector2 HighestOffsetMin
-        {
-            get { return mHighestOffsetMin; }
-            set { mHighestOffsetMin = value; }
-        }
-
-        public Vector2 HighestOffsetMax
-        {
-            get { return mHighestOffsetMax; }
-            set { mHighestOffsetMax = value; }
-        }
-
-        public Vector2 HighRatio
-        {
-            get { return mHighRatio; }
-            set { mHighRatio = value; }
-        }
-
-        public Vector2 HighPivot
-        {
-            get { return mHighPivot; }
-            set { mHighPivot = value; }
-        }
-
-        public Vector2 HighAnchorMin
-        {
-            get { return mHighAnchorMin; }
-            set { mHighAnchorMin = value; }
-        }
-
-        public Vector2 HighAnchorMax
-        {
-            get { return mHighAnchorMax; }
-            set { mHighAnchorMax = value; }
-        }
-
-        public Vector2 HighOffsetMin
-        {
-            get { return mHighOffsetMin; }
-            set { mHighOffsetMin = value; }
-        }
-
-        public Vector2 HighOffsetMax
-        {
-            get { return mHighOffsetMax; }
-            set { mHighOffsetMax = value; }
-        }
-
-        public Vector2 DefaultHighRatio
-        {
-            get { return mDefaultHighRatio; }
-            set { mDefaultHighRatio = value; }
-        }
-
-        public Vector2 DefaultLowRatio
-        {
-            get { return mDefaultLowRatio; }
-            set { mDefaultLowRatio = value; }
-        }
-
-        public Vector2 DefaultPivot
-        {
-            get { return mDefaultPivot; }
-            set { mDefaultPivot = value; }
-        }
-
-        public Vector2 DefaultAnchorMin
-        {
-            get { return mDefaultAnchorMin; }
-            set { mDefaultAnchorMin = value; }
-        }
-
-        public Vector2 DefaultAnchorMax
-        {
-            get { return mDefaultAnchorMax; }
-            set { mDefaultAnchorMax = value; }
-        }
-
-        public Vector2 DefaultOffsetMin
-        {
-            get { return mDefaultOffsetMin; }
-            set { mDefaultOffsetMin = value; }
-        }
-
-        public Vector2 DefaultOffsetMax
-        {
-            get { return mDefaultOffsetMax; }
-            set { mDefaultOffsetMax = value; }
-        }
-
-        public Vector2 LowRatio
-        {
-            get { return mLowRatio; }
-            set { mLowRatio = value; }
-        }
-
-        public Vector2 LowPivot
-        {
-            get { return mLowPivot; }
-            set { mLowPivot = value; }
-        }
-
-        public Vector2 LowAnchorMin
-        {
-            get { return mLowAnchorMin; }
-            set { mLowAnchorMin = value; }
-        }
-
-        public Vector2 LowAnchorMax
-        {
-            get { return mLowAnchorMax; }
-            set { mLowAnchorMax = value; }
-        }
-
-        public Vector2 LowOffsetMin
-        {
-            get { return mLowOffsetMin; }
-            set { mLowOffsetMin = value; }
-        }
-
-        public Vector2 LowOffsetMax
-        {
-            get { return mLowOffsetMax; }
-            set { mLowOffsetMax = value; }
-        }
-
-        public Vector2 LowestRatio
-        {
-            get { return mLowestRatio; }
-            set { mLowestRatio = value; }
-        }
-
-        public Vector2 LowestPivot
-        {
-            get { return mLowestPivot; }
-            set { mLowestPivot = value; }
-        }
-
-        public Vector2 LowestAnchorMin
-        {
-            get { return mLowestAnchorMin; }
-            set { mLowestAnchorMin = value; }
-        }
-
-        public Vector2 LowestAnchorMax
-        {
-            get { return mLowestAnchorMax; }
-            set { mLowestAnchorMax = value; }
-        }
-
-        public Vector2 LowestOffsetMin
-        {
-            get { return mLowestOffsetMin; }
-            set { mLowestOffsetMin = value; }
-        }
-
-        public Vector2 LowestOffsetMax
-        {
-            get { return mLowestOffsetMax; }
-            set { mLowestOffsetMax = value; }
-        }
-
-        public bool IsInit
-        {
-            get { return mIsInit; }
-            set { mIsInit = value; }
+            get { return mIsCurrentAnchorLoaded; }
+            set { mIsCurrentAnchorLoaded = value; }
         }
 
 #endif
@@ -509,52 +323,126 @@ namespace MyClasses.UI
         private MyUGUIAspectRatioAnchor mScript;
         private RectTransform mRectTransform;
 
+        private SerializedProperty mHighestRatio;
+        private SerializedProperty mHighestPivot;
+        private SerializedProperty mHighestAnchorMin;
+        private SerializedProperty mHighestAnchorMax;
+        private SerializedProperty mHighestOffsetMin;
+        private SerializedProperty mHighestOffsetMax;
+
+        private SerializedProperty mHighRatio;
+        private SerializedProperty mHighPivot;
+        private SerializedProperty mHighAnchorMin;
+        private SerializedProperty mHighAnchorMax;
+        private SerializedProperty mHighOffsetMin;
+        private SerializedProperty mHighOffsetMax;
+
+        private SerializedProperty mDefaultHighRatio;
+        private SerializedProperty mDefaultLowRatio;
+        private SerializedProperty mDefaultPivot;
+        private SerializedProperty mDefaultAnchorMin;
+        private SerializedProperty mDefaultAnchorMax;
+        private SerializedProperty mDefaultOffsetMin;
+        private SerializedProperty mDefaultOffsetMax;
+
+        private SerializedProperty mLowRatio;
+        private SerializedProperty mLowPivot;
+        private SerializedProperty mLowAnchorMin;
+        private SerializedProperty mLowAnchorMax;
+        private SerializedProperty mLowOffsetMin;
+        private SerializedProperty mLowOffsetMax;
+
+        private SerializedProperty mLowestRatio;
+        private SerializedProperty mLowestPivot;
+        private SerializedProperty mLowestAnchorMin;
+        private SerializedProperty mLowestAnchorMax;
+        private SerializedProperty mLowestOffsetMin;
+        private SerializedProperty mLowestOffsetMax;
+
         /// <summary>
         /// OnEnable.
         /// </summary>
         void OnEnable()
         {
             mScript = (MyUGUIAspectRatioAnchor)target;
-            
+
             mRectTransform = mScript.gameObject.GetComponent<RectTransform>();
             if (mRectTransform == null)
             {
                 Debug.LogError("[" + typeof(MyUGUIAspectRatioAnchorEditor).Name + "] OnEnable(): Could not find RectTransform component.");
             }
 
-            if (!mScript.IsInit)
+            mHighestRatio = serializedObject.FindProperty("mHighestRatio");
+            mHighestPivot = serializedObject.FindProperty("mHighestPivot");
+            mHighestAnchorMin = serializedObject.FindProperty("mHighestAnchorMin");
+            mHighestAnchorMax = serializedObject.FindProperty("mHighestAnchorMax");
+            mHighestOffsetMin = serializedObject.FindProperty("mHighestOffsetMin");
+            mHighestOffsetMax = serializedObject.FindProperty("mHighestOffsetMax");
+
+            mHighRatio = serializedObject.FindProperty("mHighRatio");
+            mHighPivot = serializedObject.FindProperty("mHighPivot");
+            mHighAnchorMin = serializedObject.FindProperty("mHighAnchorMin");
+            mHighAnchorMax = serializedObject.FindProperty("mHighAnchorMax");
+            mHighOffsetMin = serializedObject.FindProperty("mHighOffsetMin");
+            mHighOffsetMax = serializedObject.FindProperty("mHighOffsetMax");
+
+            mDefaultHighRatio = serializedObject.FindProperty("mDefaultHighRatio");
+            mDefaultLowRatio = serializedObject.FindProperty("mDefaultLowRatio");
+            mDefaultPivot = serializedObject.FindProperty("mDefaultPivot");
+            mDefaultAnchorMin = serializedObject.FindProperty("mDefaultAnchorMin");
+            mDefaultAnchorMax = serializedObject.FindProperty("mDefaultAnchorMax");
+            mDefaultOffsetMin = serializedObject.FindProperty("mDefaultOffsetMin");
+            mDefaultOffsetMax = serializedObject.FindProperty("mDefaultOffsetMax");
+
+            mLowRatio = serializedObject.FindProperty("mLowRatio");
+            mLowPivot = serializedObject.FindProperty("mLowPivot");
+            mLowAnchorMin = serializedObject.FindProperty("mLowAnchorMin");
+            mLowAnchorMax = serializedObject.FindProperty("mLowAnchorMax");
+            mLowOffsetMin = serializedObject.FindProperty("mLowOffsetMin");
+            mLowOffsetMax = serializedObject.FindProperty("mLowOffsetMax");
+
+            mLowestRatio = serializedObject.FindProperty("mLowestRatio");
+            mLowestPivot = serializedObject.FindProperty("mLowestPivot");
+            mLowestAnchorMin = serializedObject.FindProperty("mLowestAnchorMin");
+            mLowestAnchorMax = serializedObject.FindProperty("mLowestAnchorMax");
+            mLowestOffsetMin = serializedObject.FindProperty("mLowestOffsetMin");
+            mLowestOffsetMax = serializedObject.FindProperty("mLowestOffsetMax");
+
+            if (!mScript.IsCurrentAnchorLoaded)
             {
-                mScript.IsInit = true;
+                mScript.IsCurrentAnchorLoaded = true;
 
-                mScript.HighestPivot = mRectTransform.pivot;
-                mScript.HighestAnchorMin = mRectTransform.anchorMin;
-                mScript.HighestAnchorMax = mRectTransform.anchorMax;
-                mScript.HighestOffsetMin = mRectTransform.offsetMin;
-                mScript.HighestOffsetMax = mRectTransform.offsetMax;
+                mHighestPivot.vector2Value = mRectTransform.pivot;
+                mHighestAnchorMin.vector2Value = mRectTransform.anchorMin;
+                mHighestAnchorMax.vector2Value = mRectTransform.anchorMax;
+                mHighestOffsetMin.vector2Value = mRectTransform.offsetMin;
+                mHighestOffsetMax.vector2Value = mRectTransform.offsetMax;
 
-                mScript.HighPivot = mRectTransform.pivot;
-                mScript.HighAnchorMin = mRectTransform.anchorMin;
-                mScript.HighAnchorMax = mRectTransform.anchorMax;
-                mScript.HighOffsetMin = mRectTransform.offsetMin;
-                mScript.HighOffsetMax = mRectTransform.offsetMax;
+                mHighPivot.vector2Value = mRectTransform.pivot;
+                mHighAnchorMin.vector2Value = mRectTransform.anchorMin;
+                mHighAnchorMax.vector2Value = mRectTransform.anchorMax;
+                mHighOffsetMin.vector2Value = mRectTransform.offsetMin;
+                mHighOffsetMax.vector2Value = mRectTransform.offsetMax;
 
-                mScript.DefaultPivot = mRectTransform.pivot;
-                mScript.DefaultAnchorMin = mRectTransform.anchorMin;
-                mScript.DefaultAnchorMax = mRectTransform.anchorMax;
-                mScript.DefaultOffsetMin = mRectTransform.offsetMin;
-                mScript.DefaultOffsetMax = mRectTransform.offsetMax;
+                mDefaultPivot.vector2Value = mRectTransform.pivot;
+                mDefaultAnchorMin.vector2Value = mRectTransform.anchorMin;
+                mDefaultAnchorMax.vector2Value = mRectTransform.anchorMax;
+                mDefaultOffsetMin.vector2Value = mRectTransform.offsetMin;
+                mDefaultOffsetMax.vector2Value = mRectTransform.offsetMax;
 
-                mScript.LowPivot = mRectTransform.pivot;
-                mScript.LowAnchorMin = mRectTransform.anchorMin;
-                mScript.LowAnchorMax = mRectTransform.anchorMax;
-                mScript.LowOffsetMin = mRectTransform.offsetMin;
-                mScript.LowOffsetMax = mRectTransform.offsetMax;
+                mLowPivot.vector2Value = mRectTransform.pivot;
+                mLowAnchorMin.vector2Value = mRectTransform.anchorMin;
+                mLowAnchorMax.vector2Value = mRectTransform.anchorMax;
+                mLowOffsetMin.vector2Value = mRectTransform.offsetMin;
+                mLowOffsetMax.vector2Value = mRectTransform.offsetMax;
 
-                mScript.LowestPivot = mRectTransform.pivot;
-                mScript.LowestAnchorMin = mRectTransform.anchorMin;
-                mScript.LowestAnchorMax = mRectTransform.anchorMax;
-                mScript.LowestOffsetMin = mRectTransform.offsetMin;
-                mScript.LowestOffsetMax = mRectTransform.offsetMax;
+                mLowestPivot.vector2Value = mRectTransform.pivot;
+                mLowestAnchorMin.vector2Value = mRectTransform.anchorMin;
+                mLowestAnchorMax.vector2Value = mRectTransform.anchorMax;
+                mLowestOffsetMin.vector2Value = mRectTransform.offsetMin;
+                mLowestOffsetMax.vector2Value = mRectTransform.offsetMax;
+
+                serializedObject.ApplyModifiedProperties();
             }
         }
 
@@ -564,7 +452,10 @@ namespace MyClasses.UI
         public override void OnInspectorGUI()
         {
             EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour(mScript), typeof(MyUGUIAspectRatioAnchor), false);
-        
+
+            Debug.LogError("gui");
+            serializedObject.Update();
+
             EditorGUILayout.LabelField("Anchor Mode", EditorStyles.boldLabel);
             mScript.AnchorLevel = (MyUGUIAspectRatioAnchor.EAnchorLevel)EditorGUILayout.EnumPopup("   Anchor Level", mScript.AnchorLevel);
             mScript.AnchorFrequency = (MyUGUIAspectRatioAnchor.EAnchorFrequency)EditorGUILayout.EnumPopup("   Anchor Frequency", mScript.AnchorFrequency);
@@ -577,61 +468,61 @@ namespace MyClasses.UI
                 EditorGUILayout.LabelField("Highest Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Anchor", GUILayout.MaxWidth(135)))
                 {
-                    mScript.HighestPivot = mRectTransform.pivot;
-                    mScript.HighestAnchorMin = mRectTransform.anchorMin;
-                    mScript.HighestAnchorMax = mRectTransform.anchorMax;
-                    mScript.HighestOffsetMin = mRectTransform.offsetMin;
-                    mScript.HighestOffsetMax = mRectTransform.offsetMax;
+                    mHighestPivot.vector2Value = mRectTransform.pivot;
+                    mHighestAnchorMin.vector2Value = mRectTransform.anchorMin;
+                    mHighestAnchorMax.vector2Value = mRectTransform.anchorMax;
+                    mHighestOffsetMin.vector2Value = mRectTransform.offsetMin;
+                    mHighestOffsetMax.vector2Value = mRectTransform.offsetMax;
                 }
                 GUILayout.EndHorizontal();
-                mScript.HighestRatio = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mScript.HighestRatio) + ")", mScript.HighestRatio);
+                mHighestRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mHighestRatio.vector2Value) + ")", mHighestRatio.vector2Value);
                 EditorGUILayout.LabelField(string.Empty);
-                mScript.HighestPivot = EditorGUILayout.Vector2Field("   Pivot", mScript.HighestPivot);
-                mScript.HighestAnchorMin = EditorGUILayout.Vector2Field("   Anchor Min", mScript.HighestAnchorMin);
-                mScript.HighestAnchorMax = EditorGUILayout.Vector2Field("   Anchor Max", mScript.HighestAnchorMax);
-                mScript.HighestOffsetMin = EditorGUILayout.Vector2Field("   Offset Min", mScript.HighestOffsetMin);
-                mScript.HighestOffsetMax = EditorGUILayout.Vector2Field("   Offset Max", mScript.HighestOffsetMax);
+                mHighestPivot.vector2Value = EditorGUILayout.Vector2Field("   Pivot", mHighestPivot.vector2Value);
+                mHighestAnchorMin.vector2Value = EditorGUILayout.Vector2Field("   Anchor Min", mHighestAnchorMin.vector2Value);
+                mHighestAnchorMax.vector2Value = EditorGUILayout.Vector2Field("   Anchor Max", mHighestAnchorMax.vector2Value);
+                mHighestOffsetMin.vector2Value = EditorGUILayout.Vector2Field("   Offset Min", mHighestOffsetMin.vector2Value);
+                mHighestOffsetMax.vector2Value = EditorGUILayout.Vector2Field("   Offset Max", mHighestOffsetMax.vector2Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Default Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Anchor", GUILayout.MaxWidth(135)))
                 {
-                    mScript.DefaultPivot = mRectTransform.pivot;
-                    mScript.DefaultAnchorMin = mRectTransform.anchorMin;
-                    mScript.DefaultAnchorMax = mRectTransform.anchorMax;
-                    mScript.DefaultOffsetMin = mRectTransform.offsetMin;
-                    mScript.DefaultOffsetMax = mRectTransform.offsetMax;
+                    mDefaultPivot.vector2Value = mRectTransform.pivot;
+                    mDefaultAnchorMin.vector2Value = mRectTransform.anchorMin;
+                    mDefaultAnchorMax.vector2Value = mRectTransform.anchorMax;
+                    mDefaultOffsetMin.vector2Value = mRectTransform.offsetMin;
+                    mDefaultOffsetMax.vector2Value = mRectTransform.offsetMax;
                 }
                 GUILayout.EndHorizontal();
-                mScript.DefaultHighRatio = EditorGUILayout.Vector2Field("   High Ratio (" + mScript.GetRatio(mScript.DefaultHighRatio) + ")", mScript.DefaultHighRatio);
-                mScript.DefaultLowRatio = EditorGUILayout.Vector2Field("   Low Ratio (" + mScript.GetRatio(mScript.DefaultLowRatio) + ")", mScript.DefaultLowRatio);
+                mDefaultHighRatio.vector2Value = EditorGUILayout.Vector2Field("   High Ratio (" + mScript.GetRatio(mDefaultHighRatio.vector2Value) + ")", mDefaultHighRatio.vector2Value);
+                mDefaultLowRatio.vector2Value = EditorGUILayout.Vector2Field("   Low Ratio (" + mScript.GetRatio(mDefaultLowRatio.vector2Value) + ")", mDefaultLowRatio.vector2Value);
                 EditorGUILayout.LabelField(string.Empty);
-                mScript.DefaultPivot = EditorGUILayout.Vector2Field("   Pivot", mScript.DefaultPivot);
-                mScript.DefaultAnchorMin = EditorGUILayout.Vector2Field("   Anchor Min", mScript.DefaultAnchorMin);
-                mScript.DefaultAnchorMax = EditorGUILayout.Vector2Field("   Anchor Max", mScript.DefaultAnchorMax);
-                mScript.DefaultOffsetMin = EditorGUILayout.Vector2Field("   Offset Min", mScript.DefaultOffsetMin);
-                mScript.DefaultOffsetMax = EditorGUILayout.Vector2Field("   Offset Max", mScript.DefaultOffsetMax);
+                mDefaultPivot.vector2Value = EditorGUILayout.Vector2Field("   Pivot", mDefaultPivot.vector2Value);
+                mDefaultAnchorMin.vector2Value = EditorGUILayout.Vector2Field("   Anchor Min", mDefaultAnchorMin.vector2Value);
+                mDefaultAnchorMax.vector2Value = EditorGUILayout.Vector2Field("   Anchor Max", mDefaultAnchorMax.vector2Value);
+                mDefaultOffsetMin.vector2Value = EditorGUILayout.Vector2Field("   Offset Min", mDefaultOffsetMin.vector2Value);
+                mDefaultOffsetMax.vector2Value = EditorGUILayout.Vector2Field("   Offset Max", mDefaultOffsetMax.vector2Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Low Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Anchor", GUILayout.MaxWidth(135)))
                 {
-                    mScript.LowestPivot = mRectTransform.pivot;
-                    mScript.LowestAnchorMin = mRectTransform.anchorMin;
-                    mScript.LowestAnchorMax = mRectTransform.anchorMax;
-                    mScript.LowestOffsetMin = mRectTransform.offsetMin;
-                    mScript.LowestOffsetMax = mRectTransform.offsetMax;
+                    mLowestPivot.vector2Value = mRectTransform.pivot;
+                    mLowestAnchorMin.vector2Value = mRectTransform.anchorMin;
+                    mLowestAnchorMax.vector2Value = mRectTransform.anchorMax;
+                    mLowestOffsetMin.vector2Value = mRectTransform.offsetMin;
+                    mLowestOffsetMax.vector2Value = mRectTransform.offsetMax;
                 }
                 GUILayout.EndHorizontal();
-                mScript.LowestRatio = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mScript.LowestRatio) + ")", mScript.LowestRatio);
+                mLowestRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mLowestRatio.vector2Value) + ")", mLowestRatio.vector2Value);
                 EditorGUILayout.LabelField(string.Empty);
-                mScript.LowestPivot = EditorGUILayout.Vector2Field("   Pivot", mScript.LowestPivot);
-                mScript.LowestAnchorMin = EditorGUILayout.Vector2Field("   Anchor Min", mScript.LowestAnchorMin);
-                mScript.LowestAnchorMax = EditorGUILayout.Vector2Field("   Anchor Max", mScript.LowestAnchorMax);
-                mScript.LowestOffsetMin = EditorGUILayout.Vector2Field("   Offset Min", mScript.LowestOffsetMin);
-                mScript.LowestOffsetMax = EditorGUILayout.Vector2Field("   Offset Max", mScript.LowestOffsetMax);
+                mLowestPivot.vector2Value = EditorGUILayout.Vector2Field("   Pivot", mLowestPivot.vector2Value);
+                mLowestAnchorMin.vector2Value = EditorGUILayout.Vector2Field("   Anchor Min", mLowestAnchorMin.vector2Value);
+                mLowestAnchorMax.vector2Value = EditorGUILayout.Vector2Field("   Anchor Max", mLowestAnchorMax.vector2Value);
+                mLowestOffsetMin.vector2Value = EditorGUILayout.Vector2Field("   Offset Min", mLowestOffsetMin.vector2Value);
+                mLowestOffsetMax.vector2Value = EditorGUILayout.Vector2Field("   Offset Max", mLowestOffsetMax.vector2Value);
             }
             else
             {
@@ -640,101 +531,101 @@ namespace MyClasses.UI
                 EditorGUILayout.LabelField("Highest Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Anchor", GUILayout.MaxWidth(135)))
                 {
-                    mScript.HighestPivot = mRectTransform.pivot;
-                    mScript.HighestAnchorMin = mRectTransform.anchorMin;
-                    mScript.HighestAnchorMax = mRectTransform.anchorMax;
-                    mScript.HighestOffsetMin = mRectTransform.offsetMin;
-                    mScript.HighestOffsetMax = mRectTransform.offsetMax;
+                    mHighestPivot.vector2Value = mRectTransform.pivot;
+                    mHighestAnchorMin.vector2Value = mRectTransform.anchorMin;
+                    mHighestAnchorMax.vector2Value = mRectTransform.anchorMax;
+                    mHighestOffsetMin.vector2Value = mRectTransform.offsetMin;
+                    mHighestOffsetMax.vector2Value = mRectTransform.offsetMax;
                 }
                 GUILayout.EndHorizontal();
-                mScript.HighestRatio = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mScript.HighestRatio) + ")", mScript.HighestRatio);
+                mHighestRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mHighestRatio.vector2Value) + ")", mHighestRatio.vector2Value);
                 EditorGUILayout.LabelField(string.Empty);
-                mScript.HighestPivot = EditorGUILayout.Vector2Field("   Pivot", mScript.HighestPivot);
-                mScript.HighestAnchorMin = EditorGUILayout.Vector2Field("   Anchor Min", mScript.HighestAnchorMin);
-                mScript.HighestAnchorMax = EditorGUILayout.Vector2Field("   Anchor Max", mScript.HighestAnchorMax);
-                mScript.HighestOffsetMin = EditorGUILayout.Vector2Field("   Offset Min", mScript.HighestOffsetMin);
-                mScript.HighestOffsetMax = EditorGUILayout.Vector2Field("   Offset Max", mScript.HighestOffsetMax);
+                mHighestPivot.vector2Value = EditorGUILayout.Vector2Field("   Pivot", mHighestPivot.vector2Value);
+                mHighestAnchorMin.vector2Value = EditorGUILayout.Vector2Field("   Anchor Min", mHighestAnchorMin.vector2Value);
+                mHighestAnchorMax.vector2Value = EditorGUILayout.Vector2Field("   Anchor Max", mHighestAnchorMax.vector2Value);
+                mHighestOffsetMin.vector2Value = EditorGUILayout.Vector2Field("   Offset Min", mHighestOffsetMin.vector2Value);
+                mHighestOffsetMax.vector2Value = EditorGUILayout.Vector2Field("   Offset Max", mHighestOffsetMax.vector2Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("High Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Anchor", GUILayout.MaxWidth(135)))
                 {
-                    mScript.HighPivot = mRectTransform.pivot;
-                    mScript.HighAnchorMin = mRectTransform.anchorMin;
-                    mScript.HighAnchorMax = mRectTransform.anchorMax;
-                    mScript.HighOffsetMin = mRectTransform.offsetMin;
-                    mScript.HighOffsetMax = mRectTransform.offsetMax;
+                    mHighPivot.vector2Value = mRectTransform.pivot;
+                    mHighAnchorMin.vector2Value = mRectTransform.anchorMin;
+                    mHighAnchorMax.vector2Value = mRectTransform.anchorMax;
+                    mHighOffsetMin.vector2Value = mRectTransform.offsetMin;
+                    mHighOffsetMax.vector2Value = mRectTransform.offsetMax;
                 }
                 GUILayout.EndHorizontal();
-                mScript.HighRatio = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mScript.HighRatio) + ")", mScript.HighRatio);
+                mHighRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mHighRatio.vector2Value) + ")", mHighRatio.vector2Value);
                 EditorGUILayout.LabelField(string.Empty);
-                mScript.HighPivot = EditorGUILayout.Vector2Field("   Pivot", mScript.HighPivot);
-                mScript.HighAnchorMin = EditorGUILayout.Vector2Field("   Anchor Min", mScript.HighAnchorMin);
-                mScript.HighAnchorMax = EditorGUILayout.Vector2Field("   Anchor Max", mScript.HighAnchorMax);
-                mScript.HighOffsetMin = EditorGUILayout.Vector2Field("   Offset Min", mScript.HighOffsetMin);
-                mScript.HighOffsetMax = EditorGUILayout.Vector2Field("   Offset Max", mScript.HighOffsetMax);
+                mHighPivot.vector2Value = EditorGUILayout.Vector2Field("   Pivot", mHighPivot.vector2Value);
+                mHighAnchorMin.vector2Value = EditorGUILayout.Vector2Field("   Anchor Min", mHighAnchorMin.vector2Value);
+                mHighAnchorMax.vector2Value = EditorGUILayout.Vector2Field("   Anchor Max", mHighAnchorMax.vector2Value);
+                mHighOffsetMin.vector2Value = EditorGUILayout.Vector2Field("   Offset Min", mHighOffsetMin.vector2Value);
+                mHighOffsetMax.vector2Value = EditorGUILayout.Vector2Field("   Offset Max", mHighOffsetMax.vector2Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Default Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Anchor", GUILayout.MaxWidth(135)))
                 {
-                    mScript.DefaultPivot = mRectTransform.pivot;
-                    mScript.DefaultAnchorMin = mRectTransform.anchorMin;
-                    mScript.DefaultAnchorMax = mRectTransform.anchorMax;
-                    mScript.DefaultOffsetMin = mRectTransform.offsetMin;
-                    mScript.DefaultOffsetMax = mRectTransform.offsetMax;
+                    mDefaultPivot.vector2Value = mRectTransform.pivot;
+                    mDefaultAnchorMin.vector2Value = mRectTransform.anchorMin;
+                    mDefaultAnchorMax.vector2Value = mRectTransform.anchorMax;
+                    mDefaultOffsetMin.vector2Value = mRectTransform.offsetMin;
+                    mDefaultOffsetMax.vector2Value = mRectTransform.offsetMax;
                 }
                 GUILayout.EndHorizontal();
-                mScript.DefaultHighRatio = EditorGUILayout.Vector2Field("   High Ratio (" + mScript.GetRatio(mScript.DefaultHighRatio) + ")", mScript.DefaultHighRatio);
-                mScript.DefaultLowRatio = EditorGUILayout.Vector2Field("   Low Ratio (" + mScript.GetRatio(mScript.DefaultLowRatio) + ")", mScript.DefaultLowRatio);
+                mDefaultHighRatio.vector2Value = EditorGUILayout.Vector2Field("   High Ratio (" + mScript.GetRatio(mDefaultHighRatio.vector2Value) + ")", mDefaultHighRatio.vector2Value);
+                mDefaultLowRatio.vector2Value = EditorGUILayout.Vector2Field("   Low Ratio (" + mScript.GetRatio(mDefaultLowRatio.vector2Value) + ")", mDefaultLowRatio.vector2Value);
                 EditorGUILayout.LabelField(string.Empty);
-                mScript.DefaultPivot = EditorGUILayout.Vector2Field("   Pivot", mScript.DefaultPivot);
-                mScript.DefaultAnchorMin = EditorGUILayout.Vector2Field("   Anchor Min", mScript.DefaultAnchorMin);
-                mScript.DefaultAnchorMax = EditorGUILayout.Vector2Field("   Anchor Max", mScript.DefaultAnchorMax);
-                mScript.DefaultOffsetMin = EditorGUILayout.Vector2Field("   Offset Min", mScript.DefaultOffsetMin);
-                mScript.DefaultOffsetMax = EditorGUILayout.Vector2Field("   Offset Max", mScript.DefaultOffsetMax);
+                mDefaultPivot.vector2Value = EditorGUILayout.Vector2Field("   Pivot", mDefaultPivot.vector2Value);
+                mDefaultAnchorMin.vector2Value = EditorGUILayout.Vector2Field("   Anchor Min", mDefaultAnchorMin.vector2Value);
+                mDefaultAnchorMax.vector2Value = EditorGUILayout.Vector2Field("   Anchor Max", mDefaultAnchorMax.vector2Value);
+                mDefaultOffsetMin.vector2Value = EditorGUILayout.Vector2Field("   Offset Min", mDefaultOffsetMin.vector2Value);
+                mDefaultOffsetMax.vector2Value = EditorGUILayout.Vector2Field("   Offset Max", mDefaultOffsetMax.vector2Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Low Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Anchor", GUILayout.MaxWidth(135)))
                 {
-                    mScript.LowPivot = mRectTransform.pivot;
-                    mScript.LowAnchorMin = mRectTransform.anchorMin;
-                    mScript.LowAnchorMax = mRectTransform.anchorMax;
-                    mScript.LowOffsetMin = mRectTransform.offsetMin;
-                    mScript.LowOffsetMax = mRectTransform.offsetMax;
+                    mLowPivot.vector2Value = mRectTransform.pivot;
+                    mLowAnchorMin.vector2Value = mRectTransform.anchorMin;
+                    mLowAnchorMax.vector2Value = mRectTransform.anchorMax;
+                    mLowOffsetMin.vector2Value = mRectTransform.offsetMin;
+                    mLowOffsetMax.vector2Value = mRectTransform.offsetMax;
                 }
                 GUILayout.EndHorizontal();
-                mScript.LowRatio = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mScript.LowRatio) + ")", mScript.LowRatio);
+                mLowRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mLowRatio.vector2Value) + ")", mLowRatio.vector2Value);
                 EditorGUILayout.LabelField(string.Empty);
-                mScript.LowPivot = EditorGUILayout.Vector2Field("   Pivot", mScript.LowPivot);
-                mScript.LowAnchorMin = EditorGUILayout.Vector2Field("   Anchor Min", mScript.LowAnchorMin);
-                mScript.LowAnchorMax = EditorGUILayout.Vector2Field("   Anchor Max", mScript.LowAnchorMax);
-                mScript.LowOffsetMin = EditorGUILayout.Vector2Field("   Offset Min", mScript.LowOffsetMin);
-                mScript.LowOffsetMax = EditorGUILayout.Vector2Field("   Offset Max", mScript.LowOffsetMax);
+                mLowPivot.vector2Value = EditorGUILayout.Vector2Field("   Pivot", mLowPivot.vector2Value);
+                mLowAnchorMin.vector2Value = EditorGUILayout.Vector2Field("   Anchor Min", mLowAnchorMin.vector2Value);
+                mLowAnchorMax.vector2Value = EditorGUILayout.Vector2Field("   Anchor Max", mLowAnchorMax.vector2Value);
+                mLowOffsetMin.vector2Value = EditorGUILayout.Vector2Field("   Offset Min", mLowOffsetMin.vector2Value);
+                mLowOffsetMax.vector2Value = EditorGUILayout.Vector2Field("   Offset Max", mLowOffsetMax.vector2Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Lowest Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Anchor", GUILayout.MaxWidth(135)))
                 {
-                    mScript.LowestPivot = mRectTransform.pivot;
-                    mScript.LowestAnchorMin = mRectTransform.anchorMin;
-                    mScript.LowestAnchorMax = mRectTransform.anchorMax;
-                    mScript.LowestOffsetMin = mRectTransform.offsetMin;
-                    mScript.LowestOffsetMax = mRectTransform.offsetMax;
+                    mLowestPivot.vector2Value = mRectTransform.pivot;
+                    mLowestAnchorMin.vector2Value = mRectTransform.anchorMin;
+                    mLowestAnchorMax.vector2Value = mRectTransform.anchorMax;
+                    mLowestOffsetMin.vector2Value = mRectTransform.offsetMin;
+                    mLowestOffsetMax.vector2Value = mRectTransform.offsetMax;
                 }
                 GUILayout.EndHorizontal();
-                mScript.LowestRatio = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mScript.LowestRatio) + ")", mScript.LowestRatio);
+                mLowestRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mLowestRatio.vector2Value) + ")", mLowestRatio.vector2Value);
                 EditorGUILayout.LabelField(string.Empty);
-                mScript.LowestPivot = EditorGUILayout.Vector2Field("   Pivot", mScript.LowestPivot);
-                mScript.LowestAnchorMin = EditorGUILayout.Vector2Field("   Anchor Min", mScript.LowestAnchorMin);
-                mScript.LowestAnchorMax = EditorGUILayout.Vector2Field("   Anchor Max", mScript.LowestAnchorMax);
-                mScript.LowestOffsetMin = EditorGUILayout.Vector2Field("   Offset Min", mScript.LowestOffsetMin);
-                mScript.LowestOffsetMax = EditorGUILayout.Vector2Field("   Offset Max", mScript.LowestOffsetMax);
+                mLowestPivot.vector2Value = EditorGUILayout.Vector2Field("   Pivot", mLowestPivot.vector2Value);
+                mLowestAnchorMin.vector2Value = EditorGUILayout.Vector2Field("   Anchor Min", mLowestAnchorMin.vector2Value);
+                mLowestAnchorMax.vector2Value = EditorGUILayout.Vector2Field("   Anchor Max", mLowestAnchorMax.vector2Value);
+                mLowestOffsetMin.vector2Value = EditorGUILayout.Vector2Field("   Offset Min", mLowestOffsetMin.vector2Value);
+                mLowestOffsetMax.vector2Value = EditorGUILayout.Vector2Field("   Offset Max", mLowestOffsetMax.vector2Value);
             }
 
             EditorGUILayout.LabelField(string.Empty);
@@ -745,6 +636,8 @@ namespace MyClasses.UI
                 mScript.Anchor();
             }
             GUILayout.EndHorizontal();
+
+            serializedObject.ApplyModifiedProperties();
         }
     }
 
