@@ -269,6 +269,16 @@ namespace MyClasses.UI
         }
 
         /// <summary>
+        /// Get text.
+        /// </summary>
+        public string GetText()
+        {
+            _InitText();
+
+            return mText != null ? mText.text :string.Empty;
+        }
+
+        /// <summary>
         /// Hide current effect.
         /// </summary>
         public void Normalize()

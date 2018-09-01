@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyLocalization (version 2.0)
+ * Class:       MyLocalization (version 2.10)
  */
 
 #if UNITY_EDITOR
@@ -124,6 +124,8 @@ namespace MyClasses
     public class MyLocalizationEditor : Editor
     {
         private MyLocalization mScript;
+        private SerializedProperty mPrefix;
+        private SerializedProperty mSuffix;
 
         /// <summary>
         /// OnEnable.
@@ -131,6 +133,8 @@ namespace MyClasses
         void OnEnable()
         {
             mScript = (MyLocalization)target;
+            mPrefix = serializedObject.FindProperty("mPrefix");
+            mSuffix = serializedObject.FindProperty("mSuffix");
         }
 
         /// <summary>
@@ -140,8 +144,12 @@ namespace MyClasses
         {
             EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour(mScript), typeof(MyLocalization), false);
 
-            mScript.Prefix = EditorGUILayout.TextField("Prefix", mScript.Prefix);
-            mScript.Suffix = EditorGUILayout.TextField("Suffix", mScript.Suffix);
+            serializedObject.Update();
+
+            mPrefix.stringValue = EditorGUILayout.TextField("Prefix", mPrefix.stringValue);
+            mSuffix.stringValue = EditorGUILayout.TextField("Suffix", mSuffix.stringValue);
+
+            serializedObject.ApplyModifiedProperties();
         }
     }
 

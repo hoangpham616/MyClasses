@@ -29,29 +29,29 @@ namespace MyClasses.UI
         [SerializeField]
         private Vector2 mHighestRatio = new Vector2(19, 9);
         [SerializeField]
-        private Vector2 mHighestScale = Vector3.one;
+        private Vector3 mHighestScale = Vector3.one;
 
         [SerializeField]
         private Vector2 mHighRatio = new Vector2(18, 9);
         [SerializeField]
-        private Vector2 mHighScale = Vector3.one;
+        private Vector3 mHighScale = Vector3.one;
 
         [SerializeField]
         private Vector2 mDefaultHighRatio = new Vector2(16.4f, 9);
         [SerializeField]
         private Vector2 mDefaultLowRatio = new Vector2(15.6f, 9);
         [SerializeField]
-        private Vector2 mDefaultScale = Vector3.one;
+        private Vector3 mDefaultScale = Vector3.one;
 
         [SerializeField]
         private Vector2 mLowRatio = new Vector2(16, 10);
         [SerializeField]
-        private Vector2 mLowScale = Vector3.one;
+        private Vector3 mLowScale = Vector3.one;
 
         [SerializeField]
         private Vector2 mLowestRatio = new Vector2(4, 3);
         [SerializeField]
-        private Vector2 mLowestScale = Vector3.one;
+        private Vector3 mLowestScale = Vector3.one;
 
         [SerializeField]
         private bool mIsCurrentAnchorLoaded = false;
@@ -365,11 +365,11 @@ namespace MyClasses.UI
             {
                 mScript.IsCurrentAnchorLoaded = true;
 
-                mHighestScale.vector2Value = mRectTransform.localScale;
-                mHighScale.vector2Value = mRectTransform.localScale;
-                mDefaultScale.vector2Value = mRectTransform.localScale;
-                mLowScale.vector2Value = mRectTransform.localScale;
-                mLowestScale.vector2Value = mRectTransform.localScale;
+                mHighestScale.vector3Value = mRectTransform.localScale;
+                mHighScale.vector3Value = mRectTransform.localScale;
+                mDefaultScale.vector3Value = mRectTransform.localScale;
+                mLowScale.vector3Value = mRectTransform.localScale;
+                mLowestScale.vector3Value = mRectTransform.localScale;
 
                 serializedObject.ApplyModifiedProperties();
             }
@@ -381,7 +381,9 @@ namespace MyClasses.UI
         public override void OnInspectorGUI()
         {
             EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour(mScript), typeof(MyUGUIAspectRatioScaler), false);
-            
+
+            serializedObject.Update();
+
             EditorGUILayout.LabelField("Scale Mode", EditorStyles.boldLabel);
             mScript.ScaleLevel = (MyUGUIAspectRatioScaler.EScaleLevel)EditorGUILayout.EnumPopup("   Scale Level", mScript.ScaleLevel);
             mScript.ScaleFrequency = (MyUGUIAspectRatioScaler.EScaleFrequency)EditorGUILayout.EnumPopup("   Scale Frequency", mScript.ScaleFrequency);
@@ -395,34 +397,34 @@ namespace MyClasses.UI
                 EditorGUILayout.LabelField("High Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Scale", GUILayout.MaxWidth(135)))
                 {
-                    mHighestScale.vector2Value = mRectTransform.localScale;
+                    mHighestScale.vector3Value = mRectTransform.localScale;
                 }
                 GUILayout.EndHorizontal();
                 mHighestRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mHighestRatio.vector2Value) + ")", mHighestRatio.vector2Value);
-                mHighestScale.vector2Value = EditorGUILayout.Vector2Field("   Scale", mHighestScale.vector2Value);
+                mHighestScale.vector3Value = EditorGUILayout.Vector3Field("   Scale", mHighestScale.vector3Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Default Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Scale", GUILayout.MaxWidth(135)))
                 {
-                    mDefaultScale.vector2Value = mRectTransform.localScale;
+                    mDefaultScale.vector3Value = mRectTransform.localScale;
                 }
                 GUILayout.EndHorizontal();
                 mDefaultHighRatio.vector2Value = EditorGUILayout.Vector2Field("   High Ratio (" + mScript.GetRatio(mDefaultHighRatio.vector2Value) + ")", mDefaultHighRatio.vector2Value);
                 mDefaultLowRatio.vector2Value = EditorGUILayout.Vector2Field("   Low Ratio (" + mScript.GetRatio(mDefaultLowRatio.vector2Value) + ")", mDefaultLowRatio.vector2Value);
-                mDefaultScale.vector2Value = EditorGUILayout.Vector2Field("   Scale", mDefaultScale.vector2Value);
+                mDefaultScale.vector3Value = EditorGUILayout.Vector3Field("   Scale", mDefaultScale.vector3Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Low Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Scale", GUILayout.MaxWidth(135)))
                 {
-                    mLowestScale.vector2Value = mRectTransform.localScale;
+                    mLowestScale.vector3Value = mRectTransform.localScale;
                 }
                 GUILayout.EndHorizontal();
                 mLowestRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mLowestRatio.vector2Value) + ")", mLowestRatio.vector2Value);
-                mLowestScale.vector2Value = EditorGUILayout.Vector2Field("   Scale", mLowestScale.vector2Value);
+                mLowestScale.vector3Value = EditorGUILayout.Vector3Field("   Scale", mLowestScale.vector3Value);
             }
             else
             {
@@ -431,56 +433,56 @@ namespace MyClasses.UI
                 EditorGUILayout.LabelField("Highest Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Scale", GUILayout.MaxWidth(135)))
                 {
-                    mHighestScale.vector2Value = mRectTransform.localScale;
+                    mHighestScale.vector3Value = mRectTransform.localScale;
                 }
                 GUILayout.EndHorizontal();
                 mHighestRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mHighestRatio.vector2Value) + ")", mHighestRatio.vector2Value);
-                mHighestScale.vector2Value = EditorGUILayout.Vector2Field("   Scale", mHighestScale.vector2Value);
+                mHighestScale.vector3Value = EditorGUILayout.Vector3Field("   Scale", mHighestScale.vector3Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("High Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Scale", GUILayout.MaxWidth(135)))
                 {
-                    mHighScale.vector2Value = mRectTransform.localScale;
+                    mHighScale.vector3Value = mRectTransform.localScale;
                 }
                 GUILayout.EndHorizontal();
                 mHighRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mHighRatio.vector2Value) + ")", mHighRatio.vector2Value);
-                mHighScale.vector2Value = EditorGUILayout.Vector2Field("   Scale", mHighScale.vector2Value);
+                mHighScale.vector3Value = EditorGUILayout.Vector3Field("   Scale", mHighScale.vector3Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Default Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Scale", GUILayout.MaxWidth(135)))
                 {
-                    mDefaultScale.vector2Value = mRectTransform.localScale;
+                    mDefaultScale.vector3Value = mRectTransform.localScale;
                 }
                 GUILayout.EndHorizontal();
                 mDefaultHighRatio.vector2Value = EditorGUILayout.Vector2Field("   High Ratio (" + mScript.GetRatio(mDefaultHighRatio.vector2Value) + ")", mDefaultHighRatio.vector2Value);
                 mDefaultLowRatio.vector2Value = EditorGUILayout.Vector2Field("   Low Ratio (" + mScript.GetRatio(mDefaultLowRatio.vector2Value) + ")", mDefaultLowRatio.vector2Value);
-                mDefaultScale.vector2Value = EditorGUILayout.Vector2Field("   Scale", mDefaultScale.vector2Value);
+                mDefaultScale.vector3Value = EditorGUILayout.Vector3Field("   Scale", mDefaultScale.vector3Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Low Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Scale", GUILayout.MaxWidth(135)))
                 {
-                    mLowScale.vector2Value = mRectTransform.localScale;
+                    mLowScale.vector3Value = mRectTransform.localScale;
                 }
                 GUILayout.EndHorizontal();
                 mLowRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mLowRatio.vector2Value) + ")", mLowRatio.vector2Value);
-                mLowScale.vector2Value = EditorGUILayout.Vector2Field("   Scale", mLowScale.vector2Value);
+                mLowScale.vector3Value = EditorGUILayout.Vector3Field("   Scale", mLowScale.vector3Value);
 
                 EditorGUILayout.LabelField(string.Empty);
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Lowest Aspect Ratio", EditorStyles.boldLabel);
                 if (GUILayout.Button("Use Current Scale", GUILayout.MaxWidth(135)))
                 {
-                    mLowestScale.vector2Value = mRectTransform.localScale;
+                    mLowestScale.vector3Value = mRectTransform.localScale;
                 }
                 GUILayout.EndHorizontal();
                 mLowestRatio.vector2Value = EditorGUILayout.Vector2Field("   Ratio (" + mScript.GetRatio(mLowestRatio.vector2Value) + ")", mLowestRatio.vector2Value);
-                mLowestScale.vector2Value = EditorGUILayout.Vector2Field("   Scale", mLowestScale.vector2Value);
+                mLowestScale.vector3Value = EditorGUILayout.Vector3Field("   Scale", mLowestScale.vector3Value);
             }
 
             EditorGUILayout.LabelField(string.Empty);
@@ -493,6 +495,8 @@ namespace MyClasses.UI
             }
             EditorGUILayout.LabelField(string.Empty);
             GUILayout.EndHorizontal();
+
+            serializedObject.ApplyModifiedProperties();
         }
     }
 

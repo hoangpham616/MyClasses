@@ -452,8 +452,7 @@ namespace MyClasses.UI
         public override void OnInspectorGUI()
         {
             EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour(mScript), typeof(MyUGUIAspectRatioAnchor), false);
-
-            Debug.LogError("gui");
+            
             serializedObject.Update();
 
             EditorGUILayout.LabelField("Anchor Mode", EditorStyles.boldLabel);
