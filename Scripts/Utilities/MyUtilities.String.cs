@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUtilities.String (version 1.7)
+ * Class:       MyUtilities.String (version 1.8)
  */
 
 using System.Collections.Generic;
@@ -241,15 +241,15 @@ namespace MyClasses
         /// <summary>
         /// Print items in list int.
         /// </summary>
-        public static string ToString(List<int> list)
+        public static string ToString(List<int> list, string splitChar = ",")
         {
-            return ToString(list != null ? list.ToArray() : null);
+            return ToString(list != null ? list.ToArray() : null, splitChar);
         }
 
         /// <summary>
         /// Print items in int array.
         /// </summary>
-        public static string ToString(int[] array)
+        public static string ToString(int[] array, string splitChar = ",")
         {
             if (array == null)
             {
@@ -267,7 +267,7 @@ namespace MyClasses
             stringBuilder.Append(array[0]);
             for (int i = 1; i < array.Length; i++)
             {
-                stringBuilder.Append(",");
+                stringBuilder.Append(splitChar);
                 stringBuilder.Append(array[i]);
             }
             stringBuilder.Append("]");
@@ -278,15 +278,15 @@ namespace MyClasses
         /// <summary>
         /// Print items in list int array.
         /// </summary>
-        public static string ToString(List<int[]> list)
+        public static string ToString(List<int[]> list, string splitChar = ",")
         {
-            return ToString(list != null ? list.ToArray() : null);
+            return ToString(list != null ? list.ToArray() : null, splitChar);
         }
 
         /// <summary>
         /// Print items in int arrays.
         /// </summary>
-        public static string ToString(int[][] arrays)
+        public static string ToString(int[][] arrays, string splitChar = ",")
         {
             if (arrays == null)
             {
@@ -304,7 +304,7 @@ namespace MyClasses
             stringBuilder.Append(ToString(arrays[0]));
             for (int i = 1; i < arrays.Length; i++)
             {
-                stringBuilder.Append(",");
+                stringBuilder.Append(splitChar);
                 stringBuilder.Append(ToString(arrays[i]));
             }
             stringBuilder.Append("]");

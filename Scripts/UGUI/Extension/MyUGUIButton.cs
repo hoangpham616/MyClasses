@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIButton (version 2.10)
+ * Class:       MyUGUIButton (version 2.11)
  */
 
 #if UNITY_EDITOR
@@ -36,6 +36,7 @@ namespace MyClasses.UI
         private PointerEventData mPointerEventDataPress;
 
         private EEffectType mEffectType = EEffectType.None;
+        private EEffectType mDarkType = EEffectType.Dark;
         private EEffectType mGrayType = EEffectType.Gray;
 
         #endregion
@@ -61,12 +62,30 @@ namespace MyClasses.UI
 
         public bool IsDark
         {
-            get { return mEffectType == EEffectType.Dark; }
+            get { return mEffectType == EEffectType.Dark || mEffectType == EEffectType.DarkImageOnly || mEffectType == EEffectType.DarkTextOnly; }
         }
 
         public bool IsGray
         {
             get { return mEffectType == EEffectType.Gray || mEffectType == EEffectType.GrayImageOnly || mEffectType == EEffectType.GrayTextOnly; }
+        }
+
+        public Text Text
+        {
+            get
+            {
+                _InitText();
+                return mText;
+            }
+        }
+
+        public Image Image
+        {
+            get
+            {
+                _InitImage();
+                return mImage;
+            }
         }
 
         public MyPointerEvent OnEventPointerClick
@@ -269,16 +288,6 @@ namespace MyClasses.UI
         }
 
         /// <summary>
-        /// Get text.
-        /// </summary>
-        public string GetText()
-        {
-            _InitText();
-
-            return mText != null ? mText.text :string.Empty;
-        }
-
-        /// <summary>
         /// Hide current effect.
         /// </summary>
         public void Normalize()
@@ -322,7 +331,7 @@ namespace MyClasses.UI
         /// </summary>
         public void Darken()
         {
-            SetEffect(EEffectType.Dark);
+            SetEffect(mDarkType);
         }
 
         /// <summary>
@@ -337,6 +346,29 @@ namespace MyClasses.UI
             else if (IsDark)
             {
                 Normalize();
+            }
+        }
+
+        /// <summary>
+        /// Set dark mode.
+        /// </summary>
+        public void SetDarkMode(bool isDarkImage = true, bool isDarkText = true)
+        {
+            if (isDarkImage && isDarkText)
+            {
+                mDarkType = EEffectType.Dark;
+            }
+            else if (isDarkImage)
+            {
+                mDarkType = EEffectType.DarkImageOnly;
+            }
+            else if (isDarkText)
+            {
+                mDarkType = EEffectType.DarkTextOnly;
+            }
+            else
+            {
+                mDarkType = EEffectType.None;
             }
         }
 
@@ -401,7 +433,7 @@ namespace MyClasses.UI
 
             if (mImage != null)
             {
-                if (effectType == EEffectType.Dark)
+                if (effectType == EEffectType.Dark || effectType == EEffectType.DarkImageOnly)
                 {
                     mImage.material = MyResourceManager.GetMaterialDarkening();
                 }
@@ -416,7 +448,11 @@ namespace MyClasses.UI
             }
             if (mText != null)
             {
-                if (effectType == EEffectType.Gray || effectType == EEffectType.GrayTextOnly)
+                if (effectType == EEffectType.Dark || effectType == EEffectType.DarkTextOnly)
+                {
+                    mText.material = MyResourceManager.GetMaterialDarkening();
+                }
+                else if (effectType == EEffectType.Gray || effectType == EEffectType.GrayTextOnly)
                 {
                     mText.material = MyResourceManager.GetMaterialGrayscale();
                 }
@@ -521,6 +557,8 @@ namespace MyClasses.UI
         {
             None = 0,
             Dark,
+            DarkImageOnly,
+            DarkTextOnly,
             Gray,
             GrayImageOnly,
             GrayTextOnly,
