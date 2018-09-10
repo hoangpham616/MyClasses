@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyPoolManager (version 2.8)
+ * Class:       MyPoolManager (version 2.10)
  */
 
 using UnityEngine;
@@ -168,7 +168,7 @@ namespace MyClasses
                     if (!oldObj.activeInHierarchy)
                     {
                         oldObj.transform.SetParent(mOccupied.transform, false);
-                        oldObj.SetActive(false);
+                        oldObj.SetActive(true);
 
                         if (!mListOccupiedObject.Contains(oldObj))
                         {
@@ -220,7 +220,7 @@ namespace MyClasses
             }
 
             GameObject newObj = GameObject.Instantiate(mTemplate);
-            newObj.SetActive(false);
+            newObj.SetActive(true);
             newObj.name = mObjectName;
             newObj.transform.SetParent(mOccupied.transform, false);
 

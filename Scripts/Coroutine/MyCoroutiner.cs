@@ -1,10 +1,11 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyCoroutiner (version 1.3)
+ * Class:       MyCoroutiner (version 1.4)
  */
 
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -21,6 +22,24 @@ namespace MyClasses
         #endregion
 
         #region ----- Public Method -----
+
+        /// <summary>
+        /// Excute a function after a delay.
+        /// </summary>
+        public static void ExcuteAfterDelay(float delayTime, Action action)
+        {
+            _Initialize();
+
+            mCoroutineInstance.StartCoroutine(_DelayAction(delayTime, action));
+        }
+
+        /// <summary>
+        /// Excute a function after a delay.
+        /// </summary>
+        public static void ExcuteAfterDelay(string key, float delayTime, Action action)
+        {
+            Start(key, _DelayAction(delayTime, action));
+        }
 
         /// <summary>
         /// Start a coroutine.
@@ -112,6 +131,19 @@ namespace MyClasses
                 {
                     mCoroutineInstance = mCoroutineObject.AddComponent(typeof(CoroutineInstance)) as CoroutineInstance;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Delay a action.
+        /// </summary>
+        private static IEnumerator _DelayAction(float delayTime, Action action)
+        {
+            yield return new WaitForSeconds(delayTime);
+
+            if (action != null)
+            {
+                action();
             }
         }
 
