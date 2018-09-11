@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIAspectRatioScaler (version 2.10)
+ * Class:       MyUGUIAspectRatioScaler (version 2.11)
  */
 
 #if UNITY_EDITOR
@@ -486,14 +486,12 @@ namespace MyClasses.UI
             }
 
             EditorGUILayout.LabelField(string.Empty);
-            EditorGUILayout.LabelField("Current Aspect Ratio", EditorStyles.boldLabel);
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("   Ratio (" + mScript.GetCurrentRatio().ToString() + ")");
-            if (GUILayout.Button("\t\tScale Now\t\t"))
+            EditorGUILayout.LabelField("Current Aspect Ratio (" + mScript.GetCurrentRatio() + ")", EditorStyles.boldLabel);
+            if (GUILayout.Button("Scale Now", GUILayout.MaxWidth(135)))
             {
                 mScript.Scale();
             }
-            EditorGUILayout.LabelField(string.Empty);
             GUILayout.EndHorizontal();
 
             serializedObject.ApplyModifiedProperties();

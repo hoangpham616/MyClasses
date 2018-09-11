@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIAspectRatioAnchor (version 2.10)
+ * Class:       MyUGUIAspectRatioAnchor (version 2.11)
  */
 
 #pragma warning disable 0414
