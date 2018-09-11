@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIButton (version 2.11)
+ * Class:       MyUGUIButton (version 2.12)
  */
 
 #if UNITY_EDITOR
@@ -463,6 +463,27 @@ namespace MyClasses.UI
             }
 
             mEffectType = effectType;
+        }
+
+        /// <summary>
+        /// Invoke click event.
+        /// </summary>
+        public void SelfClick()
+        {
+            if (interactable)
+            {
+                base.OnSubmit(null);
+
+                if (mOnEventPointerClick != null)
+                {
+                    mOnEventPointerClick.Invoke(null);
+                }
+
+                if (!string.IsNullOrEmpty(SFXClick))
+                {
+                    MySoundManager.Instance.PlaySFX(SFXClick);
+                }
+            }
         }
 
 #if UNITY_EDITOR
