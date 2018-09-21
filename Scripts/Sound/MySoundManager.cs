@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MySoundManager (version 2.0)
+ * Class:       MySoundManager (version 2.1)
  */
 
 using UnityEngine;
@@ -50,20 +50,17 @@ namespace MyClasses
 
         public bool IsEnableBGM
         {
-            get { return VolumeBGM > 0; }
-            set { VolumeBGM = value ? 1 : 0; }
+            get { return VolumeBGM > 0 && !IsMuteBGM; }
         }
 
-        public bool IsEnableSFX
+        public bool IsMuteBGM
         {
-            get { return VolumeSFX > 0; }
-            set { VolumeSFX = value ? 1 : 0; }
-        }
-
-        public bool IsEnableVibrate
-        {
-            get { return PlayerPrefs.GetInt("MyVibrate", 1) == 1; }
-            set { PlayerPrefs.SetInt("MyVibrate", value ? 1 : 0); }
+            get { return PlayerPrefs.GetInt("MyBGM_Mute", 0) == 1; }
+            set
+            {
+                PlayerPrefs.SetInt("MyBGM_Mute", value ? 1 : 0);
+                mAudioSourceBGM.volume = value ? 0 : VolumeBGM;
+            }
         }
 
         public float VolumeBGM
@@ -72,8 +69,27 @@ namespace MyClasses
             set
             {
                 float volume = Mathf.Clamp01(value);
-                mAudioSourceBGM.volume = volume;
                 PlayerPrefs.SetFloat("MyBGM_Volume", volume);
+                mAudioSourceBGM.volume = IsMuteBGM ? 0 : volume;
+            }
+        }
+
+        public bool IsEnableSFX
+        {
+            get { return VolumeSFX > 0 && !IsMuteSFX; }
+        }
+
+        public bool IsMuteSFX
+        {
+            get { return PlayerPrefs.GetInt("MySFX_Mute", 0) == 1; }
+            set
+            {
+                PlayerPrefs.SetInt("MySFX_Mute", value ? 1 : 0);
+                float volume = value ? 0 : VolumeSFX;
+                for (int i = mListAudioSourceSFX.Count - 1; i >= 0; i--)
+                {
+                    mListAudioSourceSFX[i].volume = volume;
+                }
             }
         }
 
@@ -83,12 +99,22 @@ namespace MyClasses
             set
             {
                 float volume = Mathf.Clamp01(value);
+                PlayerPrefs.SetFloat("MySFX_Volume", volume);
+                if (IsMuteSFX)
+                {
+                    volume = 0;
+                }
                 for (int i = mListAudioSourceSFX.Count - 1; i >= 0; i--)
                 {
                     mListAudioSourceSFX[i].volume = volume;
                 }
-                PlayerPrefs.SetFloat("MySFX_Volume", volume);
             }
+        }
+
+        public bool IsEnableVibrate
+        {
+            get { return PlayerPrefs.GetInt("MyVibrate", 1) == 1; }
+            set { PlayerPrefs.SetInt("MyVibrate", value ? 1 : 0); }
         }
 
         #endregion
@@ -202,26 +228,27 @@ namespace MyClasses
         /// Play a SFX.
         /// </summary>
         /// <param name="delayTime">delay time specified in seconds</param>
-        public void PlaySFX(string filename, float delayTime = 0)
+        public AudioSource PlaySFX(string filename, float delayTime = 0)
         {
 #if DEBUG_MY_SOUND
             Debug.Log("[" + typeof(MySoundManager).Name + "] <color=#0000FFFF>PlaySFX()</color>: filename=\"" + filename + "\"");
 #endif
 
             AudioClip audioClip = Resources.Load<AudioClip>(filename);
-            PlaySFX(audioClip);
+            return PlaySFX(audioClip);
         }
 
         /// <summary>
         /// Play a SFX.
         /// </summary>
         /// <param name="delayTime">delay time specified in seconds</param>
-        public void PlaySFX(AudioClip audioClip, float delayTime = 0)
+        public AudioSource PlaySFX(AudioClip audioClip, float delayTime = 0)
         {
             AudioSource audioSource = _GetAudioSourceSFX();
             audioSource.clip = audioClip;
             audioSource.volume = VolumeSFX;
             audioSource.PlayDelayed(delayTime);
+            return audioSource;
         }
 
         /// <summary>
