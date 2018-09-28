@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISamplePopup (version 2.9)
+ * Class:       MyUGUISamplePopup (version 2.10)
  */
 
 using UnityEngine;
@@ -45,7 +45,7 @@ public class MyUGUISamplePopup : MyUGUIPopup
 
     public override bool OnUGUIVisible()
     {
-        return base.OnUGUIInvisible();
+        return base.OnUGUIVisible();
     }
 
     public override void OnUGUIUpdate(float deltaTime)
