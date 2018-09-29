@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup1Button (version 2.9)
+ * Class:       MyUGUIPopup1Button (version 2.11)
  */
 
 using UnityEngine;
@@ -9,11 +9,19 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 
+#if USE_MY_UI_TMPRO
+using TMPro;
+#endif
+
 namespace MyClasses.UI
 {
     public class MyUGUIPopup1Button : MyUGUIPopup
     {
         #region ----- Variable -----
+
+#if USE_MY_UI_TMPRO
+        private TextMeshProUGUI mTitleTMPro;
+#endif
 
         private Text mTitle;
         private Text mBody;
@@ -61,6 +69,12 @@ namespace MyClasses.UI
             if (_title != null)
             {
                 mTitle = _title.GetComponent<Text>();
+#if USE_MY_UI_TMPRO
+                if (mTitle == null)
+                {
+                    mTitleTMPro = _title.GetComponent<TextMeshProUGUI>();
+                }
+#endif
             }
 
             GameObject _close = MyUtilities.FindObjectInFirstLayer(_container, "ButtonClose");
@@ -215,6 +229,12 @@ namespace MyClasses.UI
             {
                 mTitle.text = title;
             }
+#if USE_MY_UI_TMPRO
+            else if (mTitleTMPro != null)
+            {
+                mTitleTMPro.text = title;
+            }
+#endif
 
             mBody.text = body;
 

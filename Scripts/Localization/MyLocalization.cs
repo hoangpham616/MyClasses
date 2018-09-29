@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyLocalization (version 2.10)
+ * Class:       MyLocalization (version 2.11)
  */
 
 #if UNITY_EDITOR
@@ -13,19 +13,21 @@ using UnityEngine.UI;
 
 namespace MyClasses
 {
+#if !USE_MY_UI_TMPRO
     [RequireComponent(typeof(Text))]
+#endif
     public class MyLocalization : MonoBehaviour
     {
         #region ----- Variable -----
 
         [SerializeField]
-        private string mPrefix = string.Empty;
+        protected string mPrefix = string.Empty;
         [SerializeField]
-        private string mSuffix = string.Empty;
+        protected string mSuffix = string.Empty;
 
         private Text mText;
-        private string mKey;
-        private bool mIsHasFix;
+        protected string mKey;
+        protected bool mIsHasFix;
 
         #endregion
 
@@ -103,7 +105,7 @@ namespace MyClasses
         /// <summary>
         /// Localize.
         /// </summary>
-        public void Localize()
+        public virtual void Localize()
         {
             if (mIsHasFix)
             {

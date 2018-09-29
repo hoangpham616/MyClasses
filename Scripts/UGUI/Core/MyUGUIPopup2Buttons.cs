@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup2Buttons (version 2.9)
+ * Class:       MyUGUIPopup2Buttons (version 2.11)
  */
 
 using UnityEngine;
@@ -9,11 +9,19 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 
+#if USE_MY_UI_TMPRO
+using TMPro;
+#endif
+
 namespace MyClasses.UI
 {
     public class MyUGUIPopup2Buttons : MyUGUIPopup
     {
         #region ----- Variable -----
+
+#if USE_MY_UI_TMPRO
+        private TextMeshProUGUI mTitleTMPro;
+#endif
 
         private Text mTitle;
         private Text mBody;
@@ -66,6 +74,12 @@ namespace MyClasses.UI
             if (_title != null)
             {
                 mTitle = _title.GetComponent<Text>();
+#if USE_MY_UI_TMPRO
+                if (mTitle == null)
+                {
+                    mTitleTMPro = _title.GetComponent<TextMeshProUGUI>();
+                }
+#endif
             }
 
             GameObject _close = MyUtilities.FindObjectInFirstLayer(_container, "ButtonClose");
@@ -189,41 +203,41 @@ namespace MyClasses.UI
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string title, string content, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, Action<object> actionClose, bool isAutoHideWhenClickButton = true)
+        public void SetData(string title, string body, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, Action<object> actionClose, bool isAutoHideWhenClickButton = true)
         {
-            _SetData(title, content, buttonLeft, actionLeft, buttonRight, actionRight, true, actionClose, isAutoHideWhenClickButton);
+            _SetData(title, body, buttonLeft, actionLeft, buttonRight, actionRight, true, actionClose, isAutoHideWhenClickButton);
         }
 
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string title, string content, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, bool isAutoHideWhenClickButton = true)
+        public void SetData(string title, string body, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, bool isAutoHideWhenClickButton = true)
         {
-            _SetData(title, content, buttonLeft, actionLeft, buttonRight, actionRight, false, null, isAutoHideWhenClickButton);
+            _SetData(title, body, buttonLeft, actionLeft, buttonRight, actionRight, false, null, isAutoHideWhenClickButton);
         }
 
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string content, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, Action<object> actionClose, bool isAutoHideWhenClickButton = true)
+        public void SetData(string body, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, Action<object> actionClose, bool isAutoHideWhenClickButton = true)
         {
-            _SetData(string.Empty, content, buttonLeft, actionLeft, buttonRight, actionRight, true, actionClose, isAutoHideWhenClickButton);
+            _SetData(string.Empty, body, buttonLeft, actionLeft, buttonRight, actionRight, true, actionClose, isAutoHideWhenClickButton);
         }
 
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string content, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, bool isAutoHideWhenClickButton = true)
+        public void SetData(string body, string buttonLeft, Action<object> actionLeft, string buttonRight, Action<object> actionRight, bool isAutoHideWhenClickButton = true)
         {
-            _SetData(string.Empty, content, buttonLeft, actionLeft, buttonRight, actionRight, false, null, isAutoHideWhenClickButton);
+            _SetData(string.Empty, body, buttonLeft, actionLeft, buttonRight, actionRight, false, null, isAutoHideWhenClickButton);
         }
 
         /// <summary>
         /// Set data.
         /// </summary>
-        public void SetData(string content, string buttonLeft, string buttonRight, bool isShowCloseButton = false, bool isAutoHideWhenClickButton = true)
+        public void SetData(string body, string buttonLeft, string buttonRight, bool isShowCloseButton = false, bool isAutoHideWhenClickButton = true)
         {
-            _SetData(string.Empty, content, buttonLeft, null, buttonRight, null, isShowCloseButton, null, isAutoHideWhenClickButton);
+            _SetData(string.Empty, body, buttonLeft, null, buttonRight, null, isShowCloseButton, null, isAutoHideWhenClickButton);
         }
 
         #endregion
@@ -239,6 +253,12 @@ namespace MyClasses.UI
             {
                 mTitle.text = title;
             }
+#if USE_MY_UI_TMPRO
+            else if (mTitleTMPro != null)
+            {
+                mTitleTMPro.text = title;
+            }
+#endif
 
             mBody.text = body;
 
