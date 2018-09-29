@@ -11,6 +11,10 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if USE_MY_UI_TMPRO
+using TMPro;
+#endif
+
 namespace MyClasses
 {
 #if !USE_MY_UI_TMPRO
@@ -21,13 +25,17 @@ namespace MyClasses
         #region ----- Variable -----
 
         [SerializeField]
-        protected string mPrefix = string.Empty;
+        private string mPrefix = string.Empty;
         [SerializeField]
-        protected string mSuffix = string.Empty;
+        private string mSuffix = string.Empty;
+
+#if USE_MY_UI_TMPRO
+        private TextMeshProUGUI mTextTMPro;
+#endif
 
         private Text mText;
-        protected string mKey;
-        protected bool mIsHasFix;
+        private string mKey;
+        private bool mIsHasFix;
 
         #endregion
 
@@ -36,7 +44,7 @@ namespace MyClasses
         public string Prefix
         {
             get { return mPrefix; }
-            set 
+            set
             {
                 mPrefix = value;
                 mIsHasFix = !string.IsNullOrEmpty(mPrefix) || !string.IsNullOrEmpty(mSuffix);
@@ -75,6 +83,12 @@ namespace MyClasses
             if (mText == null)
             {
                 mText = gameObject.GetComponent<Text>();
+#if USE_MY_UI_TMPRO
+                if (mText == null)
+                {
+                    mTextTMPro = gameObject.GetComponent<TextMeshProUGUI>();
+                }
+#endif
                 mKey = mText.text;
                 mIsHasFix = !string.IsNullOrEmpty(mPrefix) || !string.IsNullOrEmpty(mSuffix);
             }
@@ -105,15 +119,33 @@ namespace MyClasses
         /// <summary>
         /// Localize.
         /// </summary>
-        public virtual void Localize()
+        public void Localize()
         {
             if (mIsHasFix)
             {
-                mText.text = mPrefix + MyLocalizationManager.Instance.LoadKey(mKey) + mSuffix;
+                if (mText != null)
+                {
+                    mText.text = mPrefix + MyLocalizationManager.Instance.LoadKey(mKey) + mSuffix;
+                }
+#if USE_MY_UI_TMPRO
+                else if (mTextTMPro != null)
+                {
+                    mTextTMPro.text = mPrefix + MyLocalizationManager.Instance.LoadKey(mKey) + mSuffix;
+                }
+#endif
             }
             else
             {
-                mText.text = MyLocalizationManager.Instance.LoadKey(mKey);
+                if (mText != null)
+                {
+                    mText.text = MyLocalizationManager.Instance.LoadKey(mKey);
+                }
+#if USE_MY_UI_TMPRO
+                else if (mTextTMPro != null)
+                {
+                    mTextTMPro.text = MyLocalizationManager.Instance.LoadKey(mKey);
+                }
+#endif
             }
         }
 
