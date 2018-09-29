@@ -83,13 +83,20 @@ namespace MyClasses
             if (mText == null)
             {
                 mText = gameObject.GetComponent<Text>();
+                if (mText != null)
+                {
+                    mKey = mText.text;
+                }
 #if USE_MY_UI_TMPRO
-                if (mText == null)
+                else
                 {
                     mTextTMPro = gameObject.GetComponent<TextMeshProUGUI>();
+                    if (mTextTMPro != null)
+                    {
+                        mKey = mTextTMPro.text;
+                    }
                 }
 #endif
-                mKey = mText.text;
                 mIsHasFix = !string.IsNullOrEmpty(mPrefix) || !string.IsNullOrEmpty(mSuffix);
             }
 
@@ -101,7 +108,16 @@ namespace MyClasses
         /// </summary>
         void OnDisable()
         {
-            mText.text = mKey;
+            if (mText != null)
+            {
+                mText.text = mKey;
+            }
+#if USE_MY_UI_TMPRO
+            else if (mTextTMPro != null)
+            {
+                mTextTMPro.text = mKey;
+            }
+#endif
         }
 
         #endregion
