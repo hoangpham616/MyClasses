@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MySoundManager (version 2.1)
+ * Class:       MySoundManager (version 2.2)
  */
 
 using UnityEngine;
@@ -158,7 +158,7 @@ namespace MyClasses
         {
             mAudioSourceBGM.clip = audioClip;
             mAudioSourceBGM.loop = isLoop;
-            mAudioSourceBGM.volume = VolumeBGM;
+            mAudioSourceBGM.volume = IsMuteBGM ? 0 : VolumeBGM;
             mAudioSourceBGM.PlayDelayed(delayTime);
         }
 
@@ -246,7 +246,7 @@ namespace MyClasses
         {
             AudioSource audioSource = _GetAudioSourceSFX();
             audioSource.clip = audioClip;
-            audioSource.volume = VolumeSFX;
+            audioSource.volume = IsMuteSFX ? 0 : VolumeSFX;
             audioSource.PlayDelayed(delayTime);
             return audioSource;
         }
