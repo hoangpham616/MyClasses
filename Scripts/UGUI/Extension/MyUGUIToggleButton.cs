@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIToggleButton (version 2.6)
+ * Class:       MyUGUIToggleButton (version 2.11)
  */
 
 #if UNITY_EDITOR
@@ -38,6 +38,8 @@ namespace MyClasses.UI
         [SerializeField]
         private Text mTitleTurnOff;
         [SerializeField]
+        private bool mIsShowTitle = true;
+        [SerializeField]
         private float mSlideTime = 0.1f;
 
         [SerializeField]
@@ -46,8 +48,6 @@ namespace MyClasses.UI
         private Sprite mTurnOnSpriteBackground;
         [SerializeField]
         private Sprite mTurnOnSpriteToggle;
-        [SerializeField]
-        private string mTurnOnTitle;
 
         [SerializeField]
         private Transform mTurnOffPosition;
@@ -55,8 +55,6 @@ namespace MyClasses.UI
         private Sprite mTurnOffSpriteBackground;
         [SerializeField]
         private Sprite mTurnOffSpriteToggle;
-        [SerializeField]
-        private string mTurnOffTitle;
 
         [SerializeField]
         private bool mIsEnableSoundClick = true;
@@ -441,15 +439,7 @@ namespace MyClasses.UI
                 }
                 if (mTitleTurnOn != null)
                 {
-                    if (!string.IsNullOrEmpty(mTurnOnTitle))
-                    {
-                        mTitleTurnOn.gameObject.SetActive(true);
-                        mTitleTurnOn.text = mTurnOffTitle;
-                    }
-                    else
-                    {
-                        mTitleTurnOn.gameObject.SetActive(false);
-                    }
+                    mTitleTurnOn.gameObject.SetActive(mIsShowTitle);
                 }
                 if (mTitleTurnOff != null)
                 {
@@ -469,15 +459,7 @@ namespace MyClasses.UI
                 }
                 if (mTitleTurnOff != null)
                 {
-                    if (!string.IsNullOrEmpty(mTurnOffTitle))
-                    {
-                        mTitleTurnOff.gameObject.SetActive(true);
-                        mTitleTurnOff.text = mTurnOffTitle;
-                    }
-                    else
-                    {
-                        mTitleTurnOff.gameObject.SetActive(false);
-                    }
+                    mTitleTurnOff.gameObject.SetActive(mIsShowTitle);
                 }
                 if (mTitleTurnOn != null)
                 {
@@ -517,14 +499,13 @@ namespace MyClasses.UI
         private SerializedProperty mToggle;
         private SerializedProperty mTextTurnOn;
         private SerializedProperty mTextTurnOff;
+        private SerializedProperty mIsShowTitle;
         private SerializedProperty mTurnOnPosition;
         private SerializedProperty mTurnOnSpriteBackground;
         private SerializedProperty mTurnOnSpriteToggle;
-        private SerializedProperty mTurnOnTitle;
         private SerializedProperty mTurnOffPosition;
         private SerializedProperty mTurnOffSpriteBackground;
         private SerializedProperty mTurnOffSpriteToggle;
-        private SerializedProperty mTurnOffTitle;
         private SerializedProperty mOnValueChange;
 
         /// <summary>
@@ -538,14 +519,13 @@ namespace MyClasses.UI
             mToggle = serializedObject.FindProperty("mToggle");
             mTextTurnOn = serializedObject.FindProperty("mTitleTurnOn");
             mTextTurnOff = serializedObject.FindProperty("mTitleTurnOff");
+            mIsShowTitle = serializedObject.FindProperty("mIsShowTitle");
             mTurnOnPosition = serializedObject.FindProperty("mTurnOnPosition");
             mTurnOnSpriteBackground = serializedObject.FindProperty("mTurnOnSpriteBackground");
             mTurnOnSpriteToggle = serializedObject.FindProperty("mTurnOnSpriteToggle");
-            mTurnOnTitle = serializedObject.FindProperty("mTurnOnTitle");
             mTurnOffPosition = serializedObject.FindProperty("mTurnOffPosition");
             mTurnOffSpriteBackground = serializedObject.FindProperty("mTurnOffSpriteBackground");
             mTurnOffSpriteToggle = serializedObject.FindProperty("mTurnOffSpriteToggle");
-            mTurnOffTitle = serializedObject.FindProperty("mTurnOffTitle");
             mOnValueChange = serializedObject.FindProperty("OnValueChange");
         }
 
@@ -566,6 +546,7 @@ namespace MyClasses.UI
             mToggle.objectReferenceValue = EditorGUILayout.ObjectField("Image Toggle", mToggle.objectReferenceValue, typeof(Image), true);
             mTextTurnOn.objectReferenceValue = EditorGUILayout.ObjectField("Text Turn On (Nullable)", mTextTurnOn.objectReferenceValue, typeof(Text), true);
             mTextTurnOff.objectReferenceValue = EditorGUILayout.ObjectField("Text Turn Off (Nullable)", mTextTurnOff.objectReferenceValue, typeof(Text), true);
+            mIsShowTitle.boolValue = EditorGUILayout.Toggle("Is Show Title", mIsShowTitle.boolValue);
             mScript.SlideTime = EditorGUILayout.FloatField("Slide Time", mScript.SlideTime);
             EditorGUI.indentLevel--;
 
@@ -575,7 +556,6 @@ namespace MyClasses.UI
             mTurnOnPosition.objectReferenceValue = EditorGUILayout.ObjectField("Position", mTurnOnPosition.objectReferenceValue, typeof(Transform), true);
             mTurnOnSpriteBackground.objectReferenceValue = EditorGUILayout.ObjectField("Sprite Background", mTurnOnSpriteBackground.objectReferenceValue, typeof(Sprite), true);
             mTurnOnSpriteToggle.objectReferenceValue = EditorGUILayout.ObjectField("Sprite Toggle", mTurnOnSpriteToggle.objectReferenceValue, typeof(Sprite), true);
-            mTurnOnTitle.stringValue = EditorGUILayout.TextField("Title", mTurnOnTitle.stringValue);
             EditorGUI.indentLevel--;
 
             EditorGUILayout.Space();
@@ -584,7 +564,6 @@ namespace MyClasses.UI
             mTurnOffPosition.objectReferenceValue = EditorGUILayout.ObjectField("Position", mTurnOffPosition.objectReferenceValue, typeof(Transform), true);
             mTurnOffSpriteBackground.objectReferenceValue = EditorGUILayout.ObjectField("Sprite Background", mTurnOffSpriteBackground.objectReferenceValue, typeof(Sprite), true);
             mTurnOffSpriteToggle.objectReferenceValue = EditorGUILayout.ObjectField("Sprite Toggle", mTurnOffSpriteToggle.objectReferenceValue, typeof(Sprite), true);
-            mTurnOffTitle.stringValue = EditorGUILayout.TextField("Title", mTurnOffTitle.stringValue);
             EditorGUI.indentLevel--;
 
             EditorGUILayout.Space();
