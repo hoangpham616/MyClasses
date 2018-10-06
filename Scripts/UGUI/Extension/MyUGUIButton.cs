@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIButton (version 2.12)
+ * Class:       MyUGUIButton (version 2.13)
  */
 
 #if UNITY_EDITOR
@@ -258,7 +258,18 @@ namespace MyClasses.UI
         /// </summary>
         public void SetEnable(bool isEnable)
         {
-            enabled = isEnable;
+            _InitImage();
+            _InitText();
+
+            if (mImage != null)
+            {
+                mImage.raycastTarget = isEnable;
+            }
+
+            if (mText != null)
+            {
+                mText.raycastTarget = isEnable;
+            }
         }
 
         /// <summary>

@@ -1,35 +1,58 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUtilities.Currency (version 1.2)
+ * Class:       MyUtilities.Currency (version 1.3)
  */
+
+using System.Globalization;
 
 namespace MyClasses
 {
     public static partial class MyUtilities
     {
+        private static CultureInfo CULTURE_DOT = CultureInfo.GetCultureInfo("es-ES");
+        private static CultureInfo CULTURE_COMMA = CultureInfo.GetCultureInfo("en-US");
+
         #region ----- Public Method -----
 
         /// <summary>
         /// Add commas into thousands places.
         /// </summary>
-        public static string AddThousandSeparator(long number)
+        public static string AddThousandSeparator(long number, ESeparator separator = ESeparator.Dot)
         {
-            return string.Format("{0:n0}", number);
+            return number.ToString("0,0", separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
         }
 
         /// <summary>
         /// Add commas into thousands places.
         /// </summary>
-        public static string AddThousandSeparator(float number, bool isDecimalPoint = false)
+        /// <param name="decimalDigit">-1: show full decimal</param>
+        /// <returns></returns>
+        public static string AddThousandSeparator(float number, int decimalDigit = 2, ESeparator separator = ESeparator.Dot)
         {
-            if (isDecimalPoint)
+            if(decimalDigit == 0)
             {
-                return string.Format("{0:n}", number);
+                return number.ToString("0,0", separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
+            }
+            else if (decimalDigit == 1)
+            {
+                return number.ToString("0,0.0", separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
+            }
+            else if (decimalDigit >= 2)
+            {
+                return number.ToString("N", separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
             }
             else
             {
-                return string.Format("{0:n0}", number);
+                float decimalPart = System.Math.Abs(number - (int)number);
+                if (separator == ESeparator.Dot)
+                {
+                    return number.ToString("0,0", CULTURE_DOT) + (decimalPart > 0 ? "," + decimalPart.ToString().Substring(2) : string.Empty);
+                }
+                else
+                {
+                    return number.ToString("0,0", CULTURE_COMMA) + (decimalPart > 0 ? "." + decimalPart.ToString().Substring(2) : string.Empty);
+                }
             }
         }
 
@@ -38,7 +61,7 @@ namespace MyClasses
         /// </summary>
         /// <param name="highestUnitCurrency">highest unit of currency can be shown</param>
         public static string ConvertNumberToFullCurrencyString(ulong number, EUnitCurrency highestUnitCurrency = EUnitCurrency.Billions, string decimalMark = ".",
-            string keyThousand = "_TEXT_THOUSAND", string keyMillion = "_TEXT_MILLION", string keyBillion = "_TEXT_BILLION", 
+            string keyThousand = "_TEXT_THOUSAND", string keyMillion = "_TEXT_MILLION", string keyBillion = "_TEXT_BILLION",
             string keyTrillion = "_TEXT_TRILLION", string keyQuarallion = "_TEXT_QUARALLION")
         {
             return _ConvertNumberToCurrencyString(number, highestUnitCurrency, decimalMark, keyThousand, keyMillion, keyBillion, keyTrillion, keyQuarallion);
@@ -49,7 +72,7 @@ namespace MyClasses
         /// </summary>
         /// <param name="highestUnitCurrency">highest unit of currency can be shown</param>
         public static string ConvertNumberToShortCurrencyString(ulong number, EUnitCurrency highestUnitCurrency = EUnitCurrency.Billions, string decimalMark = ".",
-            string keyThousand = "_TEXT_SHORT_THOUSAND", string keyMillion = "_TEXT_SHORT_MILLION", string keyBillion = "_TEXT_SHORT_BILLION", 
+            string keyThousand = "_TEXT_SHORT_THOUSAND", string keyMillion = "_TEXT_SHORT_MILLION", string keyBillion = "_TEXT_SHORT_BILLION",
             string keyTrillion = "_TEXT_SHORT_TRILLION", string keyQuarallion = "_TEXT_SHORT_QUARALLION")
         {
             return _ConvertNumberToCurrencyString(number, highestUnitCurrency, decimalMark, keyThousand, keyMillion, keyBillion, keyTrillion, keyQuarallion);
@@ -196,6 +219,12 @@ namespace MyClasses
         #endregion
 
         #region ----- Enumeration -----
+
+        public enum ESeparator
+        {
+            Dot,
+            Comma
+        }
 
         public enum EUnitCurrency
         {
