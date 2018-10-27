@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUtilities.Currency (version 1.3)
+ * Class:       MyUtilities.Currency (version 1.4)
  */
 
 using System.Globalization;
@@ -18,9 +18,9 @@ namespace MyClasses
         /// <summary>
         /// Add commas into thousands places.
         /// </summary>
-        public static string AddThousandSeparator(long number, ESeparator separator = ESeparator.Dot)
+        public static string AddThousandSeparator(long number, ESeparator separator = ESeparator.Comma)
         {
-            return number.ToString("0,0", separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
+            return number.ToString("#,0", separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
         }
 
         /// <summary>
@@ -28,31 +28,50 @@ namespace MyClasses
         /// </summary>
         /// <param name="decimalDigit">-1: show full decimal</param>
         /// <returns></returns>
-        public static string AddThousandSeparator(float number, int decimalDigit = 2, ESeparator separator = ESeparator.Dot)
+        public static string AddThousandSeparator(double number, int decimalDigit = 2, ESeparator separator = ESeparator.Comma)
         {
-            if(decimalDigit == 0)
+            if (decimalDigit < 0)
             {
-                return number.ToString("0,0", separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
-            }
-            else if (decimalDigit == 1)
-            {
-                return number.ToString("0,0.0", separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
-            }
-            else if (decimalDigit >= 2)
-            {
-                return number.ToString("N", separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
-            }
-            else
-            {
-                float decimalPart = System.Math.Abs(number - (int)number);
+                long integerPart = (long)number;
+                double decimalPart = System.Math.Abs(number - integerPart);
                 if (separator == ESeparator.Dot)
                 {
-                    return number.ToString("0,0", CULTURE_DOT) + (decimalPart > 0 ? "," + decimalPart.ToString().Substring(2) : string.Empty);
+                    return integerPart.ToString("#,0", CULTURE_DOT) + (decimalPart > 0 ? "," + decimalPart.ToString().Substring(2) : string.Empty);
                 }
                 else
                 {
-                    return number.ToString("0,0", CULTURE_COMMA) + (decimalPart > 0 ? "." + decimalPart.ToString().Substring(2) : string.Empty);
+                    return integerPart.ToString("#,0", CULTURE_COMMA) + (decimalPart > 0 ? "." + decimalPart.ToString().Substring(2) : string.Empty);
                 }
+            }
+            else
+            {
+                return number.ToString("N" + decimalDigit, separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
+            }
+        }
+
+        /// <summary>
+        /// Add commas into thousands places.
+        /// </summary>
+        /// <param name="decimalDigit">-1: show full decimal</param>
+        /// <returns></returns>
+        public static string AddThousandSeparator(decimal number, int decimalDigit = 2, ESeparator separator = ESeparator.Comma)
+        {
+            if (decimalDigit < 0)
+            {
+                long integerPart = (long)number;
+                decimal decimalPart = System.Math.Abs(number - integerPart);
+                if (separator == ESeparator.Dot)
+                {
+                    return integerPart.ToString("#,0", CULTURE_DOT) + (decimalPart > 0 ? "," + decimalPart.ToString().Substring(2) : string.Empty);
+                }
+                else
+                {
+                    return integerPart.ToString("#,0", CULTURE_COMMA) + (decimalPart > 0 ? "." + decimalPart.ToString().Substring(2) : string.Empty);
+                }
+            }
+            else
+            {
+                return number.ToString("N" + decimalDigit, separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
             }
         }
 

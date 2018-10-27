@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.9)
+ * Class:       MyUGUIManager (version 2.13)
  */
 
 #pragma warning disable 0162
@@ -481,8 +481,10 @@ namespace MyClasses.UI
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowPopup()</color>: " + popupID);
 #endif
+            
+            bool isRepeatable = popupID == EPopupID.Dialog0ButtonPopup || popupID == EPopupID.Dialog1ButtonPopup || popupID == EPopupID.Dialog2ButtonsPopup;
 
-            return _ShowPopup(popupID, false, attachedData);
+            return _ShowPopup(popupID, isRepeatable, attachedData);
         }
 
         /// <summary>
@@ -1194,18 +1196,14 @@ namespace MyClasses.UI
             }
             else
             {
-                if (!popup.IsRepeatable)
+                mCurrentPopup = null;
+                
+                for (int i = mListPopup.Count - 1; i >= 0; i--)
                 {
-                    mCurrentPopup = null;
-
-                    int countPopup = mListPopup.Count;
-                    for (int i = countPopup - 1; i >= 0; i--)
+                    MyUGUIPopup tmpPopup = mListPopup[i];
+                    if (tmpPopup == null || (tmpPopup.ID == popup.ID && !tmpPopup.IsRepeatable))
                     {
-                        MyUGUIPopup tmpPopup = mListPopup[i];
-                        if (tmpPopup == null || (tmpPopup.ID == popup.ID && !tmpPopup.IsRepeatable))
-                        {
-                            mListPopup.RemoveAt(i);
-                        }
+                        mListPopup.RemoveAt(i);
                     }
                 }
 
@@ -1728,7 +1726,15 @@ namespace MyClasses.UI
 
                             if (popup.GameObject != null)
                             {
-                                popup.GameObject.SetActive(false);
+                                if (popup.IsRepeatable)
+                                {
+                                    Destroy(popup.GameObject);
+                                    //mListPopup.Remove(popup);
+                                }
+                                else
+                                {
+                                    popup.GameObject.SetActive(false);
+                                }
                             }
                             popup = null;
                         }
