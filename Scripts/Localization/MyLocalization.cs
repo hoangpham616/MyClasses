@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyLocalization (version 2.11)
+ * Class:       MyLocalization (version 2.12)
  */
 
 #if UNITY_EDITOR
@@ -28,6 +28,8 @@ namespace MyClasses
         private string mPrefix = string.Empty;
         [SerializeField]
         private string mSuffix = string.Empty;
+        [SerializeField]
+        private EFormatText mFormatText = EFormatText.None;
 
 #if USE_MY_UI_TMPRO
         private TextMeshProUGUI mTextTMPro;
@@ -137,32 +139,41 @@ namespace MyClasses
         /// </summary>
         public void Localize()
         {
+            string text = MyLocalizationManager.Instance.LoadKey(mKey);
             if (mIsHasFix)
             {
-                if (mText != null)
-                {
-                    mText.text = mPrefix + MyLocalizationManager.Instance.LoadKey(mKey) + mSuffix;
-                }
-#if USE_MY_UI_TMPRO
-                else if (mTextTMPro != null)
-                {
-                    mTextTMPro.text = mPrefix + MyLocalizationManager.Instance.LoadKey(mKey) + mSuffix;
-                }
-#endif
+                text = mPrefix + text + mSuffix;
             }
-            else
+            if (mFormatText == EFormatText.Lowercase)
             {
-                if (mText != null)
-                {
-                    mText.text = MyLocalizationManager.Instance.LoadKey(mKey);
-                }
-#if USE_MY_UI_TMPRO
-                else if (mTextTMPro != null)
-                {
-                    mTextTMPro.text = MyLocalizationManager.Instance.LoadKey(mKey);
-                }
-#endif
+                text = text.ToLower();
             }
+            else if (mFormatText == EFormatText.Uppercase)
+            {
+                text = text.ToUpper();
+            }
+
+            if (mText != null)
+            {
+                mText.text = text;
+            }
+#if USE_MY_UI_TMPRO
+            else if (mTextTMPro != null)
+            {
+                mTextTMPro.text = text;
+            }
+#endif
+        }
+
+        #endregion
+
+        #region ----- Enumeration -----
+
+        public enum EFormatText
+        {
+            None = 0,
+            Lowercase = 1,
+            Uppercase = 2
         }
 
         #endregion
@@ -176,6 +187,7 @@ namespace MyClasses
         private MyLocalization mScript;
         private SerializedProperty mPrefix;
         private SerializedProperty mSuffix;
+        private SerializedProperty mFormatText;
 
         /// <summary>
         /// OnEnable.
@@ -185,6 +197,7 @@ namespace MyClasses
             mScript = (MyLocalization)target;
             mPrefix = serializedObject.FindProperty("mPrefix");
             mSuffix = serializedObject.FindProperty("mSuffix");
+            mFormatText = serializedObject.FindProperty("mFormatText");
         }
 
         /// <summary>
@@ -198,6 +211,7 @@ namespace MyClasses
 
             mPrefix.stringValue = EditorGUILayout.TextField("Prefix", mPrefix.stringValue);
             mSuffix.stringValue = EditorGUILayout.TextField("Suffix", mSuffix.stringValue);
+            mFormatText.enumValueIndex = (int)(MyLocalization.EFormatText)EditorGUILayout.EnumPopup("Format Text", (MyLocalization.EFormatText)System.Enum.GetValues(typeof(MyLocalization.EFormatText)).GetValue(mFormatText.enumValueIndex));
 
             serializedObject.ApplyModifiedProperties();
         }
