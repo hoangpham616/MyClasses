@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.13)
+ * Class:       MyUGUIManager (version 2.15)
  */
 
 #pragma warning disable 0162
@@ -155,6 +155,11 @@ namespace MyClasses.UI
         public MyUGUILoadingIndicator CurrentLoadingIndicator
         {
             get { return mCurrentLoadingIndicator; }
+        }
+
+        public bool IsShowingLoadingIndicator
+        {
+            get { return mCurrentLoadingIndicator != null && mCurrentLoadingIndicator.IsActive; }
         }
 
         public bool IsClosePopupByClickingOutside
@@ -469,7 +474,7 @@ namespace MyClasses.UI
         {
             if (mCurrentPopupOverlay != null)
             {
-                StartCoroutine(_UpdatePopupOverlay());
+                StartCoroutine(_DoUpdatePopupOverlay());
             }
         }
 
@@ -1830,9 +1835,9 @@ namespace MyClasses.UI
         /// Updates the popup overlay.
         /// </summary>
         /// <returns>The popup overlay.</returns>
-        private IEnumerator _UpdatePopupOverlay()
+        private IEnumerator _DoUpdatePopupOverlay()
         {
-            if (mCurrentLoadingIndicator != null && mCurrentLoadingIndicator.IsActive)
+            if (IsShowingLoadingIndicator)
             {
                 mCurrentPopupOverlay.Transform.SetParent(mCanvasOnTopLoadingIndicator.transform, false);
                 mCurrentPopupOverlay.Transform.SetAsFirstSibling();
@@ -1855,7 +1860,7 @@ namespace MyClasses.UI
 
             yield return null;
 
-            if (mCurrentLoadingIndicator != null && mCurrentLoadingIndicator.IsActive)
+            if (IsShowingLoadingIndicator)
             {
                 mCurrentPopupOverlay.Transform.SetParent(mCanvasOnTopLoadingIndicator.transform, false);
                 mCurrentPopupOverlay.Transform.SetAsFirstSibling();

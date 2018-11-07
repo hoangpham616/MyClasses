@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIScrollView (version 2.0)
+ * Class:       MyUGUIScrollView (version 2.1)
  */
 
 using UnityEngine;
@@ -36,7 +36,7 @@ namespace MyClasses.UI
         /// <param name="targetPosition">0: left, 1: right</param>
         public void MoveX(float targetPosition, float second)
         {
-            StartCoroutine(_MoveX(targetPosition, second));
+            StartCoroutine(_DoMoveX(targetPosition, second));
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace MyClasses.UI
         /// <param name="targetPosition">0: top, 1: bottom</param>
         public void MoveY(float targetPosition, float second)
         {
-            StartCoroutine(_MoveY(1 - targetPosition, second));
+            StartCoroutine(_DoMoveY(1 - targetPosition, second));
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Move x-axis.
         /// </summary>
-        private IEnumerator _MoveX(float targetPosition, float second)
+        private IEnumerator _DoMoveX(float targetPosition, float second)
         {
             float startPosition = mScrollRect.horizontalNormalizedPosition;
             float velocity = 1 / second;
@@ -118,7 +118,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Move y-axis.
         /// </summary>
-        private IEnumerator _MoveY(float targetPosition, float second)
+        private IEnumerator _DoMoveY(float targetPosition, float second)
         {
             float startPosition = mScrollRect.verticalNormalizedPosition;
             float velocity = 1 / second;
