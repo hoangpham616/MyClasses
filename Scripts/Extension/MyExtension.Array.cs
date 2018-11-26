@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyExtension.Array (version 1.1)
+ * Class:       MyExtension.Array (version 1.2)
  */
 
 using UnityEngine;
@@ -78,6 +78,54 @@ namespace MyClasses
         /// Print items in array.
         /// </summary>
         public static void LogError(this int[][] arrays)
+        {
+            Debug.LogError(MyUtilities.ToString(arrays));
+        }
+
+        /// <summary>
+        /// Print items in array.
+        /// </summary>
+        public static void Log(this float[] array)
+        {
+            Debug.Log(MyUtilities.ToString(array));
+        }
+
+        /// <summary>
+        /// Print items in array.
+        /// </summary>
+        public static void LogWarning(this float[] array)
+        {
+            Debug.LogWarning(MyUtilities.ToString(array));
+        }
+
+        /// <summary>
+        /// Print items in array.
+        /// </summary>
+        public static void LogError(this float[] array)
+        {
+            Debug.LogError(MyUtilities.ToString(array));
+        }
+
+        /// <summary>
+        /// Print items in array.
+        /// </summary>
+        public static void Log(this float[][] arrays)
+        {
+            Debug.Log(MyUtilities.ToString(arrays));
+        }
+
+        /// <summary>
+        /// Print items in array.
+        /// </summary>
+        public static void LogWarning(this float[][] arrays)
+        {
+            Debug.LogWarning(MyUtilities.ToString(arrays));
+        }
+
+        /// <summary>
+        /// Print items in array.
+        /// </summary>
+        public static void LogError(this float[][] arrays)
         {
             Debug.LogError(MyUtilities.ToString(arrays));
         }

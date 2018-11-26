@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUtilities.String (version 1.8)
+ * Class:       MyUtilities.String (version 1.10)
  */
 
 using System.Collections.Generic;
@@ -199,7 +199,44 @@ namespace MyClasses
 
         #endregion
 
-        #region ----- To String -----
+        #region ----- To String ----- 
+
+        /// <summary>
+        /// Print items in list byte.
+        /// </summary>
+        public static string ToString(List<byte> list)
+        {
+            return ToString(list != null ? list.ToArray() : null);
+        }
+
+        /// <summary>
+        /// Print items in byte array.
+        /// </summary>
+        public static string ToString(byte[] array)
+        {
+            if (array == null)
+            {
+                return "null";
+            }
+
+            if (array.Length == 0)
+            {
+                return "[]";
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.Append("[");
+            stringBuilder.Append(array[0]);
+            for (int i = 1; i < array.Length; i++)
+            {
+                stringBuilder.Append(",");
+                stringBuilder.Append(array[i]);
+            }
+            stringBuilder.Append("]");
+
+            return stringBuilder.ToString();
+        }
 
         /// <summary>
         /// Print items in list bool.
@@ -287,6 +324,80 @@ namespace MyClasses
         /// Print items in int arrays.
         /// </summary>
         public static string ToString(int[][] arrays, string splitChar = ",")
+        {
+            if (arrays == null)
+            {
+                return "null";
+            }
+
+            if (arrays.Length == 0)
+            {
+                return "[]";
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.Append("[");
+            stringBuilder.Append(ToString(arrays[0]));
+            for (int i = 1; i < arrays.Length; i++)
+            {
+                stringBuilder.Append(splitChar);
+                stringBuilder.Append(ToString(arrays[i]));
+            }
+            stringBuilder.Append("]");
+
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Print items in list float.
+        /// </summary>
+        public static string ToString(List<float> list, string splitChar = ",")
+        {
+            return ToString(list != null ? list.ToArray() : null, splitChar);
+        }
+
+        /// <summary>
+        /// Print items in float array.
+        /// </summary>
+        public static string ToString(float[] array, string splitChar = ",")
+        {
+            if (array == null)
+            {
+                return "null";
+            }
+
+            if (array.Length == 0)
+            {
+                return "[]";
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.Append("[");
+            stringBuilder.Append(array[0]);
+            for (int i = 1; i < array.Length; i++)
+            {
+                stringBuilder.Append(splitChar);
+                stringBuilder.Append(array[i]);
+            }
+            stringBuilder.Append("]");
+
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Print items in list float array.
+        /// </summary>
+        public static string ToString(List<float[]> list, string splitChar = ",")
+        {
+            return ToString(list != null ? list.ToArray() : null, splitChar);
+        }
+
+        /// <summary>
+        /// Print items in float arrays.
+        /// </summary>
+        public static string ToString(float[][] arrays, string splitChar = ",")
         {
             if (arrays == null)
             {
