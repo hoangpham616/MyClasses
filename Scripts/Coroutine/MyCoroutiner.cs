@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyCoroutiner (version 1.4)
+ * Class:       MyCoroutiner (version 1.5)
  */
 
 using UnityEngine;
@@ -26,19 +26,77 @@ namespace MyClasses
         /// <summary>
         /// Excute a function after a delay.
         /// </summary>
-        public static void ExcuteAfterDelay(float delayTime, Action action)
+        public static void ExcuteAfterDelayTime(float delayTime, Action action)
         {
             _Initialize();
 
-            mCoroutineInstance.StartCoroutine(_DelayAction(delayTime, action));
+            if (delayTime > 0)
+            {
+                mCoroutineInstance.StartCoroutine(_DelayActionByTime(delayTime, action));
+            }
+            else
+            {
+                if (action != null)
+                {
+                    action();
+                }
+            }
         }
 
         /// <summary>
         /// Excute a function after a delay.
         /// </summary>
-        public static void ExcuteAfterDelay(string key, float delayTime, Action action)
+        public static void ExcuteAfterDelayTime(string key, float delayTime, Action action)
         {
-            Start(key, _DelayAction(delayTime, action));
+            if (delayTime > 0)
+            {
+                Start(key, _DelayActionByTime(delayTime, action));
+            }
+            else
+            {
+                if (action != null)
+                {
+                    action();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Excute a function after a delay.
+        /// </summary>
+        public static void ExcuteAfterDelayFrame(int delayFrame, Action action)
+        {
+            _Initialize();
+
+            if (delayFrame > 0)
+            {
+                mCoroutineInstance.StartCoroutine(_DelayActionByFrame(delayFrame, action));
+            }
+            else
+            {
+                if (action != null)
+                {
+                    action();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Excute a function after a delay.
+        /// </summary>
+        public static void ExcuteAfterDelayFrame(string key, int delayFrame, Action action)
+        {
+            if (delayFrame > 0)
+            {
+                Start(key, _DelayActionByFrame(delayFrame, action));
+            }
+            else
+            {
+                if (action != null)
+                {
+                    action();
+                }
+            }
         }
 
         /// <summary>
@@ -137,9 +195,25 @@ namespace MyClasses
         /// <summary>
         /// Delay a action.
         /// </summary>
-        private static IEnumerator _DelayAction(float delayTime, Action action)
+        private static IEnumerator _DelayActionByTime(float delayTime, Action action)
         {
             yield return new WaitForSeconds(delayTime);
+
+            if (action != null)
+            {
+                action();
+            }
+        }
+
+        /// <summary>
+        /// Delay a action.
+        /// </summary>
+        private static IEnumerator _DelayActionByFrame(int delayFrame, Action action)
+        {
+            for (int i = 0; i < delayFrame; i++)
+            {
+                yield return null;
+            }
 
             if (action != null)
             {
