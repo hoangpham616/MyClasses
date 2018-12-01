@@ -21,7 +21,7 @@ namespace MyClasses
         {
             if (username != null)
             {
-                return (new Regex(@"^[a-z0-9_-]{" + minLength + "," + maxLength + "}$").Match(username)).Length > 0;
+                return (new Regex(@"^[a-z0-9_-]{" + minLength + ", " + maxLength + "}$").Match(username)).Length > 0;
             }
 
             return false;
@@ -34,7 +34,7 @@ namespace MyClasses
         {
             if (password != null)
             {
-                return (new Regex(@"^[\w-!@#$%^&*]{" + minLength + "," + maxLength + "}$").Match(password)).Length > 0;
+                return (new Regex(@"^[\w-!@#$%^&*]{" + minLength + ", " + maxLength + "}$").Match(password)).Length > 0;
             }
 
             return false;
@@ -47,7 +47,7 @@ namespace MyClasses
         {
             if (password != null)
             {
-                return (new Regex(@"((?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-!@#$%^&*]).{" + minLength + "," + maxLength + "})$").Match(password)).Length > 0;
+                return (new Regex(@"((?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-!@#$%^&*]).{" + minLength + ", " + maxLength + "})$").Match(password)).Length > 0;
             }
 
             return false;
@@ -278,7 +278,7 @@ namespace MyClasses
         /// <summary>
         /// Print items in list int.
         /// </summary>
-        public static string ToString(List<int> list, string splitChar = ",")
+        public static string ToString(List<int> list, string splitChar = ", ")
         {
             return ToString(list != null ? list.ToArray() : null, splitChar);
         }
@@ -286,7 +286,7 @@ namespace MyClasses
         /// <summary>
         /// Print items in int array.
         /// </summary>
-        public static string ToString(int[] array, string splitChar = ",")
+        public static string ToString(int[] array, string splitChar = ", ")
         {
             if (array == null)
             {
@@ -315,7 +315,7 @@ namespace MyClasses
         /// <summary>
         /// Print items in list int array.
         /// </summary>
-        public static string ToString(List<int[]> list, string splitChar = ",")
+        public static string ToString(List<int[]> list, string splitChar = ", ")
         {
             return ToString(list != null ? list.ToArray() : null, splitChar);
         }
@@ -323,7 +323,7 @@ namespace MyClasses
         /// <summary>
         /// Print items in int arrays.
         /// </summary>
-        public static string ToString(int[][] arrays, string splitChar = ",")
+        public static string ToString(int[][] arrays, string splitChar = ", ")
         {
             if (arrays == null)
             {
@@ -352,7 +352,7 @@ namespace MyClasses
         /// <summary>
         /// Print items in list float.
         /// </summary>
-        public static string ToString(List<float> list, string splitChar = ",")
+        public static string ToString(List<float> list, string splitChar = ", ")
         {
             return ToString(list != null ? list.ToArray() : null, splitChar);
         }
@@ -360,7 +360,7 @@ namespace MyClasses
         /// <summary>
         /// Print items in float array.
         /// </summary>
-        public static string ToString(float[] array, string splitChar = ",")
+        public static string ToString(float[] array, string splitChar = ", ")
         {
             if (array == null)
             {
@@ -389,7 +389,7 @@ namespace MyClasses
         /// <summary>
         /// Print items in list float array.
         /// </summary>
-        public static string ToString(List<float[]> list, string splitChar = ",")
+        public static string ToString(List<float[]> list, string splitChar = ", ")
         {
             return ToString(list != null ? list.ToArray() : null, splitChar);
         }
@@ -397,7 +397,7 @@ namespace MyClasses
         /// <summary>
         /// Print items in float arrays.
         /// </summary>
-        public static string ToString(float[][] arrays, string splitChar = ",")
+        public static string ToString(float[][] arrays, string splitChar = ", ")
         {
             if (arrays == null)
             {
