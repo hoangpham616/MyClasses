@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIAspectRatioAnchor (version 2.11)
+ * Class:       MyUGUIAspectRatioAnchor (version 2.12)
  */
 
 #pragma warning disable 0414
@@ -193,7 +193,14 @@ namespace MyClasses.UI
         /// </summary>
         public double GetRatio(Vector2 resolution)
         {
-            return Math.Round(resolution.x / resolution.y, (int)mRoundingRatio);
+            if (resolution.x > resolution.y)
+            {
+                return Math.Round(resolution.x / resolution.y, (int)mRoundingRatio);
+            }
+            else
+            {
+                return Math.Round(resolution.y / resolution.x, (int)mRoundingRatio);
+            }
         }
 
         #endregion

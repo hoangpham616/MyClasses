@@ -1,12 +1,15 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISamplePopup (version 2.10)
+ * Class:       MyUGUISamplePopup (version 2.12)
  */
 
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using MyClasses;
 using MyClasses.UI;
 
@@ -14,7 +17,7 @@ public class MyUGUISamplePopup : MyUGUIPopup
 {
     #region ----- Variable -----
 
-    //private MyUGUIButton _btnClose;
+    private MyUGUIButton _btnClose;
 
     #endregion
 
@@ -33,19 +36,23 @@ public class MyUGUISamplePopup : MyUGUIPopup
     {
         base.OnUGUIInit();
 
-        //_btnClose = MyUtilities.FindObjectInAllLayers(GameObject, "ButtonClose").GetComponent<MyUGUIButton>();
+        _btnClose = MyUtilities.FindObject(GameObject, "Container/ButtonClose").GetComponent<MyUGUIButton>();
     }
 
     public override void OnUGUIEnter()
     {
         base.OnUGUIEnter();
 
-        //_btnClose.OnEventPointerClick.AddListener(_OnClickClose);
+        _btnClose.OnEventPointerClick.AddListener(_OnClickClose);
     }
 
     public override bool OnUGUIVisible()
     {
-        return base.OnUGUIVisible();
+        if (base.OnUGUIVisible())
+        {
+            return true;
+        }
+        return false;
     }
 
     public override void OnUGUIUpdate(float deltaTime)
@@ -56,12 +63,16 @@ public class MyUGUISamplePopup : MyUGUIPopup
     {
         base.OnUGUIExit();
 
-        //_btnClose.OnEventPointerClick.RemoveAllListeners();
+        _btnClose.OnEventPointerClick.RemoveAllListeners();
     }
 
     public override bool OnUGUIInvisible()
     {
-        return base.OnUGUIInvisible();
+        if (base.OnUGUIInvisible())
+        {
+            return true;
+        }
+        return false;
     }
 
     public override void OnUGUIBackKey()
@@ -72,7 +83,7 @@ public class MyUGUISamplePopup : MyUGUIPopup
     #endregion
 
     #region ----- Button Event -----
-    
+
     private void _OnClickClose(PointerEventData arg0)
     {
         Hide();

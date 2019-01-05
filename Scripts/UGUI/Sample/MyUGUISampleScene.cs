@@ -1,12 +1,15 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISampleScene (version 2.9)
+ * Class:       MyUGUISampleScene (version 2.12)
  */
 
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using MyClasses;
 using MyClasses.UI;
 
@@ -14,7 +17,7 @@ public class MyUGUISampleScene : MyUGUIScene
 {
     #region ----- Variable -----
 
-    //private MyUGUIButton _btnTest;
+    private MyUGUIButton _btnTest;
 
     #endregion
 
@@ -33,19 +36,23 @@ public class MyUGUISampleScene : MyUGUIScene
     {
         base.OnUGUIInit();
 
-        //_btnTest = MyUtilities.FindObjectInAllLayers(GameObject, "ButtonTest").GetComponent<MyUGUIButton>();
+        _btnTest = MyUtilities.FindObject(GameObject, "Something/ButtonTest").GetComponent<MyUGUIButton>();
     }
 
     public override void OnUGUIEnter()
     {
         base.OnUGUIEnter();
 
-        //_btnTest.OnEventPointerClick.AddListener(_OnClickTest);
+        _btnTest.OnEventPointerClick.AddListener(_OnClickTest);
     }
 
     public override bool OnUGUIVisible()
     {
-        return base.OnUGUIVisible();
+        if (base.OnUGUIVisible())
+        {
+            return true;
+        }
+        return false;
     }
 
     public override void OnUGUIUpdate(float deltaTime)
@@ -56,12 +63,16 @@ public class MyUGUISampleScene : MyUGUIScene
     {
         base.OnUGUIExit();
 
-        //_btnTest.OnEventPointerClick.RemoveAllListeners();
+        _btnTest.OnEventPointerClick.RemoveAllListeners();
     }
 
     public override bool OnUGUIInvisible()
     {
-        return base.OnUGUIInvisible();
+        if (base.OnUGUIInvisible())
+        {
+            return true;
+        }
+        return false;
     }
 
     public override void OnUGUIBackKey()

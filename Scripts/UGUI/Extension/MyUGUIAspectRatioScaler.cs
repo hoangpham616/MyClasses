@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIAspectRatioScaler (version 2.11)
+ * Class:       MyUGUIAspectRatioScaler (version 2.12)
  */
 
 #if UNITY_EDITOR
@@ -159,7 +159,14 @@ namespace MyClasses.UI
         /// </summary>
         public double GetRatio(Vector2 resolution)
         {
-            return Math.Round(resolution.x / resolution.y, (int)mRoundingRatio);
+            if (resolution.x > resolution.y)
+            {
+                return Math.Round(resolution.x / resolution.y, (int)mRoundingRatio);
+            }
+            else
+            {
+                return Math.Round(resolution.y / resolution.x, (int)mRoundingRatio);
+            }
         }
 
         #endregion
@@ -318,7 +325,7 @@ namespace MyClasses.UI
 
         private SerializedProperty mHighestRatio;
         private SerializedProperty mHighestScale;
-        
+
         private SerializedProperty mHighRatio;
         private SerializedProperty mHighScale;
 
@@ -338,13 +345,13 @@ namespace MyClasses.UI
         void OnEnable()
         {
             mScript = (MyUGUIAspectRatioScaler)target;
-            
+
             mRectTransform = mScript.gameObject.GetComponent<RectTransform>();
             if (mRectTransform == null)
             {
                 Debug.LogError("[" + typeof(MyUGUIAspectRatioScalerEditor).Name + "] OnEnable(): Could not find RectTransform component.");
             }
-            
+
             mHighestRatio = serializedObject.FindProperty("mHighestRatio");
             mHighestScale = serializedObject.FindProperty("mHighestScale");
 

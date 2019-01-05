@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIButton (version 2.13)
+ * Class:       MyUGUIButton (version 2.14)
  */
 
 #if UNITY_EDITOR
@@ -483,11 +483,14 @@ namespace MyClasses.UI
         {
             if (interactable)
             {
-                base.OnSubmit(null);
+                PointerEventData eventData = new PointerEventData(EventSystem.current);
+                eventData.pointerPress = gameObject;
+
+                base.OnSubmit(eventData);
 
                 if (mOnEventPointerClick != null)
                 {
-                    mOnEventPointerClick.Invoke(null);
+                    mOnEventPointerClick.Invoke(eventData);
                 }
 
                 if (!string.IsNullOrEmpty(SFXClick))

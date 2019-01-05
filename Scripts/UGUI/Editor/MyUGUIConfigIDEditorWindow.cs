@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIConfigIDEditor (version 2.2)
+ * Class:       MyUGUIConfigIDEditor (version 2.3)
  */
 
 using UnityEngine;
@@ -196,7 +196,8 @@ namespace MyClasses.UI.Tool
                 if (Directory.Exists(paths[i]))
                 {
                     File.WriteAllText(paths[i] + "/Scripts/UGUI/Core/MyUGUIConfigID.cs", content);
-                    Debug.Log("[MyClasses] MyUGUIConfigID was created. Please refresh editor!");
+                    AssetDatabase.Refresh();
+                    Debug.Log("[MyClasses] MyUGUIConfigID was created.");
                     return;
                 }
             }

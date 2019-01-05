@@ -1,12 +1,15 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISampleHUD (version 2.9)
+ * Class:       MyUGUISampleHUD (version 2.12)
  */
 
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using MyClasses;
 using MyClasses.UI;
 
@@ -14,7 +17,7 @@ public class MyUGUISampleHUD : MyUGUIHUD
 {
     #region ----- Variable -----
 
-    //private MyUGUIButton _btnBack;
+    private MyUGUIButton _btnBack;
 
     #endregion
 
@@ -33,14 +36,14 @@ public class MyUGUISampleHUD : MyUGUIHUD
     {
         base.OnUGUIInit();
 
-        //_btnBack = MyUtilities.FindObjectInAllLayers(GameObject, "ButtonBack").GetComponent<MyUGUIButton>();
+        _btnBack = MyUtilities.FindObject(GameObject, "Something/ButtonBack").GetComponent<MyUGUIButton>();
     }
 
     public override void OnUGUIEnter()
     {
         base.OnUGUIEnter();
 
-        //_btnBack.OnEventPointerClick.AddListener(_OnClickBack);
+        _btnBack.OnEventPointerClick.AddListener(_OnClickBack);
     }
 
     public override void OnUGUIUpdate(float deltaTime)
@@ -51,11 +54,15 @@ public class MyUGUISampleHUD : MyUGUIHUD
     {
         base.OnUGUIExit();
 
-        //_btnBack.OnEventPointerClick.RemoveAllListeners();
+        _btnBack.OnEventPointerClick.RemoveAllListeners();
     }
 
     public override void OnUGUISceneSwitch(MyUGUIScene scene)
     {
+        switch (scene.ID)
+        {
+
+        }
     }
 
     #endregion
@@ -64,7 +71,7 @@ public class MyUGUISampleHUD : MyUGUIHUD
 
     private void _OnClickBack(PointerEventData arg0)
     {
-        //MyUGUIManager.Instance.Back();
+        MyUGUIManager.Instance.Back();
     }
 
     #endregion
