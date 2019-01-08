@@ -116,7 +116,7 @@ namespace MyClasses.UI
             else
 #endif
             {
-                MyCoroutiner.ExcuteAfterDelay("MyUGUIOrientationAnchor_Anchor", delayTime, () =>
+                MyCoroutiner.ExcuteAfterDelayTime("MyUGUIOrientationAnchor_Anchor", delayTime, () =>
                 {
                     _Anchor();
                 });

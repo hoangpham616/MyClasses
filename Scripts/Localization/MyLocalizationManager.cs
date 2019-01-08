@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyLocalizationManager (version 2.10)
+ * Class:       MyLocalizationManager (version 2.13)
  */
 
 #pragma warning disable 0162
@@ -34,7 +34,7 @@ namespace MyClasses
         [SerializeField]
         private ELanguage mDefaultLanguage = ELanguage.Vietnamese;
 
-        private ELanguage mLanguageType;
+        private ELanguage mLanguageType = ELanguage.None;
         private string[] mLanguageKeys;
         private int mLanguageIndex;
         private Dictionary<string, string[]> mDictionary = new Dictionary<string, string[]>();
@@ -105,7 +105,7 @@ namespace MyClasses
             {
                 mLanguageType = value;
 
-                PlayerPrefs.SetInt("MyLocalization", (int)mLanguageType);
+                PlayerPrefs.SetInt("MyLocalizationManager_Language", (int)mLanguageType);
                 PlayerPrefs.Save();
             }
         }

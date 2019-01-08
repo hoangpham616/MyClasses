@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyLocalization (version 2.12)
+ * Class:       MyLocalization (version 2.13)
  */
 
 #if UNITY_EDITOR
@@ -82,7 +82,7 @@ namespace MyClasses
         /// </summary>
         void OnEnable()
         {
-            if (mText == null)
+            if (mText == null && mTextTMPro == null)
             {
                 mText = gameObject.GetComponent<Text>();
                 if (mText != null)
@@ -140,10 +140,12 @@ namespace MyClasses
         public void Localize()
         {
             string text = MyLocalizationManager.Instance.LoadKey(mKey);
+
             if (mIsHasFix)
             {
                 text = mPrefix + text + mSuffix;
             }
+
             if (mFormatText == EFormatText.Lowercase)
             {
                 text = text.ToLower();
