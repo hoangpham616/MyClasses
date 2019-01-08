@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyImageDownloader (version 1.0)
+ * Class:       MyImageDownloader (version 1.1)
  */
 
 using UnityEngine;
@@ -61,9 +61,45 @@ namespace MyClasses
         }
 
         /// <summary>
+        /// Load a sprite from a url.
+        /// </summary>
+        public void LoadSprite(string url, Action<string, Sprite> onLoadSuccess = null, Action<string> onLoadError = null)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                StartCoroutine(_DoLoadSprite(url, onLoadSuccess, onLoadError));
+            }
+            else
+            {
+                if (onLoadError != null)
+                {
+                    onLoadError(url);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Load a texture 2D from a url.
+        /// </summary>
+        public void LoadTexture2D(string url, Action<string, Texture2D> onLoadSuccess = null, Action<string> onLoadError = null)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                StartCoroutine(_DoLoadTexture2D(url, onLoadSuccess, onLoadError));
+            }
+            else
+            {
+                if (onLoadError != null)
+                {
+                    onLoadError(url);
+                }
+            }
+        }
+
+        /// <summary>
         /// Load an image from a url.
         /// </summary>
-        public void LoadImage(Image image, string url, Action onLoadSuccess = null, Action onLoadError = null)
+        public void LoadImage(Image image, string url, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
         {
             if (image != null && !string.IsNullOrEmpty(url))
             {
@@ -73,7 +109,7 @@ namespace MyClasses
             {
                 if (onLoadError != null)
                 {
-                    onLoadError();
+                    onLoadError(url);
                 }
             }
         }
@@ -81,7 +117,7 @@ namespace MyClasses
         /// <summary>
         /// Load a raw image from a url.
         /// </summary>
-        public void LoadImage(RawImage rawImage, string url, Action onLoadSuccess = null, Action onLoadError = null)
+        public void LoadRawImage(RawImage rawImage, string url, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
         {
             if (rawImage != null && !string.IsNullOrEmpty(url))
             {
@@ -91,7 +127,7 @@ namespace MyClasses
             {
                 if (onLoadError != null)
                 {
-                    onLoadError();
+                    onLoadError(url);
                 }
             }
         }
@@ -100,7 +136,74 @@ namespace MyClasses
 
         #region ----- Private Method -----
 
-        private IEnumerator _DoLoadImage(Image image, string url, Action onLoadSuccess = null, Action onLoadError = null)
+        private IEnumerator _DoLoadSprite(string url, Action<string, Sprite> onLoadSuccess = null, Action<string> onLoadError = null)
+        {
+            if (mDictionarySprite.ContainsKey(url))
+            {
+                if (onLoadSuccess != null)
+                {
+                    onLoadSuccess(url, mDictionarySprite[url]);
+                }
+            }
+            else
+            {
+                WWW www = new WWW(url);
+                yield return www;
+
+                if (string.IsNullOrEmpty(www.error))
+                {
+                    Sprite sprite = Sprite.Create(www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0, 0));
+                    mDictionarySprite[url] = sprite;
+                    if (onLoadSuccess != null)
+                    {
+                        onLoadSuccess(url, sprite);
+                    }
+                }
+                else
+                {
+                    if (onLoadError != null)
+                    {
+                        onLoadError(url);
+                    }
+                }
+            }
+        }
+
+        private IEnumerator _DoLoadTexture2D(string url, Action<string, Texture2D> onLoadSuccess = null, Action<string> onLoadError = null)
+        {
+            if (mDictionaryTexture2D.ContainsKey(url))
+            {
+                if (onLoadSuccess != null)
+                {
+                    onLoadSuccess(url, mDictionaryTexture2D[url]);
+                }
+            }
+            else
+            {
+                WWW www = new WWW(url);
+                yield return www;
+
+                if (string.IsNullOrEmpty(www.error))
+                {
+                    Texture2D texture = new Texture2D(4, 4, TextureFormat.DXT1, false);
+                    www.LoadImageIntoTexture(texture);
+                    mDictionaryTexture2D[url] = texture;
+                    if (onLoadSuccess != null)
+                    {
+                        onLoadSuccess(url, texture);
+                    }
+                }
+                else
+                {
+                    if (onLoadError != null)
+                    {
+                        onLoadError(url);
+                    }
+                }
+            }
+        }
+
+        private IEnumerator _DoLoadImage(Image image, string url, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
         {
             if (image.sprite == null)
             {
@@ -128,20 +231,20 @@ namespace MyClasses
                     }
                     if (onLoadSuccess != null)
                     {
-                        onLoadSuccess();
+                        onLoadSuccess(url);
                     }
                 }
                 else
                 {
                     if (onLoadError != null)
                     {
-                        onLoadError();
+                        onLoadError(url);
                     }
                 }
             }
         }
 
-        private IEnumerator _DoLoadRawImage(RawImage rawImage, string url, Action onLoadSuccess = null, Action onLoadError = null)
+        private IEnumerator _DoLoadRawImage(RawImage rawImage, string url, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
         {
             if (rawImage.texture == null)
             {
@@ -173,14 +276,14 @@ namespace MyClasses
                     }
                     if (onLoadSuccess != null)
                     {
-                        onLoadSuccess();
+                        onLoadSuccess(url);
                     }
                 }
                 else
                 {
                     if (onLoadError != null)
                     {
-                        onLoadError();
+                        onLoadError(url);
                     }
                 }
             }
