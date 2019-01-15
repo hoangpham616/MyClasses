@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIRunningText (version 2.8)
+ * Class:       MyUGUIRunningText (version 2.16)
  */
 
 using UnityEngine;
@@ -22,6 +22,7 @@ namespace MyClasses.UI
         private RectTransform mMask;
         private Vector3 mCurPos;
         private EState mState;
+        private EType mType;
         private Color mTextOriginalColor;
         private float mSpeed;
         private float mMinSpeed;
@@ -48,6 +49,11 @@ namespace MyClasses.UI
             get { return mGameObject != null && mGameObject.activeSelf; }
         }
 
+        public EType Type
+        {
+            get { return mType; }
+        }
+
         #endregion
 
         #region ----- Constructor -----
@@ -55,12 +61,13 @@ namespace MyClasses.UI
         /// <summary>
         /// Constructor.
         /// </summary>
-        public MyUGUIRunningText()
+        public MyUGUIRunningText(EType type)
         {
+            mType = type;
 #if UNITY_EDITOR
-            if (!_CheckPrefab())
+            if (!_CheckPrefab(mType))
             {
-                _CreatePrefab();
+                _CreatePrefab(mType);
             }
 #endif
         }
@@ -70,7 +77,7 @@ namespace MyClasses.UI
         #region ----- Public Method -----
 
         /// <summary>
-        /// Show running text.
+        /// Show.
         /// </summary>
         public void Show(string content, float minSpeed, float maxSpeed)
         {
@@ -87,7 +94,7 @@ namespace MyClasses.UI
         }
 
         /// <summary>
-        /// Hide running text.
+        /// Hide.
         /// </summary>
         public void Hide()
         {
@@ -96,6 +103,21 @@ namespace MyClasses.UI
                 _Init();
 
                 mState = EState.Hide;
+            }
+        }
+
+        /// <summary>
+        /// Hide immedialy.
+        /// </summary>
+        public void HideImmedialy()
+        {
+            if (mGameObject != null)
+            {
+                _Init();
+
+                mState = EState.Hide;
+
+                LateUpdate(Time.deltaTime);
             }
         }
 
@@ -155,7 +177,7 @@ namespace MyClasses.UI
                         mCurPos.x = (mMask.rect.width / 2) + mText.rectTransform.rect.width;
                         mText.rectTransform.localPosition = mCurPos;
                         mGameObject.SetActive(false);
-
+                        
                         mState = EState.Idle;
                     }
                     break;
@@ -163,11 +185,19 @@ namespace MyClasses.UI
         }
 
         /// <summary>
+        /// Return name of game object by type.
+        /// </summary>
+        public static string GetGameObjectName(EType type)
+        {
+            return PREFAB_NAME + (type == EType.Default ? string.Empty : "_" + type.ToString());
+        }
+
+        /// <summary>
         /// Create a template game object.
         /// </summary>
-        public static GameObject CreateTemplate()
+        public static GameObject CreateTemplate(EType type)
         {
-            GameObject obj = new GameObject(PREFAB_NAME);
+            GameObject obj = new GameObject(GetGameObjectName(type));
 
             obj.transform.SetParent(MyUGUIManager.Instance.CanvasOnTop.transform, false);
             obj.layer = LayerMask.NameToLayer("UI");
@@ -248,20 +278,20 @@ namespace MyClasses.UI
         /// <summary>
         /// Check existence of prefab.
         /// </summary>
-        private static bool _CheckPrefab()
+        private static bool _CheckPrefab(EType type)
         {
-            string filePath = "Assets/Resources/" + MyUGUIManager.SPECIAL_DIRECTORY + PREFAB_NAME + ".prefab";
+            string filePath = "Assets/Resources/" + MyUGUIManager.SPECIAL_DIRECTORY + GetGameObjectName(type) + ".prefab";
             return System.IO.File.Exists(filePath);
         }
 
         /// <summary>
         /// Create template prefab.
         /// </summary>
-        private static void _CreatePrefab()
+        private static void _CreatePrefab(EType type)
         {
             Debug.Log("[" + typeof(MyUGUIToast).Name + "] CreatePrefab(): a template prefab was created.");
 
-            GameObject prefab = CreateTemplate();
+            GameObject prefab = CreateTemplate(type);
 
             string folderPath = "Assets/Resources/" + MyUGUIManager.SPECIAL_DIRECTORY;
             if (!System.IO.Directory.Exists(folderPath))
@@ -269,7 +299,7 @@ namespace MyClasses.UI
                 System.IO.Directory.CreateDirectory(folderPath);
             }
 
-            string filePath = "Assets/Resources/" + MyUGUIManager.SPECIAL_DIRECTORY + PREFAB_NAME;
+            string filePath = "Assets/Resources/" + MyUGUIManager.SPECIAL_DIRECTORY + GetGameObjectName(type);
             UnityEditor.PrefabUtility.CreatePrefab(filePath + ".prefab", prefab, UnityEditor.ReplacePrefabOptions.ReplaceNameBased);
         }
 
@@ -285,6 +315,12 @@ namespace MyClasses.UI
             Show,
             Update,
             Hide
+        }
+
+        public enum EType
+        {
+            Default,
+            Custom
         }
 
         #endregion

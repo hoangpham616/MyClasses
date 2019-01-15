@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.15)
+ * Class:       MyUGUIManager (version 2.16)
  */
 
 #pragma warning disable 0162
@@ -58,6 +58,7 @@ namespace MyClasses.UI
         private List<MyUGUIScene> mListScene = new List<MyUGUIScene>();
         private List<MyUGUIPopup> mListPopup = new List<MyUGUIPopup>();
         private List<MyUGUIPopup> mListFloatPopup = new List<MyUGUIPopup>();
+        private List<MyUGUIRunningText> mListRunningText = new List<MyUGUIRunningText>();
 
         private MyUGUIUnityScene mCurrentUnityScene;
         private MyUGUIUnityScene mNextUnityScene;
@@ -486,7 +487,7 @@ namespace MyClasses.UI
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowPopup()</color>: " + popupID);
 #endif
-            
+
             bool isRepeatable = popupID == EPopupID.Dialog0ButtonPopup || popupID == EPopupID.Dialog1ButtonPopup || popupID == EPopupID.Dialog2ButtonsPopup;
 
             return _ShowPopup(popupID, isRepeatable, attachedData);
@@ -679,13 +680,13 @@ namespace MyClasses.UI
         /// <summary>
         /// Show running text.
         /// </summary>
-        public void ShowRunningText(string content, ERunningTextSpeed speed = ERunningTextSpeed.Normal)
+        public void ShowRunningText(string content, ERunningTextSpeed speed = ERunningTextSpeed.Normal, MyUGUIRunningText.EType type = MyUGUIRunningText.EType.Default)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowRunningText()</color>");
 #endif
 
-            _InitRunningText();
+            _InitRunningText(type);
 
             mCurrentRunningText.Show(content, (int)speed, (int)speed * 1.2f);
         }
@@ -1095,16 +1096,30 @@ namespace MyClasses.UI
         /// <summary>
         /// Init running text.
         /// </summary>
-        private void _InitRunningText()
+        private void _InitRunningText(MyUGUIRunningText.EType type = MyUGUIRunningText.EType.Default)
         {
 #if DEBUG_MY_UI
-            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitRunningText()</color>");
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitRunningText()</color>: type=" + type);
 #endif
+
+            if (mCurrentRunningText != null && mCurrentRunningText.GameObject != null && mCurrentRunningText.Type != type)
+            {
+                mCurrentRunningText.HideImmedialy();
+                mCurrentRunningText = null;
+                for (int i = 0, count = mListRunningText.Count; i < count; i++)
+                {
+                    if (mListRunningText[i].Type == type)
+                    {
+                        mCurrentRunningText = mListRunningText[i];
+                        break;
+                    }
+                }
+            }
 
             if (mCurrentRunningText == null || mCurrentRunningText.GameObject == null)
             {
-                mCurrentRunningText = new MyUGUIRunningText();
-                mCurrentRunningText.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUIRunningText.PREFAB_NAME);
+                mCurrentRunningText = new MyUGUIRunningText(type);
+                mCurrentRunningText.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUIRunningText.GetGameObjectName(type));
 
                 if (mCurrentRunningText.GameObject == null)
                 {
@@ -1114,22 +1129,24 @@ namespace MyClasses.UI
                         if (bundle == null)
                         {
                             Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitRunningText(): Could not get asset bundle which contains Running Text. A template was created instead.");
-                            mCurrentRunningText.GameObject = MyUGUIRunningText.CreateTemplate();
+                            mCurrentRunningText.GameObject = MyUGUIRunningText.CreateTemplate(type);
                         }
                         else
                         {
-                            mCurrentRunningText.GameObject = Instantiate(bundle.LoadAsset(MyUGUIRunningText.PREFAB_NAME) as GameObject);
+                            mCurrentRunningText.GameObject = Instantiate(bundle.LoadAsset(MyUGUIRunningText.GetGameObjectName(type)) as GameObject);
                         }
                     }
                     else
                     {
-                        mCurrentRunningText.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIRunningText.PREFAB_NAME) as GameObject);
+                        mCurrentRunningText.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIRunningText.GetGameObjectName(type)) as GameObject);
                     }
                 }
 
-                mCurrentRunningText.GameObject.name = MyUGUIRunningText.PREFAB_NAME;
+                mCurrentRunningText.GameObject.name = MyUGUIRunningText.GetGameObjectName(type);
                 mCurrentRunningText.GameObject.SetActive(false);
                 mCurrentRunningText.Transform.SetParent(mCanvasOnTop.transform, false);
+
+                mListRunningText.Add(mCurrentRunningText);
             }
 
             mCurrentRunningText.Transform.SetAsLastSibling();
@@ -1202,7 +1219,7 @@ namespace MyClasses.UI
             else
             {
                 mCurrentPopup = null;
-                
+
                 for (int i = mListPopup.Count - 1; i >= 0; i--)
                 {
                     MyUGUIPopup tmpPopup = mListPopup[i];
@@ -1317,6 +1334,7 @@ namespace MyClasses.UI
                             }
 
                             mListPopup.Clear();
+                            mListRunningText.Clear();
 
                             mUnitySceneUnloadUnusedAsset = Resources.UnloadUnusedAssets();
 
