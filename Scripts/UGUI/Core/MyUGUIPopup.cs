@@ -1,10 +1,11 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup (version 2.8)
+ * Class:       MyUGUIPopup (version 2.18)
  */
 
 using UnityEngine;
+using System;
 
 namespace MyClasses.UI
 {
@@ -17,6 +18,7 @@ namespace MyClasses.UI
         private bool mIsFloat;
         private bool mIsRepeatable;
         private object mAttachedData;
+        private Action mOnCloseCallback;
 
         #endregion
 
@@ -41,6 +43,11 @@ namespace MyClasses.UI
         public bool IsRepeatable
         {
             get { return mIsRepeatable; }
+        }
+
+        public Action OnCloseCallback
+        {
+            set { mOnCloseCallback = value; }
         }
 
         #endregion
@@ -89,7 +96,7 @@ namespace MyClasses.UI
                 {
                     GameObject = GameObject.Instantiate(Resources.Load(MyUGUIManager.POPUP_DIRECTORY + PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
                 }
-                GameObject.name = PrefabName + "_Reaptable (" + Random.Range(0, int.MaxValue) + ")";
+                GameObject.name = PrefabName + "_Reaptable (" + UnityEngine.Random.Range(0, int.MaxValue) + ")";
             }
             else
             {
@@ -178,7 +185,17 @@ namespace MyClasses.UI
                 return false;
             }
 
-            return base.OnUGUIInvisible();
+            if (base.OnUGUIInvisible())
+            {
+                if (mOnCloseCallback != null)
+                {
+                    mOnCloseCallback();
+                    mOnCloseCallback = null;
+                }
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>

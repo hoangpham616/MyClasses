@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.16)
+ * Class:       MyUGUIManager (version 2.18)
  */
 
 #pragma warning disable 0162
@@ -482,7 +482,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Show a popup.
         /// </summary>
-        public MyUGUIPopup ShowPopup(EPopupID popupID, object attachedData = null)
+        public MyUGUIPopup ShowPopup(EPopupID popupID, object attachedData = null, Action onCloseCallback = null)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowPopup()</color>: " + popupID);
@@ -490,19 +490,19 @@ namespace MyClasses.UI
 
             bool isRepeatable = popupID == EPopupID.Dialog0ButtonPopup || popupID == EPopupID.Dialog1ButtonPopup || popupID == EPopupID.Dialog2ButtonsPopup;
 
-            return _ShowPopup(popupID, isRepeatable, attachedData);
+            return _ShowPopup(popupID, isRepeatable, attachedData, onCloseCallback);
         }
 
         /// <summary>
         /// Show a repeatable popup.
         /// </summary>
-        public MyUGUIPopup ShowRepeatablePopup(EPopupID popupID, object attachedData = null)
+        public MyUGUIPopup ShowRepeatablePopup(EPopupID popupID, object attachedData = null, Action onCloseCallback = null)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowRepeatablePopup()</color>: " + popupID);
 #endif
 
-            return _ShowPopup(popupID, true, attachedData);
+            return _ShowPopup(popupID, true, attachedData, onCloseCallback);
         }
 
         /// <summary>
@@ -1198,7 +1198,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Show a popup.
         /// </summary>
-        private MyUGUIPopup _ShowPopup(EPopupID popupID, bool isRepeatable, object attachedData)
+        private MyUGUIPopup _ShowPopup(EPopupID popupID, bool isRepeatable, object attachedData, Action onCloseCallback = null)
         {
             MyUGUIPopup popup = null;
 
@@ -1230,6 +1230,7 @@ namespace MyClasses.UI
                 }
 
                 popup.AttachedData = attachedData;
+                popup.OnCloseCallback = onCloseCallback;
                 popup.State = EBaseState.LoadAssetBundle;
 
                 _UpdatePopup(ref popup, 0f);

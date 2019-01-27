@@ -82,7 +82,7 @@ namespace MyClasses
         /// </summary>
         void OnEnable()
         {
-            if (mText == null && mTextTMPro == null)
+            if (mText == null)
             {
                 mText = gameObject.GetComponent<Text>();
                 if (mText != null)

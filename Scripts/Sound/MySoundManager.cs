@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MySoundManager (version 2.2)
+ * Class:       MySoundManager (version 2.18)
  */
 
 using UnityEngine;
@@ -228,25 +228,27 @@ namespace MyClasses
         /// Play a SFX.
         /// </summary>
         /// <param name="delayTime">delay time specified in seconds</param>
-        public AudioSource PlaySFX(string filename, float delayTime = 0)
+        /// <param name="localVolume">adjust local volumne (1 = original volume)</param>
+        public AudioSource PlaySFX(string filename, float delayTime = 0, float localVolume = 1)
         {
 #if DEBUG_MY_SOUND
             Debug.Log("[" + typeof(MySoundManager).Name + "] <color=#0000FFFF>PlaySFX()</color>: filename=\"" + filename + "\"");
 #endif
 
             AudioClip audioClip = Resources.Load<AudioClip>(filename);
-            return PlaySFX(audioClip);
+            return PlaySFX(audioClip, delayTime, localVolume);
         }
 
         /// <summary>
         /// Play a SFX.
         /// </summary>
         /// <param name="delayTime">delay time specified in seconds</param>
-        public AudioSource PlaySFX(AudioClip audioClip, float delayTime = 0)
+        /// <param name="localVolume">adjust local volumne (1 = original volume)</param>
+        public AudioSource PlaySFX(AudioClip audioClip, float delayTime = 0, float localVolume = 1)
         {
             AudioSource audioSource = _GetAudioSourceSFX();
             audioSource.clip = audioClip;
-            audioSource.volume = IsMuteSFX ? 0 : VolumeSFX;
+            audioSource.volume = (IsMuteSFX ? 0 : VolumeSFX) * localVolume;
             audioSource.PlayDelayed(delayTime);
             return audioSource;
         }
