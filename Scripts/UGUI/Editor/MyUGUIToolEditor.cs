@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIToolEditor (version 2.10)
+ * Class:       MyUGUIToolEditor (version 2.18)
  */
 
 using UnityEditor;
@@ -165,18 +165,46 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Create a game object with MyUGUIButton attached.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/GameObject/Button", false, 1)]
-        public static void CreateMyUGUIButton()
+        [MenuItem("MyClasses/UGUI/GameObject/Button (Color Tint)", false, 1)]
+        public static void CreateMyUGUIButtonColorTint()
         {
-            MyUGUIButton.CreateTemplate();
+            GameObject go = MyUGUIButton.CreateTemplate();
 
-            Debug.Log("[MyClasses] Button was created.");
+            MyUGUIButton button = go.GetComponent<MyUGUIButton>();
+            button.transition = Selectable.Transition.ColorTint;
+
+            Debug.Log("[MyClasses] Button (Color Tint) was created.");
+        }
+
+        /// <summary>
+        /// Create a game object with MyUGUIButton attached.
+        /// </summary>
+        [MenuItem("MyClasses/UGUI/GameObject/Button (Scale Animation)", false, 2)]
+        public static void CreateMyUGUIButtonScaleAnimation()
+        {
+            GameObject go = MyUGUIButton.CreateTemplate();
+
+            MyUGUIButton button = go.GetComponent<MyUGUIButton>();
+            button.transition = Selectable.Transition.Animation;
+            
+            Animator animator = go.AddComponent<Animator>();
+            string[] paths = new string[] { "Assets/MyClasses", "Assets/Core/MyClasses", "Assets/Plugin/MyClasses", "Assets/Plugins/MyClasses", "Assets/Framework/MyClasses", "Assets/Frameworks/MyClasses" };
+            for (int i = 0; i < paths.Length; i++)
+            {
+                if (System.IO.File.Exists(paths[i] + "/Animations/my_animator_button_click_scale.controller"))
+                {
+                    animator.runtimeAnimatorController = (RuntimeAnimatorController)UnityEditor.AssetDatabase.LoadAssetAtPath(paths[i] + "/Animations/my_animator_button_click_scale.controller", typeof(RuntimeAnimatorController));
+                    break;
+                }
+            }
+
+            Debug.Log("[MyClasses] Button (Scale Animation) was created.");
         }
 
         /// <summary>
         /// Create a game object with MyUGUIToggleButton attached.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/GameObject/Toggle Button", false, 2)]
+        [MenuItem("MyClasses/UGUI/GameObject/Toggle Button", false, 3)]
         public static void CreateMyUGUIToggleButton()
         {
             MyUGUIToggleButton.CreateTemplate();
@@ -187,7 +215,7 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Create a game object with MyUGUIReusableListView attached.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/GameObject/Reusable List View", false, 13)]
+        [MenuItem("MyClasses/UGUI/GameObject/Reusable List View", false, 14)]
         public static void CreateMyUGUIReusableListView()
         {
             MyUGUIReusableListView.CreateTemplate();
@@ -198,7 +226,7 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Create a game object with MyUGUIPieChart attached.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/GameObject/Pie Chart", false, 24)]
+        [MenuItem("MyClasses/UGUI/GameObject/Pie Chart", false, 25)]
         public static void CreateMyUGUIPieChart()
         {
             MyUGUIPieChart.CreateTemplate();
@@ -209,7 +237,7 @@ namespace MyClasses.UI.Tool
         /// <summary>
         /// Create a game object with MyUGUIRadarChart attached.
         /// </summary>
-        [MenuItem("MyClasses/UGUI/GameObject/Radar Chart", false, 25)]
+        [MenuItem("MyClasses/UGUI/GameObject/Radar Chart", false, 26)]
         public static void CreateMyUGUIRadarChart()
         {
             MyUGUIRadarChart.CreateTemplate();
