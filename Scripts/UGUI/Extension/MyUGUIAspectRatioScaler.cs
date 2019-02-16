@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIAspectRatioScaler (version 2.12)
+ * Class:       MyUGUIAspectRatioScaler (version 2.18)
  */
 
 #if UNITY_EDITOR
@@ -103,6 +103,10 @@ namespace MyClasses.UI
         /// </summary>
         void Awake()
         {
+#if UNITY_WEBGL
+            mScaleFrequency = EScaleFrequency.EverytimeActive;
+#endif
+
             if (mScaleFrequency == EScaleFrequency.OneTimeOnly)
             {
                 Scale();

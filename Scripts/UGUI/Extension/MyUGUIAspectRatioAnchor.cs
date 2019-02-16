@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIAspectRatioAnchor (version 2.12)
+ * Class:       MyUGUIAspectRatioAnchor (version 2.18)
  */
 
 #pragma warning disable 0414
@@ -137,6 +137,10 @@ namespace MyClasses.UI
         /// </summary>
         void Awake()
         {
+#if UNITY_WEBGL
+            mAnchorFrequency = EAnchorFrequency.EverytimeActive;
+#endif
+
             if (mAnchorFrequency == EAnchorFrequency.OneTimeOnly)
             {
                 Anchor();
