@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIToolEditor (version 2.18)
+ * Class:       MyUGUIToolEditor (version 2.19)
  */
 
 using UnityEditor;
@@ -39,6 +39,8 @@ namespace MyClasses.UI.Tool
 
             EditorGUIUtility.PingObject(goCamera);
             Selection.activeGameObject = goCamera;
+
+            Debug.Log("[MyClasses] UICamera was created.");
         }
 
         /// <summary>
@@ -186,7 +188,7 @@ namespace MyClasses.UI.Tool
 
             MyUGUIButton button = go.GetComponent<MyUGUIButton>();
             button.transition = Selectable.Transition.Animation;
-            
+
             Animator animator = go.AddComponent<Animator>();
             string[] paths = new string[] { "Assets/MyClasses", "Assets/Core/MyClasses", "Assets/Plugin/MyClasses", "Assets/Plugins/MyClasses", "Assets/Framework/MyClasses", "Assets/Frameworks/MyClasses" };
             for (int i = 0; i < paths.Length; i++)
@@ -243,6 +245,40 @@ namespace MyClasses.UI.Tool
             MyUGUIRadarChart.CreateTemplate();
 
             Debug.Log("[MyClasses] RadarChart was created.");
+        }
+
+        #endregion
+
+        #region ----- Utilities -----
+
+        /// <summary>
+        /// Invoke all "Anchor Now" buttons in current scene.
+        /// </summary>
+        [MenuItem("MyClasses/UGUI/Utilities/Anchor All Now (MyUGUIAspectRatioAnchor)", false, 1)]
+        public static void AnchorAllNow()
+        {
+            MyUGUIAspectRatioAnchor[] scripts = GameObject.FindObjectsOfType<MyUGUIAspectRatioAnchor>();
+            foreach (var item in scripts)
+            {
+                item.Anchor();
+            }
+
+            Debug.Log("[MyClasses] All \"Anchor Now\" buttons were invoked.");
+        }
+
+        /// <summary>
+        /// Invoke all "Scale Now" buttons in current scene.
+        /// </summary>
+        [MenuItem("MyClasses/UGUI/Utilities/Scale All Now (MyUGUIAspectRatioScaler)", false, 2)]
+        public static void ScaleAllNow()
+        {
+            MyUGUIAspectRatioScaler[] scripts = GameObject.FindObjectsOfType<MyUGUIAspectRatioScaler>();
+            foreach (var item in scripts)
+            {
+                item.Scale();
+            }
+
+            Debug.Log("[MyClasses] All \"Scale Now\" buttons were invoked.");
         }
 
         #endregion
