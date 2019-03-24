@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Shader:      Unlit/Darkening (version 1.0)
+ * Shader:      Unlit/Darkening (version 1.1)
  */
 
 Shader "MyClasses/Unlit/Darkening"
@@ -11,6 +11,14 @@ Shader "MyClasses/Unlit/Darkening"
     	_DarkAmount("Dark Amount", Range(0, 1)) = 0.8
 
     	[HideIninspector] _White ("White", Color) = (1, 1, 1, 1)
+
+		// UI system default properties
+		_StencilComp("Stencil Comparison", Float) = 8
+		_Stencil("Stencil ID", Float) = 0
+		_StencilOp("Stencil Operation", Float) = 0
+		_StencilWriteMask("Stencil Write Mask", Float) = 255
+		_StencilReadMask("Stencil Read Mask", Float) = 255
+		_ColorMask("Color Mask", Float) = 15
     }
 
     SubShader

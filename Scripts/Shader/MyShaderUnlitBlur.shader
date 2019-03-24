@@ -3,7 +3,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Shader:      Unlit/Blur (version 1.0)
+ * Shader:      Unlit/Blur (version 1.1)
  */
 
 Shader "MyClasses/Unlit/Blur"
@@ -13,6 +13,14 @@ Shader "MyClasses/Unlit/Blur"
         _BlurColor("Blur Color", Color) = (0, 0, 0, 0)
         _HorizontalBlur("Horizontal Blur", Range(0, 100)) = 1
         _VerticalBlur("Vertical Blur", Range(0, 100)) = 1
+
+		// UI system default properties
+		_StencilComp("Stencil Comparison", Float) = 8
+		_Stencil("Stencil ID", Float) = 0
+		_StencilOp("Stencil Operation", Float) = 0
+		_StencilWriteMask("Stencil Write Mask", Float) = 255
+		_StencilReadMask("Stencil Read Mask", Float) = 255
+		_ColorMask("Color Mask", Float) = 15
     }
 
     SubShader

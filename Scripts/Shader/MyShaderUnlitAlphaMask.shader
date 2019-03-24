@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Shader:      Unlit/AlphaMask (version 1.1)
+ * Shader:      Unlit/AlphaMask (version 1.2)
  */
 
 Shader "MyClasses/Unlit/AlphaMask"
@@ -15,6 +15,14 @@ Shader "MyClasses/Unlit/AlphaMask"
 		[HideIninspector] _AlphaUV("Alpha UV", Vector) = (1, 1, 0, 0)
 		[HideIninspector] _Min("Min", Vector) = (0, 0, 0, 0)
 		[HideIninspector] _Max("Max", Vector) = (1, 1, 0, 0)
+
+		// UI system default properties
+		_StencilComp("Stencil Comparison", Float) = 8
+		_Stencil("Stencil ID", Float) = 0
+		_StencilOp("Stencil Operation", Float) = 0
+		_StencilWriteMask("Stencil Write Mask", Float) = 255
+		_StencilReadMask("Stencil Read Mask", Float) = 255
+		_ColorMask("Color Mask", Float) = 15
 	}
 
 	SubShader

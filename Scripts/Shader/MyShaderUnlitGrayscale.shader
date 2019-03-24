@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Shader:      Unlit/Grayscale (version 1.2)
+ * Shader:      Unlit/Grayscale (version 1.3)
  */
 
 Shader "MyClasses/Unlit/Grayscale"
@@ -11,6 +11,14 @@ Shader "MyClasses/Unlit/Grayscale"
         _MainTex ("Texture", 2D) = "white" {}
     	_Brightness("Color to Brightness (Default #4C961C)", Color) = (0.3, 0.59, 0.11, 1)
     	_EffectAmount("Effect Amount", Range(0, 1)) = 1
+
+		// UI system default properties
+		_StencilComp("Stencil Comparison", Float) = 8
+		_Stencil("Stencil ID", Float) = 0
+		_StencilOp("Stencil Operation", Float) = 0
+		_StencilWriteMask("Stencil Write Mask", Float) = 255
+		_StencilReadMask("Stencil Read Mask", Float) = 255
+		_ColorMask("Color Mask", Float) = 15
     }
 
     SubShader
