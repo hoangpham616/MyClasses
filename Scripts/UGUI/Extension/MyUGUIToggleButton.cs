@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIToggleButton (version 2.11)
+ * Class:       MyUGUIToggleButton (version 2.18)
  */
 
 #if UNITY_EDITOR
@@ -119,13 +119,14 @@ namespace MyClasses.UI
 
         #region ----- Implement MonoBehaviour -----
 
-        /// <summary>
-        /// Awake.
-        /// </summary>
-        void Awake()
+        void OnEnable()
+        {
+            mButton.onClick.AddListener(_OnClick);
+        }
+
+        void OnDisable()
         {
             mButton.onClick.RemoveAllListeners();
-            mButton.onClick.AddListener(_OnClick);
         }
 
         #endregion
@@ -150,7 +151,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Set toggle.
         /// </summary>
-        public void SetToggle(bool isToggle, bool isShowAnim)
+        public void SetToggle(bool isToggle, bool isShowAnim = true)
         {
             if (isShowAnim)
             {
@@ -207,8 +208,8 @@ namespace MyClasses.UI
         /// </summary>
         public void SetEnable(bool isEnable)
         {
-            mBackground.enabled = isEnable;
-            mToggle.enabled = isEnable;
+            mBackground.raycastTarget = isEnable;
+            mToggle.raycastTarget = isEnable;
         }
 
         /// <summary>

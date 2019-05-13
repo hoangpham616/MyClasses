@@ -1,11 +1,12 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIRunningText (version 2.16)
+ * Class:       MyUGUIRunningText (version 2.19)
  */
 
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace MyClasses.UI
 {
@@ -17,6 +18,7 @@ namespace MyClasses.UI
 
         private Text mText;
 
+        private Animator mAnimator;
         private GameObject mGameObject;
         private GameObject mContainer;
         private RectTransform mMask;
@@ -28,6 +30,9 @@ namespace MyClasses.UI
         private float mMinSpeed;
         private float mMaxSpeed;
         private float mEndX;
+
+        private List<string> mContents = new List<string>();
+        private int mMaxContentQueue = 3;
 
         #endregion
 
@@ -77,19 +82,38 @@ namespace MyClasses.UI
         #region ----- Public Method -----
 
         /// <summary>
+        /// Set max content queue.
+        /// </summary>
+        public void SetMaxQueue(int maxQueue)
+        {
+            mMaxContentQueue = maxQueue;
+        }
+
+        /// <summary>
         /// Show.
         /// </summary>
         public void Show(string content, float minSpeed, float maxSpeed)
         {
             if (mGameObject != null)
             {
-                _Init();
+                if (mState == EState.Update)
+                {
+                    mContents.Insert(0, content);
+                    if (mContents.Count > mMaxContentQueue)
+                    {
+                        mContents.RemoveAt(mMaxContentQueue);
+                    }
+                }
+                else
+                {
+                    _Init();
 
-                mText.text = content;
-                mMinSpeed = minSpeed;
-                mMaxSpeed = maxSpeed;
+                    mText.text = content;
+                    mMinSpeed = minSpeed;
+                    mMaxSpeed = maxSpeed;
 
-                mState = EState.Show;
+                    mState = EState.Show;
+                }
             }
         }
 
@@ -101,6 +125,8 @@ namespace MyClasses.UI
             if (mGameObject != null)
             {
                 _Init();
+
+                mContents.Clear();
 
                 mState = EState.Hide;
             }
@@ -114,6 +140,9 @@ namespace MyClasses.UI
             if (mGameObject != null)
             {
                 _Init();
+
+                mContents.Clear();
+                mAnimator = null;
 
                 mState = EState.Hide;
 
@@ -142,6 +171,11 @@ namespace MyClasses.UI
                             mText.color = colorAlpha0;
 
                             mGameObject.SetActive(true);
+                            mAnimator = mGameObject.GetComponent<Animator>();
+                            if (mAnimator != null)
+                            {
+                                mAnimator.Play("Show");
+                            }
                         }
                         else
                         {
@@ -168,7 +202,20 @@ namespace MyClasses.UI
 
                         if (mCurPos.x < mEndX)
                         {
-                            mState = EState.Hide;
+                            if (mContents.Count > 0)
+                            {
+                                int lastIndex = mContents.Count - 1;
+                                mText.text = mContents[lastIndex];
+                                mContents.RemoveAt(lastIndex);
+
+                                mState = EState.Show;
+                            }
+                            else
+                            {
+                                mAnimator = mGameObject.GetComponent<Animator>();
+
+                                mState = EState.Hide;
+                            }
                         }
                     }
                     break;
@@ -176,9 +223,27 @@ namespace MyClasses.UI
                     {
                         mCurPos.x = (mMask.rect.width / 2) + mText.rectTransform.rect.width;
                         mText.rectTransform.localPosition = mCurPos;
-                        mGameObject.SetActive(false);
-                        
-                        mState = EState.Idle;
+
+                        if (mAnimator != null)
+                        {
+                            mAnimator.Play("Hide");
+                            mState = EState.Hiding;
+                        }
+                        else
+                        {
+                            mGameObject.SetActive(false);
+                            mState = EState.Idle;
+                        }
+
+                    }
+                    break;
+                case EState.Hiding:
+                    {
+                        if (mAnimator == null || mAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+                        {
+                            mGameObject.SetActive(false);
+                            mState = EState.Idle;
+                        }
                     }
                     break;
             }
@@ -314,13 +379,16 @@ namespace MyClasses.UI
             Idle,
             Show,
             Update,
-            Hide
+            Hide,
+            Hiding,
         }
 
         public enum EType
         {
             Default,
-            Custom
+            Custom,
+            Custom2,
+            Custom3
         }
 
         #endregion

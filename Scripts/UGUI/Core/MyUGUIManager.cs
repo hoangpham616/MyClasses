@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.18)
+ * Class:       MyUGUIManager (version 2.19)
  */
 
 #pragma warning disable 0162
@@ -2010,9 +2010,11 @@ namespace MyClasses.UI
 
     public enum ERunningTextSpeed
     {
-        Slow = 50,
-        Normal = 100,
-        Fast = 200
+        VerySlow = 50,
+        Slow = 100,
+        Normal = 150,
+        Fast = 200,
+        VeryFast = 300
     }
 
     public enum EToastDuration
