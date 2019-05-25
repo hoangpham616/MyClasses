@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyLocalizationManager (version 2.13)
+ * Class:       MyLocalizationManager (version 2.20)
  */
 
 #pragma warning disable 0162
@@ -141,6 +141,18 @@ namespace MyClasses
         #endregion
 
         #region ----- Public Method -----
+
+        /// <summary>
+        /// Initalize.
+        /// </summary>
+        /// <param name="localized mode"></param>
+        /// <param name="default language"></param>
+        public void Init(EMode mode, ELanguage defaultLanguage)
+        {
+            mMode = mode;
+            mDefaultLanguage = defaultLanguage;
+            LoadLanguage(Language);
+        }
 
         /// <summary>
         /// Reload localization file.
@@ -320,7 +332,7 @@ namespace MyClasses
         /// </summary>
         private void _LoadLanguageFromCache()
         {
-            int languageValue = PlayerPrefs.GetInt("MyLocalization", (int)ELanguage.None);
+            int languageValue = PlayerPrefs.GetInt("MyLocalizationManager_Language", (int)ELanguage.None);
             if (languageValue != (int)ELanguage.None && Enum.IsDefined(typeof(ELanguage), languageValue))
             {
                 mLanguageType = (ELanguage)languageValue;
@@ -351,7 +363,7 @@ namespace MyClasses
         /// </summary>
         private void _LoadLanguagBasedOnDeviceAndCache()
         {
-            int languageValue = PlayerPrefs.GetInt("MyLocalization", (int)ELanguage.None);
+            int languageValue = PlayerPrefs.GetInt("MyLocalizationManager_Language", (int)ELanguage.None);
             if (languageValue != (int)ELanguage.None && Enum.IsDefined(typeof(ELanguage), languageValue))
             {
                 mLanguageType = (ELanguage)languageValue;

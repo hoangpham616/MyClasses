@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyLocalization (version 2.13)
+ * Class:       MyLocalization (version 2.20)
  */
 
 #if UNITY_EDITOR
@@ -30,12 +30,19 @@ namespace MyClasses
         private string mSuffix = string.Empty;
         [SerializeField]
         private EFormatText mFormatText = EFormatText.None;
+        [SerializeField]
+        private MyLocalizationManager.ELanguage[] mImageLanguages;
+        [SerializeField]
+        private GameObject[] mImageObjects;
+        [SerializeField]
+        private string[] mImageInvisibleTexts;
 
 #if USE_MY_UI_TMPRO
         private TextMeshProUGUI mTextTMPro;
 #endif
 
         private Text mText;
+        private Color mColor;
         private string mKey;
         private bool mIsHasFix;
 
@@ -88,6 +95,7 @@ namespace MyClasses
                 if (mText != null)
                 {
                     mKey = mText.text;
+                    mColor = mText.color;
                 }
 #if USE_MY_UI_TMPRO
                 else
@@ -96,6 +104,7 @@ namespace MyClasses
                     if (mTextTMPro != null)
                     {
                         mKey = mTextTMPro.text;
+                        mColor = mTextTMPro.color;
                     }
                 }
 #endif
@@ -139,6 +148,48 @@ namespace MyClasses
         /// </summary>
         public void Localize()
         {
+            int imageIndex = -1;
+            for (int i = 0; i < mImageLanguages.Length; i++)
+            {
+                if (imageIndex == -1 && (mImageLanguages[i] + 1) == MyLocalizationManager.Instance.Language)
+                {
+                    imageIndex = i;
+                }
+                mImageObjects[i].SetActive(false);
+            }
+
+            if (imageIndex >= 0)
+            {
+                mImageObjects[imageIndex].SetActive(true);
+
+                string invisibleText = mImageInvisibleTexts.Length > imageIndex && mImageInvisibleTexts[imageIndex] != null ? mImageInvisibleTexts[imageIndex] : string.Empty;
+
+                if (mText != null)
+                {
+                    mText.text = invisibleText;
+                    if (invisibleText.Length > 0)
+                    {
+                        Color color = mColor;
+                        color.a = 0;
+                        mText.color = color;
+                    }
+                }
+#if USE_MY_UI_TMPRO
+                else if (mTextTMPro != null)
+                {
+                    mTextTMPro.text = invisibleText;
+                    if (invisibleText.Length > 0)
+                    {
+                        Color color = mColor;
+                        color.a = 0;
+                        mTextTMPro.color = color;
+                    }
+                }
+#endif
+
+                return;
+            }
+
             string text = MyLocalizationManager.Instance.LoadKey(mKey);
 
             if (mIsHasFix)
@@ -158,11 +209,13 @@ namespace MyClasses
             if (mText != null)
             {
                 mText.text = text;
+                mText.color = mColor;
             }
 #if USE_MY_UI_TMPRO
             else if (mTextTMPro != null)
             {
                 mTextTMPro.text = text;
+                mTextTMPro.color = mColor;
             }
 #endif
         }
@@ -187,9 +240,13 @@ namespace MyClasses
     public class MyLocalizationEditor : Editor
     {
         private MyLocalization mScript;
+        private SerializedProperty mImageLanguages;
+        private SerializedProperty mImageObjects;
+        private SerializedProperty mImageInvisibleTexts;
         private SerializedProperty mPrefix;
         private SerializedProperty mSuffix;
         private SerializedProperty mFormatText;
+        private bool mIsImageLanguageVisible = true;
 
         /// <summary>
         /// OnEnable.
@@ -197,6 +254,9 @@ namespace MyClasses
         void OnEnable()
         {
             mScript = (MyLocalization)target;
+            mImageLanguages = serializedObject.FindProperty("mImageLanguages");
+            mImageObjects = serializedObject.FindProperty("mImageObjects");
+            mImageInvisibleTexts = serializedObject.FindProperty("mImageInvisibleTexts");
             mPrefix = serializedObject.FindProperty("mPrefix");
             mSuffix = serializedObject.FindProperty("mSuffix");
             mFormatText = serializedObject.FindProperty("mFormatText");
@@ -211,6 +271,26 @@ namespace MyClasses
 
             serializedObject.Update();
 
+            mIsImageLanguageVisible = EditorGUILayout.Foldout(mIsImageLanguageVisible, "Images");
+            if (mIsImageLanguageVisible)
+            {
+                EditorGUI.indentLevel++;
+                mImageLanguages.arraySize = EditorGUILayout.IntField("Size", mImageLanguages.arraySize);
+                mImageObjects.arraySize = mImageLanguages.arraySize;
+                mImageInvisibleTexts.arraySize = mImageLanguages.arraySize;
+                for (int i = 0; i < mImageLanguages.arraySize; i++)
+                {
+                    SerializedProperty language = mImageLanguages.GetArrayElementAtIndex(i);
+                    language.enumValueIndex = (int)(MyLocalizationManager.ELanguage)EditorGUILayout.EnumPopup("Language", (MyLocalizationManager.ELanguage)System.Enum.GetValues(typeof(MyLocalizationManager.ELanguage)).GetValue(language.enumValueIndex));
+
+                    SerializedProperty image = mImageObjects.GetArrayElementAtIndex(i);
+                    image.objectReferenceValue = (GameObject)EditorGUILayout.ObjectField("Image", image.objectReferenceValue, typeof(GameObject), true);
+
+                    SerializedProperty invisibleText = mImageInvisibleTexts.GetArrayElementAtIndex(i);
+                    invisibleText.stringValue = EditorGUILayout.TextField("Invisible Text", invisibleText.stringValue);
+                }
+                EditorGUI.indentLevel--;
+            }
             mPrefix.stringValue = EditorGUILayout.TextField("Prefix", mPrefix.stringValue);
             mSuffix.stringValue = EditorGUILayout.TextField("Suffix", mSuffix.stringValue);
             mFormatText.enumValueIndex = (int)(MyLocalization.EFormatText)EditorGUILayout.EnumPopup("Format Text", (MyLocalization.EFormatText)System.Enum.GetValues(typeof(MyLocalization.EFormatText)).GetValue(mFormatText.enumValueIndex));
