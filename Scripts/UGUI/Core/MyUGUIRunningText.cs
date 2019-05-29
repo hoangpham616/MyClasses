@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIRunningText (version 2.19)
+ * Class:       MyUGUIRunningText (version 2.20)
  */
 
 using UnityEngine;
@@ -146,14 +146,14 @@ namespace MyClasses.UI
 
                 mState = EState.Hide;
 
-                LateUpdate(Time.deltaTime);
+                Update(Time.deltaTime);
             }
         }
 
         /// <summary>
         /// Update state machine.
         /// </summary>
-        public void LateUpdate(float dt)
+        public void Update(float dt)
         {
             if (mText == null)
             {

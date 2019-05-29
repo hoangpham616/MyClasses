@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.19)
+ * Class:       MyUGUIManager (version 2.20)
  */
 
 #pragma warning disable 0162
@@ -244,6 +244,11 @@ namespace MyClasses.UI
                 _UpdateFloatPopup(ref popup, Time.deltaTime);
                 mListFloatPopup[i] = popup;
             }
+
+            if (mCurrentRunningText != null)
+            {
+                mCurrentRunningText.Update(Time.deltaTime);
+            }
         }
 
         /// <summary>
@@ -254,11 +259,6 @@ namespace MyClasses.UI
             if (mCurrentToast != null)
             {
                 mCurrentToast.LateUpdate(Time.deltaTime);
-            }
-
-            if (mCurrentRunningText != null)
-            {
-                mCurrentRunningText.LateUpdate(Time.deltaTime);
             }
         }
 
@@ -1838,7 +1838,7 @@ namespace MyClasses.UI
                             {
                                 mCurrentFloatPopup = null;
                             }
-
+                            
                             if (popup.GameObject != null)
                             {
                                 popup.GameObject.SetActive(false);
