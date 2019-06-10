@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUtilities.Currency (version 1.4)
+ * Class:       MyUtilities.Currency (version 1.5)
  */
 
 using System.Globalization;
@@ -73,6 +73,25 @@ namespace MyClasses
             {
                 return number.ToString("N" + decimalDigit, separator == ESeparator.Dot ? CULTURE_DOT : CULTURE_COMMA);
             }
+        }
+
+        /// <summary>
+        /// Convert currency string to number.
+        /// </summary>
+        public static long ConvertCurrencyStringToNumber(string currencyString)
+        {
+            string newCurrencyString = string.Empty;
+            for (int i = 0; i < currencyString.Length; i++)
+            {
+                if (48 <= (char)currencyString[i] && (char)currencyString[i] <= 57)
+                {
+                    newCurrencyString += currencyString[i];
+                }
+            }
+            long money = 0;
+            long.TryParse(newCurrencyString, out money);
+
+            return money;
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyLocalizationManager (version 2.20)
+ * Class:       MyLocalizationManager (version 2.21)
  */
 
 #pragma warning disable 0162
@@ -33,6 +33,8 @@ namespace MyClasses
         private EMode mMode = EMode.DEVICE_LANGUAGE_AND_CACHE;
         [SerializeField]
         private ELanguage mDefaultLanguage = ELanguage.Vietnamese;
+        [SerializeField]
+        private bool mIsConvertKhmerFont = true;
 
         private ELanguage mLanguageType = ELanguage.None;
         private string[] mLanguageKeys;
@@ -216,6 +218,11 @@ namespace MyClasses
                 Reload();
             }
 
+            if (mIsConvertKhmerFont && Language == ELanguage.Unknown)
+            {
+                MyFontKhmerConverter.Initialize();
+            }
+
             for (int i = 0; i < mLanguageKeys.Length; i++)
             {
                 if (mLanguageKeys[i].Equals(Language.ToString()))
@@ -238,7 +245,14 @@ namespace MyClasses
 
             if (mDictionary.ContainsKey(key))
             {
-                return mDictionary[key][mLanguageIndex];
+                if (mIsConvertKhmerFont && mLanguageType == ELanguage.Unknown)
+                {
+                    return MyFontKhmerConverter.Convert(mDictionary[key][mLanguageIndex]);
+                }
+                else
+                {
+                    return mDictionary[key][mLanguageIndex];
+                }
             }
 
             Debug.LogWarning("[" + typeof(MyLocalizationManager).Name + "] LoadKey(): Key \"" + key + "\" missing or null");
