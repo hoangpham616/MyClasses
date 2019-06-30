@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.20)
+ * Class:       MyUGUIManager (version 2.22)
  */
 
 #pragma warning disable 0162
@@ -680,7 +680,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Show running text.
         /// </summary>
-        public void ShowRunningText(string content, ERunningTextSpeed speed = ERunningTextSpeed.Normal, MyUGUIRunningText.EType type = MyUGUIRunningText.EType.Default)
+        public void ShowRunningText(string content, ERunningTextSpeed speed = ERunningTextSpeed.Normal, MyUGUIRunningText.EType type = MyUGUIRunningText.EType.Default, int maxQueue = -1)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowRunningText()</color>");
@@ -688,6 +688,10 @@ namespace MyClasses.UI
 
             _InitRunningText(type);
 
+            if (maxQueue > 0)
+            {
+                mCurrentRunningText.SetMaxQueue(maxQueue);
+            }
             mCurrentRunningText.Show(content, (int)speed, (int)speed * 1.2f);
         }
 
@@ -1202,7 +1206,20 @@ namespace MyClasses.UI
         {
             MyUGUIPopup popup = null;
 
-            if (mDictPopupConfig.ContainsKey(popupID))
+            for (int i = mListPopup.Count - 1; i >= 0; i--)
+            {
+                MyUGUIPopup tmpPopup = mListPopup[i];
+                if (tmpPopup == null)
+                {
+                    mListPopup.RemoveAt(i);
+                }
+                else if (!isRepeatable && popupID == tmpPopup.ID)
+                {
+                    popup = tmpPopup;
+                }
+            }
+
+            if (popup == null && mDictPopupConfig.ContainsKey(popupID))
             {
                 MyUGUIConfigPopup popupConfig = mDictPopupConfig[popupID];
                 popup = (MyUGUIPopup)Activator.CreateInstance(Type.GetType(popupConfig.ScriptName), popupConfig.ID, popupConfig.PrefabName, false, isRepeatable);
@@ -1220,18 +1237,9 @@ namespace MyClasses.UI
             {
                 mCurrentPopup = null;
 
-                for (int i = mListPopup.Count - 1; i >= 0; i--)
-                {
-                    MyUGUIPopup tmpPopup = mListPopup[i];
-                    if (tmpPopup == null || (tmpPopup.ID == popup.ID && !tmpPopup.IsRepeatable))
-                    {
-                        mListPopup.RemoveAt(i);
-                    }
-                }
-
                 popup.AttachedData = attachedData;
                 popup.OnCloseCallback = onCloseCallback;
-                popup.State = EBaseState.LoadAssetBundle;
+                popup.State = popup.State == EBaseState.Idle && popup.IsLoaded ? EBaseState.Enter : EBaseState.LoadAssetBundle;
 
                 _UpdatePopup(ref popup, 0f);
 
@@ -1753,14 +1761,21 @@ namespace MyClasses.UI
                                 if (popup.IsRepeatable)
                                 {
                                     Destroy(popup.GameObject);
-                                    //mListPopup.Remove(popup);
                                 }
                                 else
                                 {
                                     popup.GameObject.SetActive(false);
                                 }
                             }
-                            popup = null;
+
+                            if (popup.IsRetainable)
+                            {
+                                popup.State = EBaseState.Idle;
+                            }
+                            else
+                            {
+                                popup = null;
+                            }
                         }
 
                         UpdatePopupOverlay();
@@ -1838,7 +1853,7 @@ namespace MyClasses.UI
                             {
                                 mCurrentFloatPopup = null;
                             }
-                            
+
                             if (popup.GameObject != null)
                             {
                                 popup.GameObject.SetActive(false);
@@ -1892,7 +1907,7 @@ namespace MyClasses.UI
                 bool isHasActivedPopup = false;
                 foreach (MyUGUIPopup popup in mListPopup)
                 {
-                    if (popup != null && popup.State != EBaseState.Init)
+                    if (popup != null && popup.State != EBaseState.Init && popup.State != EBaseState.Idle)
                     {
                         isHasActivedPopup = true;
                         break;
@@ -2020,8 +2035,8 @@ namespace MyClasses.UI
     public enum EToastDuration
     {
         Short = 2,
-        Medium = 4,
-        Long = 6
+        Medium = 3,
+        Long = 5
     }
 
     #endregion

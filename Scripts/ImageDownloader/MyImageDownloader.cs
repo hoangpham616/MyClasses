@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyImageDownloader (version 1.1)
+ * Class:       MyImageDownloader (version 1.3)
  */
 
 using UnityEngine;
@@ -63,11 +63,21 @@ namespace MyClasses
         /// <summary>
         /// Load a sprite from a url.
         /// </summary>
-        public void LoadSprite(string url, Action<string, Sprite> onLoadSuccess = null, Action<string> onLoadError = null)
+        public void LoadSprite(string url, float delayDownload = 0, Action<string, Sprite> onLoadSuccess = null, Action<string> onLoadError = null)
         {
             if (!string.IsNullOrEmpty(url))
             {
-                StartCoroutine(_DoLoadSprite(url, onLoadSuccess, onLoadError));
+                if (mDictionarySprite.ContainsKey(url))
+                {
+                    if (onLoadSuccess != null)
+                    {
+                        onLoadSuccess(url, mDictionarySprite[url]);
+                    }
+                }
+                else
+                {
+                    StartCoroutine(_DoLoadSprite(url, delayDownload, onLoadSuccess, onLoadError));
+                }
             }
             else
             {
@@ -81,11 +91,21 @@ namespace MyClasses
         /// <summary>
         /// Load a texture 2D from a url.
         /// </summary>
-        public void LoadTexture2D(string url, Action<string, Texture2D> onLoadSuccess = null, Action<string> onLoadError = null)
+        public void LoadTexture2D(string url, float delayDownload = 0, Action<string, Texture2D> onLoadSuccess = null, Action<string> onLoadError = null)
         {
             if (!string.IsNullOrEmpty(url))
             {
-                StartCoroutine(_DoLoadTexture2D(url, onLoadSuccess, onLoadError));
+                if (mDictionaryTexture2D.ContainsKey(url))
+                {
+                    if (onLoadSuccess != null)
+                    {
+                        onLoadSuccess(url, mDictionaryTexture2D[url]);
+                    }
+                }
+                else
+                {
+                    StartCoroutine(_DoLoadTexture2D(url, delayDownload, onLoadSuccess, onLoadError));
+                }
             }
             else
             {
@@ -99,11 +119,23 @@ namespace MyClasses
         /// <summary>
         /// Load an image from a url.
         /// </summary>
-        public void LoadImage(Image image, string url, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
+        public void LoadImage(Image image, string url, float delayDownload = 0, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
         {
             if (image != null && !string.IsNullOrEmpty(url))
             {
-                StartCoroutine(_DoLoadImage(image, url, onLoadSuccess, onLoadError));
+                if (mDictionarySprite.ContainsKey(url))
+                {
+                    image.sprite = mDictionarySprite[url];
+                    image.enabled = true;
+                    if (onLoadSuccess != null)
+                    {
+                        onLoadSuccess(url);
+                    }
+                }
+                else
+                {
+                    StartCoroutine(_DoLoadImage(image, url, delayDownload, onLoadSuccess, onLoadError));
+                }
             }
             else
             {
@@ -117,11 +149,25 @@ namespace MyClasses
         /// <summary>
         /// Load a raw image from a url.
         /// </summary>
-        public void LoadRawImage(RawImage rawImage, string url, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
+        public void LoadRawImage(RawImage rawImage, string url, float delayDownload = 0, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
         {
             if (rawImage != null && !string.IsNullOrEmpty(url))
             {
-                StartCoroutine(_DoLoadRawImage(rawImage, url, onLoadSuccess, onLoadError));
+                if (mDictionaryTexture2D.ContainsKey(url))
+                {
+                    Texture2D texture = mDictionaryTexture2D[url];
+                    mDictionaryTexture2D[url] = texture;
+                    rawImage.texture = texture;
+                    rawImage.enabled = true;
+                    if (onLoadSuccess != null)
+                    {
+                        onLoadSuccess(url);
+                    }
+                }
+                else
+                {
+                    StartCoroutine(_DoLoadRawImage(rawImage, url, delayDownload, onLoadSuccess, onLoadError));
+                }
             }
             else
             {
@@ -136,155 +182,136 @@ namespace MyClasses
 
         #region ----- Private Method -----
 
-        private IEnumerator _DoLoadSprite(string url, Action<string, Sprite> onLoadSuccess = null, Action<string> onLoadError = null)
+        private IEnumerator _DoLoadSprite(string url, float delayDownload = 0, Action<string, Sprite> onLoadSuccess = null, Action<string> onLoadError = null)
         {
-            if (mDictionarySprite.ContainsKey(url))
+            if (delayDownload > 0)
             {
+                yield return new WaitForSeconds(delayDownload);
+            }
+
+            WWW www = new WWW(url);
+            yield return www;
+
+            if (string.IsNullOrEmpty(www.error))
+            {
+                Sprite sprite = Sprite.Create(www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0, 0));
+                mDictionarySprite[url] = sprite;
                 if (onLoadSuccess != null)
                 {
-                    onLoadSuccess(url, mDictionarySprite[url]);
+                    onLoadSuccess(url, sprite);
                 }
             }
             else
             {
-                WWW www = new WWW(url);
-                yield return www;
-
-                if (string.IsNullOrEmpty(www.error))
+                if (onLoadError != null)
                 {
-                    Sprite sprite = Sprite.Create(www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0, 0));
-                    mDictionarySprite[url] = sprite;
-                    if (onLoadSuccess != null)
-                    {
-                        onLoadSuccess(url, sprite);
-                    }
-                }
-                else
-                {
-                    if (onLoadError != null)
-                    {
-                        onLoadError(url);
-                    }
+                    onLoadError(url);
                 }
             }
         }
 
-        private IEnumerator _DoLoadTexture2D(string url, Action<string, Texture2D> onLoadSuccess = null, Action<string> onLoadError = null)
+        private IEnumerator _DoLoadTexture2D(string url, float delayDownload = 0, Action<string, Texture2D> onLoadSuccess = null, Action<string> onLoadError = null)
         {
-            if (mDictionaryTexture2D.ContainsKey(url))
+            if (delayDownload > 0)
             {
+                yield return new WaitForSeconds(delayDownload);
+            }
+
+            WWW www = new WWW(url);
+            yield return www;
+
+            if (string.IsNullOrEmpty(www.error))
+            {
+                Texture2D texture = new Texture2D(4, 4, TextureFormat.DXT1, false);
+                www.LoadImageIntoTexture(texture);
+                mDictionaryTexture2D[url] = texture;
                 if (onLoadSuccess != null)
                 {
-                    onLoadSuccess(url, mDictionaryTexture2D[url]);
+                    onLoadSuccess(url, texture);
                 }
             }
             else
             {
-                WWW www = new WWW(url);
-                yield return www;
-
-                if (string.IsNullOrEmpty(www.error))
+                if (onLoadError != null)
                 {
-                    Texture2D texture = new Texture2D(4, 4, TextureFormat.DXT1, false);
-                    www.LoadImageIntoTexture(texture);
-                    mDictionaryTexture2D[url] = texture;
-                    if (onLoadSuccess != null)
-                    {
-                        onLoadSuccess(url, texture);
-                    }
-                }
-                else
-                {
-                    if (onLoadError != null)
-                    {
-                        onLoadError(url);
-                    }
+                    onLoadError(url);
                 }
             }
         }
 
-        private IEnumerator _DoLoadImage(Image image, string url, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
+        private IEnumerator _DoLoadImage(Image image, string url, float delayDownload = 0, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
         {
             if (image.sprite == null)
             {
                 image.enabled = false;
             }
 
-            if (mDictionarySprite.ContainsKey(url))
+            if (delayDownload > 0)
             {
-                image.sprite = mDictionarySprite[url];
-                image.enabled = true;
+                yield return new WaitForSeconds(delayDownload);
+            }
+
+            WWW www = new WWW(url);
+            yield return www;
+
+            if (string.IsNullOrEmpty(www.error))
+            {
+                Sprite sprite = Sprite.Create(www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0, 0));
+                mDictionarySprite[url] = sprite;
+                if (image != null)
+                {
+                    image.sprite = sprite;
+                    image.enabled = true;
+                }
+                if (onLoadSuccess != null)
+                {
+                    onLoadSuccess(url);
+                }
             }
             else
             {
-                WWW www = new WWW(url);
-                yield return www;
-
-                if (string.IsNullOrEmpty(www.error))
+                if (onLoadError != null)
                 {
-                    Sprite sprite = Sprite.Create(www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0, 0));
-                    mDictionarySprite[url] = sprite;
-                    if (image != null)
-                    {
-                        image.sprite = sprite;
-                        image.enabled = true;
-                    }
-                    if (onLoadSuccess != null)
-                    {
-                        onLoadSuccess(url);
-                    }
-                }
-                else
-                {
-                    if (onLoadError != null)
-                    {
-                        onLoadError(url);
-                    }
+                    onLoadError(url);
                 }
             }
         }
 
-        private IEnumerator _DoLoadRawImage(RawImage rawImage, string url, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
+        private IEnumerator _DoLoadRawImage(RawImage rawImage, string url, float delayDownload = 0, Action<string> onLoadSuccess = null, Action<string> onLoadError = null)
         {
             if (rawImage.texture == null)
             {
                 rawImage.enabled = false;
             }
 
-            if (mDictionaryTexture2D.ContainsKey(url))
+            if (delayDownload > 0)
             {
-                Texture2D texture = mDictionaryTexture2D[url];
-                mDictionaryTexture2D[url] = texture;
+                yield return new WaitForSeconds(delayDownload);
+            }
 
-                rawImage.texture = texture;
-                rawImage.enabled = true;
+            WWW www = new WWW(url);
+            yield return www;
+
+            if (string.IsNullOrEmpty(www.error))
+            {
+                Texture2D texture = new Texture2D(4, 4, TextureFormat.DXT1, false);
+                www.LoadImageIntoTexture(texture);
+                mDictionaryTexture2D[url] = texture;
+                if (rawImage != null)
+                {
+                    rawImage.texture = texture;
+                    rawImage.enabled = true;
+                }
+                if (onLoadSuccess != null)
+                {
+                    onLoadSuccess(url);
+                }
             }
             else
             {
-                WWW www = new WWW(url);
-                yield return www;
-
-                if (string.IsNullOrEmpty(www.error))
+                if (onLoadError != null)
                 {
-                    Texture2D texture = new Texture2D(4, 4, TextureFormat.DXT1, false);
-                    www.LoadImageIntoTexture(texture);
-                    mDictionaryTexture2D[url] = texture;
-                    if (rawImage != null)
-                    {
-                        rawImage.texture = texture;
-                        rawImage.enabled = true;
-                    }
-                    if (onLoadSuccess != null)
-                    {
-                        onLoadSuccess(url);
-                    }
-                }
-                else
-                {
-                    if (onLoadError != null)
-                    {
-                        onLoadError(url);
-                    }
+                    onLoadError(url);
                 }
             }
         }

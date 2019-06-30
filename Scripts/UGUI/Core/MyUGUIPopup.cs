@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup (version 2.18)
+ * Class:       MyUGUIPopup (version 2.22)
  */
 
 using UnityEngine;
@@ -17,6 +17,7 @@ namespace MyClasses.UI
         private Animator mAnimator;
         private bool mIsFloat;
         private bool mIsRepeatable;
+        private bool mIsRetainable;
         private object mAttachedData;
         private Action mOnCloseCallback;
 
@@ -45,6 +46,11 @@ namespace MyClasses.UI
             get { return mIsRepeatable; }
         }
 
+        public bool IsRetainable
+        {
+            get { return mIsRetainable; }
+        }
+
         public Action OnCloseCallback
         {
             set { mOnCloseCallback = value; }
@@ -64,6 +70,7 @@ namespace MyClasses.UI
             mID = id;
             mIsFloat = isFloat;
             mIsRepeatable = isRepeatable;
+            mIsRetainable = !isRepeatable;
         }
 
         #endregion
@@ -180,11 +187,11 @@ namespace MyClasses.UI
         /// </summary>
         public override bool OnUGUIInvisible()
         {
-            if (mAnimator != null && mAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
+            if (mAnimator != null && mAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1 && GameObject.activeSelf)
             {
                 return false;
             }
-
+            
             if (base.OnUGUIInvisible())
             {
                 if (mOnCloseCallback != null)
@@ -217,6 +224,16 @@ namespace MyClasses.UI
         #endregion
 
         #region ----- Public Method -----
+
+        /// <summary>
+        /// Hide and destroy.
+        /// </summary>
+        public void HideAndDestroy()
+        {
+            mIsRetainable = false;
+
+            State = EBaseState.Exit;
+        }
 
         /// <summary>
         /// Hide popup.
