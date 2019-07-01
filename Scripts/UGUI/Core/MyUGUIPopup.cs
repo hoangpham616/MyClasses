@@ -51,6 +51,11 @@ namespace MyClasses.UI
             get { return mIsRetainable; }
         }
 
+        public bool IsShowing
+        {
+            get { return State >= EBaseState.Enter; }
+        }
+
         public Action OnCloseCallback
         {
             set { mOnCloseCallback = value; }
