@@ -65,7 +65,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- Implement MonoBehaviour -----
+        #region ----- MonoBehaviour Implemention -----
 
         /// <summary>
         /// Awake.

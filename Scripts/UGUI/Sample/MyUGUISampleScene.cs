@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISampleScene (version 2.12)
+ * Class:       MyUGUISampleScene (version 2.22)
  */
 
 using UnityEngine;
@@ -30,7 +30,7 @@ public class MyUGUISampleScene : MyUGUIScene
 
     #endregion
 
-    #region ----- Implement MyUGUIScene -----
+    #region ----- MyUGUIScene Implementation -----
 
     public override void OnUGUIInit()
     {

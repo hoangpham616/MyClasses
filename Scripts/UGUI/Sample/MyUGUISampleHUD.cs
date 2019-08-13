@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISampleHUD (version 2.12)
+ * Class:       MyUGUISampleHUD (version 2.22)
  */
 
 using UnityEngine;
@@ -30,7 +30,7 @@ public class MyUGUISampleHUD : MyUGUIHUD
 
     #endregion
 
-    #region ----- Implement MyUGUIHUD -----
+    #region ----- MyUGUIHUD Implementation -----
 
     public override void OnUGUIInit()
     {

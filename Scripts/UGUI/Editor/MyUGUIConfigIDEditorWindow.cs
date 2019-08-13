@@ -20,7 +20,7 @@ namespace MyClasses.UI.Tool
 
         #endregion
 
-        #region ----- Implement MonoBehaviour -----
+        #region ----- MonoBehaviour Implemention -----
 
         /// <summary>
         /// OnEnable.

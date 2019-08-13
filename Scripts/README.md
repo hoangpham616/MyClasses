@@ -1,5 +1,7 @@
 ********** Compile Flag **********
 
+IAP: DEBUG_MY_IAP	USE_MY_IAP
+
 AssetBundles: DEBUG_MY_ASSET_BUNDLE
 
 Sound: DEBUG_MY_SOUND

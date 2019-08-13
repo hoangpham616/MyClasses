@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIButton (version 2.14)
+ * Class:       MyUGUIButton (version 2.22)
  */
 
 #if UNITY_EDITOR
@@ -57,7 +57,31 @@ namespace MyClasses.UI
 
         public bool IsEnable
         {
-            get { return enabled; }
+            get
+            {
+                if (!enabled)
+                {
+                    return false;
+                }
+
+                if (mImage != null)
+                {
+                    if (mImage.raycastTarget)
+                    {
+                        return true;
+                    }
+                }
+
+                if (mText != null)
+                {
+                    if (mText.raycastTarget)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
         }
 
         public bool IsDark
@@ -138,7 +162,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- Implement MonoBehaviour -----
+        #region ----- MonoBehaviour Implemention -----
 
         /// <summary>
         /// Update.
@@ -505,7 +529,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Create a template.
         /// </summary>
-        public static void CreateTemplate()
+        public static GameObject CreateTemplate()
         {
             GameObject canvas = MyUtilities.FindObjectInRoot("Canvas");
 
@@ -535,6 +559,8 @@ namespace MyClasses.UI
 
             EditorGUIUtility.PingObject(obj);
             Selection.activeGameObject = obj.gameObject;
+
+            return obj;
         }
 
 #endif
@@ -572,6 +598,10 @@ namespace MyClasses.UI
                 if (text != null)
                 {
                     mText = text.GetComponent<Text>();
+                }
+                else
+                {
+                    mText = gameObject.GetComponent<Text>();
                 }
             }
         }

@@ -1,8 +1,10 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyIAPManager (version 1.1)
+ * Class:       MyIAPManager (version 1.2)
  */
+
+#if USE_MY_IAP && (UNITY_ANDROID || UNITY_IOS)
 
 using System;
 using UnityEngine;
@@ -71,7 +73,7 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
 
     #endregion
 
-    #region ----- Implement IStoreListener -----
+    #region ----- IStoreListener Implemention -----
 
     public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
     {
@@ -283,3 +285,5 @@ public class MyIAPManager : MonoBehaviour, IStoreListener
 
     #endregion
 }
+
+#endif

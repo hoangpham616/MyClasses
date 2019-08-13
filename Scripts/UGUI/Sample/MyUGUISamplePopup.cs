@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUISamplePopup (version 2.12)
+ * Class:       MyUGUISamplePopup (version 2.22)
  */
 
 using UnityEngine;
@@ -30,7 +30,7 @@ public class MyUGUISamplePopup : MyUGUIPopup
 
     #endregion
 
-    #region ----- Implement MyUGUIPopup -----
+    #region ----- MyUGUIPopup Implementation -----
 
     public override void OnUGUIInit()
     {
