@@ -10,7 +10,7 @@ namespace MyClasses.UI
 {
     public class MyUGUITouchZone : Graphic
     {
-        #region ----- Implement Graphic -----
+        #region ----- Graphic Implementation -----
 
         /// <summary>
         /// OnPopulateMesh.

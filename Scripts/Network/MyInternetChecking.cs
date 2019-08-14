@@ -78,7 +78,7 @@ namespace MyClasses
 
         #endregion
 
-        #region ----- MonoBehaviour Implemention -----
+        #region ----- MonoBehaviour Event -----
 
         /// <summary>
         /// Start.

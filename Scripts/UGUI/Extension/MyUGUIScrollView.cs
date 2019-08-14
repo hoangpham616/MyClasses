@@ -19,7 +19,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Implemention -----
+        #region ----- MonoBehaviour Event -----
 
         void Awake()
         {

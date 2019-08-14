@@ -20,7 +20,7 @@ namespace MyClasses.UI.Tool
 
         #endregion
 
-        #region ----- MonoBehaviour Implemention -----
+        #region ----- MonoBehaviour Event -----
 
         /// <summary>
         /// OnEnable.
@@ -52,7 +52,7 @@ namespace MyClasses.UI.Tool
 
         #endregion
 
-        #region ----- Implement GUI -----
+        #region ----- GUI Implementation -----
 
         /// <summary>
         /// OnGUI.

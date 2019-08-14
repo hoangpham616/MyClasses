@@ -93,7 +93,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Implemention -----
+        #region ----- MonoBehaviour Event -----
 
         /// <summary>
         /// Start.
@@ -105,7 +105,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- Implement Graphic -----
+        #region ----- Graphic Implementation -----
 
         /// <summary>
         /// OnPopulateMesh.

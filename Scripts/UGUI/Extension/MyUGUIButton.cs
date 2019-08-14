@@ -162,7 +162,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Implemention -----
+        #region ----- MonoBehaviour Event -----
 
         /// <summary>
         /// Update.
@@ -177,7 +177,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- Implement IPointerDownHandler, IPointerUpHandler, IPointerClickHandler -----
+        #region ----- IPointerDownHandler, IPointerUpHandler, IPointerClickHandler Implementation -----
 
         /// <summary>
         /// OnPointerClick.

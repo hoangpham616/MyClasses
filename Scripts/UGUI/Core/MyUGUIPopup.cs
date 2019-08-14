@@ -80,7 +80,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- Implement MyUGUIBase -----
+        #region ----- MyUGUIBase Implementation -----
 
         /// <summary>
         /// OnUGUIInit.

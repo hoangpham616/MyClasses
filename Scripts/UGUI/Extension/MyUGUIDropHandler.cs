@@ -70,7 +70,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- Implement IDropHandler -----
+        #region ----- IDropHandler Implementation -----
 
         /// <summary>
         /// OnDrop.

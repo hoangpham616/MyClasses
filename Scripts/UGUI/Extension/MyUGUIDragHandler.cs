@@ -131,7 +131,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- Implement IBeginDragHandler, IDragHandler, IEndDragHandler -----
+        #region ----- IBeginDragHandler, IDragHandler, IEndDragHandler Implementation -----
 
         /// <summary>
         /// OnBeginDrag.

@@ -48,7 +48,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- Implement MyUGUIPopup -----
+        #region ----- MyUGUIPopup Implementation -----
 
         /// <summary>
         /// OnUGUIInit.

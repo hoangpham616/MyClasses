@@ -51,7 +51,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Implemention -----
+        #region ----- MonoBehaviour Event -----
 
         /// <summary>
         /// Start.
