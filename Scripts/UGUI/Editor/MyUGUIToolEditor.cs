@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIToolEditor (version 2.19)
+ * Class:       MyUGUIToolEditor (version 2.22)
  */
 
 using UnityEditor;
@@ -56,7 +56,7 @@ namespace MyClasses.UI.Tool
             canvasCanvas.sortingOrder = -1000;
             CanvasScaler canvasCanvasScaler = goCanvas.AddComponent<CanvasScaler>();
             canvasCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasCanvasScaler.referenceResolution = new Vector2(1080, 1920);
+            canvasCanvasScaler.referenceResolution = new Vector2(1080, 2220);
             canvasCanvasScaler.matchWidthOrHeight = 1;
             GraphicRaycaster canvasGraphicRaycaster = goCanvas.AddComponent<GraphicRaycaster>();
             canvasGraphicRaycaster.ignoreReversedGraphics = true;
@@ -93,7 +93,7 @@ namespace MyClasses.UI.Tool
             canvasCanvas.sortingOrder = -1000;
             CanvasScaler canvasCanvasScaler = goCanvas.AddComponent<CanvasScaler>();
             canvasCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasCanvasScaler.referenceResolution = new Vector2(1920, 1080);
+            canvasCanvasScaler.referenceResolution = new Vector2(2220, 1080);
             canvasCanvasScaler.matchWidthOrHeight = 1;
             GraphicRaycaster canvasGraphicRaycaster = goCanvas.AddComponent<GraphicRaycaster>();
             canvasGraphicRaycaster.ignoreReversedGraphics = true;

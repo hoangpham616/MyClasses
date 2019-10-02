@@ -1,15 +1,11 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.22)
+ * Class:       MyUGUIManager (version 2.23)
  */
 
 #pragma warning disable 0162
 #pragma warning disable 0429
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 using System;
 using System.Collections;
@@ -126,6 +122,11 @@ namespace MyClasses.UI
         public MyUGUIUnityScene CurrentUnityScene
         {
             get { return mCurrentUnityScene; }
+        }
+
+        public MyUGUIHUD CurrentHUD
+        {
+            get { return mCurrentUnityScene.HUD; }
         }
 
         public MyUGUIScene CurrentScene

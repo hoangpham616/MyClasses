@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUtilities.Convert (version 1.1)
+ * Class:       MyUtilities.Convert (version 1.2)
  */
 
 using UnityEngine;
@@ -13,9 +13,9 @@ namespace MyClasses
 {
     public static partial class MyUtilities
     {
-        #region ----- From Array -----
-
         private static StringBuilder mStringBuilerConvert;
+
+        #region ----- From Array -----
 
         /// <summary>
         /// Convert int array to string.
@@ -414,6 +414,48 @@ namespace MyClasses
             streamWriter.Flush();
             memoryStream.Position = 0;
             return memoryStream;
+        }
+
+        #endregion
+
+        #region ----- To String -----
+
+        /// <summary>
+        /// Convert Vector2 to string.
+        /// </summary>
+        /// <param name="mergeChar">a delimiter to merge values of vector into one string</param>
+        public static string ConvertVector2ToString(Vector3 vector2, char mergeChar)
+        {
+            if (mStringBuilerConvert == null)
+            {
+                mStringBuilerConvert = new StringBuilder();
+            }
+
+            mStringBuilerConvert.Length = 0;
+            mStringBuilerConvert.Append(vector2.x);
+            mStringBuilerConvert.Append(mergeChar);
+            mStringBuilerConvert.Append(vector2.y);
+            return mStringBuilerConvert.ToString();
+        }
+
+        /// <summary>
+        /// Convert Vector3 to string.
+        /// </summary>
+        /// <param name="mergeChar">a delimiter to merge values of vector into one string</param>
+        public static string ConvertVector3ToString(Vector3 vector3, char mergeChar)
+        {
+            if (mStringBuilerConvert == null)
+            {
+                mStringBuilerConvert = new StringBuilder();
+            }
+
+            mStringBuilerConvert.Length = 0;
+            mStringBuilerConvert.Append(vector3.x);
+            mStringBuilerConvert.Append(mergeChar);
+            mStringBuilerConvert.Append(vector3.y);
+            mStringBuilerConvert.Append(mergeChar);
+            mStringBuilerConvert.Append(vector3.z);
+            return mStringBuilerConvert.ToString();
         }
 
         #endregion
