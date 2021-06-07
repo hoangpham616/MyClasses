@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIManager (version 2.23)
+ * Class:       MyUGUIManager (version 2.31)
  */
 
 #pragma warning disable 0162
@@ -31,7 +31,7 @@ namespace MyClasses.UI
 
         #region ----- Variable -----
 
-        public static string SETTING_DIRECTORY = "Settings/UGUI/";
+        public static string CONFIG_DIRECTORY = "Configs/UGUI/";
         public static string SCENE_DIRECTORY = "Prefabs/UGUI/Scenes/";
         public static string POPUP_DIRECTORY = "Prefabs/UGUI/Popups/";
         public static string HUD_DIRECTORY = "Prefabs/UGUI/HUDs/";
@@ -39,8 +39,8 @@ namespace MyClasses.UI
 
         private Camera mCameraUI;
 
-        private GameObject mCanvas;
-        private GameObject mCanvasOnTop;
+        private Canvas mCanvas;
+        private Canvas mCanvasOnTop;
         private GameObject mCanvasOnTopHUD;
         private GameObject mCanvasOnTopPopup;
         private GameObject mCanvasOnTopFloatPopup;
@@ -54,7 +54,8 @@ namespace MyClasses.UI
         private List<MyUGUIScene> mListScene = new List<MyUGUIScene>();
         private List<MyUGUIPopup> mListPopup = new List<MyUGUIPopup>();
         private List<MyUGUIPopup> mListFloatPopup = new List<MyUGUIPopup>();
-        private List<MyUGUIRunningText> mListRunningText = new List<MyUGUIRunningText>();
+        private List<MyUGUIFlyingMessage> mListFlyingMessage = new List<MyUGUIFlyingMessage>();
+        private List<MyUGUIRunningMessage> mListRunningMessage = new List<MyUGUIRunningMessage>();
 
         private MyUGUIUnityScene mCurrentUnityScene;
         private MyUGUIUnityScene mNextUnityScene;
@@ -69,8 +70,11 @@ namespace MyClasses.UI
         private MyUGUIPopup mCurrentFloatPopup;
 
         private MyUGUILoadingIndicator mCurrentLoadingIndicator;
-        private MyUGUIRunningText mCurrentRunningText;
-        private MyUGUIToast mCurrentToast;
+        private MyUGUIFlyingMessage mCurrentFlyingMessage;
+        private MyUGUIRunningMessage mCurrentRunningMessage;
+        private MyUGUIToastMessage mCurrentToastMessage;
+
+        private Dictionary<MyUGUIRunningMessage.EType, int> mDictRunningMessageMaxQueue = new Dictionary<MyUGUIRunningMessage.EType, int>();
 
         private AsyncOperation mUnitySceneUnloadUnusedAsset;
         private AsyncOperation mUnitySceneLoad;
@@ -80,7 +84,7 @@ namespace MyClasses.UI
         private Action mOnScenePostVisibleCallback;
 
         private bool mIsClosePopupByClickingOutside;
-        private bool mIsHideRunningTextWhenSwitchingScene;
+        private bool mIsHideRunningMessageWhenSwitchingScene;
         private bool mIsHideToastWhenSwitchingScene;
 
         private int mPreviousInitSceneIndex;
@@ -94,12 +98,12 @@ namespace MyClasses.UI
             get { return mCameraUI; }
         }
 
-        public GameObject Canvas
+        public Canvas Canvas
         {
             get { return mCanvas; }
         }
 
-        public GameObject CanvasOnTop
+        public Canvas CanvasOnTop
         {
             get { return mCanvasOnTop; }
         }
@@ -212,7 +216,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Event -----
+        #region ----- Implement MonoBehaviour -----
 
         /// <summary>
         /// Awake.
@@ -233,22 +237,36 @@ namespace MyClasses.UI
             _UpdateScene(Time.deltaTime);
             _UpdateHUD(Time.deltaTime);
 
-            for (int i = 0, count = mListPopup.Count; i < count; i++)
+            for (int i = mListPopup.Count - 1; i >= 0; --i)
             {
                 MyUGUIPopup popup = mListPopup[i];
-                _UpdatePopup(ref popup, Time.deltaTime);
-                mListPopup[i] = popup;
+                if (popup == null)
+                {
+                    mListPopup.RemoveAt(i);
+                }
+                else
+                {
+                    _UpdatePopup(ref popup, Time.deltaTime);
+                    mListPopup[i] = popup;
+                }
             }
-            for (int i = 0, count = mListFloatPopup.Count; i < count; i++)
+            for (int i = mListFloatPopup.Count - 1; i >= 0; --i)
             {
                 MyUGUIPopup popup = mListFloatPopup[i];
-                _UpdateFloatPopup(ref popup, Time.deltaTime);
-                mListFloatPopup[i] = popup;
+                if (popup == null)
+                {
+                    mListFloatPopup.RemoveAt(i);
+                }
+                else
+                {
+                    _UpdateFloatPopup(ref popup, Time.deltaTime);
+                    mListFloatPopup[i] = popup;
+                }
             }
 
-            if (mCurrentRunningText != null)
+            if (mCurrentRunningMessage != null)
             {
-                mCurrentRunningText.Update(Time.deltaTime);
+                mCurrentRunningMessage.Update(Time.deltaTime);
             }
         }
 
@@ -257,9 +275,9 @@ namespace MyClasses.UI
         /// </summary>
         void LateUpdate()
         {
-            if (mCurrentToast != null)
+            if (mCurrentToastMessage != null)
             {
-                mCurrentToast.LateUpdate(Time.deltaTime);
+                mCurrentToastMessage.LateUpdate(Time.deltaTime);
             }
         }
 
@@ -436,7 +454,7 @@ namespace MyClasses.UI
         /// <summary>
         /// Show a scene.
         /// </summary>
-        public void ShowScene(ESceneID sceneID, bool isHideRunningTextWhenSwitchingScene = false, bool isHideToastWhenSwitchingScene = true, Action onPreEnterCallback = null, Action onPostEnterCallback = null, Action onPostVisibleCallback = null)
+        public void ShowScene(ESceneID sceneID, bool isHideRunningMessageWhenSwitchingScene = false, bool isHideToastWhenSwitchingScene = true, Action onPreEnterCallback = null, Action onPostEnterCallback = null, Action onPostVisibleCallback = null)
         {
 #if DEBUG_MY_UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowScene()</color>: " + sceneID);
@@ -447,7 +465,7 @@ namespace MyClasses.UI
             {
                 if (mCurrentUnityScene.ListScene[i].ID == sceneID)
                 {
-                    mIsHideRunningTextWhenSwitchingScene = isHideRunningTextWhenSwitchingScene;
+                    mIsHideRunningMessageWhenSwitchingScene = isHideRunningMessageWhenSwitchingScene;
                     mIsHideToastWhenSwitchingScene = isHideToastWhenSwitchingScene;
 
                     mOnScenePreEnterCallback = onPreEnterCallback;
@@ -476,7 +494,7 @@ namespace MyClasses.UI
         {
             if (mCurrentPopupOverlay != null)
             {
-                StartCoroutine(_DoUpdatePopupOverlay());
+                MyCoroutiner.Start("_DoUpdatePopupOverlay", _DoUpdatePopupOverlay());
             }
         }
 
@@ -571,7 +589,7 @@ namespace MyClasses.UI
             {
                 foreach (MyUGUIPopup popup in mListPopup)
                 {
-                    if (popup != null)
+                    if (popup != null && popup.IsActive)
                     {
                         popup.Hide();
                     }
@@ -679,64 +697,90 @@ namespace MyClasses.UI
         }
 
         /// <summary>
-        /// Show running text.
+        /// Show flying message.
         /// </summary>
-        public void ShowRunningText(string content, ERunningTextSpeed speed = ERunningTextSpeed.Normal, MyUGUIRunningText.EType type = MyUGUIRunningText.EType.Default, int maxQueue = -1)
+        public void ShowFlyingMessage(string content, MyUGUIFlyingMessage.EType type = MyUGUIFlyingMessage.EType.ShortFlyFromBot)
         {
 #if DEBUG_MY_UI
-            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowRunningText()</color>");
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowFlyingMessage()</color>");
 #endif
 
-            _InitRunningText(type);
+            _InitFlyingMessage();
 
-            if (maxQueue > 0)
+            mCurrentFlyingMessage.Show(content, type);
+        }
+
+        /// <summary>
+        /// Set queue limit for running message.
+        /// </summary>
+        public void SetRunningMessageMaxQueue(MyUGUIRunningMessage.EType type = MyUGUIRunningMessage.EType.Default, int maxQueue = -1)
+        {
+#if DEBUG_MY_UI
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>SetRunningMessageMaxQueue()</color>");
+#endif
+
+            mDictRunningMessageMaxQueue[type] = maxQueue;
+        }
+
+        /// <summary>
+        /// Show running message.
+        /// </summary>
+        public void ShowRunningMessage(string content, ERunningMessageSpeed speed = ERunningMessageSpeed.Normal, MyUGUIRunningMessage.EType type = MyUGUIRunningMessage.EType.Default)
+        {
+#if DEBUG_MY_UI
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowRunningMessage()</color>");
+#endif
+
+            _InitRunningMessage(type);
+
+            if (mDictRunningMessageMaxQueue.ContainsKey(type))
             {
-                mCurrentRunningText.SetMaxQueue(maxQueue);
+                mCurrentRunningMessage.SetMaxQueue(mDictRunningMessageMaxQueue[type]);
             }
-            mCurrentRunningText.Show(content, (int)speed, (int)speed * 1.2f);
+            mCurrentRunningMessage.Show(content, (int)speed, (int)speed * 1.2f);
         }
 
         /// <summary>
-        /// Hide running text.
+        /// Hide running message.
         /// </summary>
-        public void HideRunningText()
+        public void HideRunningMessage()
         {
 #if DEBUG_MY_UI
-            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>HideRunningText()</color>");
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>HideRunningMessage()</color>");
 #endif
 
-            if (mCurrentRunningText != null)
+            if (mCurrentRunningMessage != null)
             {
-                mCurrentRunningText.Hide();
+                mCurrentRunningMessage.Hide();
             }
         }
 
         /// <summary>
-        /// Show toast.
+        /// Show toast message.
         /// </summary>
-        public void ShowToast(string content, EToastDuration duration = EToastDuration.Medium)
+        public void ShowToastMessage(string content, EToastMessageDuration duration = EToastMessageDuration.Medium)
         {
 #if DEBUG_MY_UI
-            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowToast()</color>: duration=" + duration.ToString());
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowToastMessage()</color>: duration=" + duration.ToString());
 #endif
 
-            _InitToast();
+            _InitToastMessage();
 
-            mCurrentToast.Show(content, (int)duration);
+            mCurrentToastMessage.Show(content, (int)duration);
         }
 
         /// <summary>
-        /// Show toast.
+        /// Show toast message.
         /// </summary>
-        public void ShowToast(string content, float duration)
+        public void ShowToastMessage(string content, float duration)
         {
 #if DEBUG_MY_UI
-            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowToast()</color>: duration=" + duration);
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>ShowToastMessage()</color>: duration=" + duration);
 #endif
 
-            _InitToast();
+            _InitToastMessage();
 
-            mCurrentToast.Show(content, duration);
+            mCurrentToastMessage.Show(content, duration);
         }
 
         /// <summary>
@@ -748,10 +792,19 @@ namespace MyClasses.UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#0000FFFF>HideToast()</color>");
 #endif
 
-            if (mCurrentToast != null)
+            if (mCurrentToastMessage != null)
             {
-                mCurrentToast.Hide();
+                mCurrentToastMessage.Hide();
             }
+        }
+
+        /// <summary>
+        /// Convert screen point to world point.
+        /// </summary>
+        public Vector3 ScreenToWorldPoint(Vector3 screenPoint)
+        {
+            screenPoint.z = mCanvas.planeDistance;
+            return mCameraUI.ScreenToWorldPoint(screenPoint);
         }
 
         #endregion
@@ -768,13 +821,13 @@ namespace MyClasses.UI
 #endif
 
 #if UNITY_EDITOR
-            if (!System.IO.File.Exists("Assets/Resources/" + SETTING_DIRECTORY + typeof(MyUGUIConfigUnityScenes).Name + ".asset"))
+            if (!System.IO.File.Exists("Assets/Resources/" + CONFIG_DIRECTORY + typeof(MyUGUIConfigUnityScenes).Name + ".asset"))
             {
                 Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitConfig(): Could not find scene config file. Please setup it on Menu Bar first.");
                 return;
             }
 
-            if (!System.IO.File.Exists("Assets/Resources/" + SETTING_DIRECTORY + typeof(MyUGUIConfigPopups).Name + ".asset"))
+            if (!System.IO.File.Exists("Assets/Resources/" + CONFIG_DIRECTORY + typeof(MyUGUIConfigPopups).Name + ".asset"))
             {
                 Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitConfig(): Could not find popup config file. Please setup it on Menu Bar first.");
                 return;
@@ -782,7 +835,7 @@ namespace MyClasses.UI
 #endif
 
             mListUnityScene.Clear();
-            MyUGUIConfigUnityScenes unityScenesConfig = Resources.Load<MyUGUIConfigUnityScenes>(SETTING_DIRECTORY + typeof(MyUGUIConfigUnityScenes).Name);
+            MyUGUIConfigUnityScenes unityScenesConfig = Resources.Load<MyUGUIConfigUnityScenes>(CONFIG_DIRECTORY + typeof(MyUGUIConfigUnityScenes).Name);
             if (unityScenesConfig != null)
             {
                 foreach (MyUGUIConfigUnityScene unitySceneConfig in unityScenesConfig.ListUnityScene)
@@ -795,12 +848,12 @@ namespace MyClasses.UI
                             Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitConfig(): HUD prefab of " + unitySceneConfig.HUDScriptName + " is empty. Please setup it on Menu Bar.");
                             return;
                         }
-                        var hud = Activator.CreateInstance(Type.GetType(unitySceneConfig.HUDScriptName), unitySceneConfig.HUDPrefabName);
+                        var hud = Activator.CreateInstance(MyUtilities.FindTypesByName(unitySceneConfig.HUDScriptName)[0], unitySceneConfig.HUDPrefabName);
                         unityScene.SetHUD((MyUGUIHUD)hud);
                     }
                     foreach (MyUGUIConfigScene sceneConfig in unitySceneConfig.ListScene)
                     {
-                        var scene = Activator.CreateInstance(Type.GetType(sceneConfig.ScriptName), sceneConfig.ID, sceneConfig.PrefabName, sceneConfig.IsInitWhenLoadUnityScene, sceneConfig.IsHideHUD, sceneConfig.FadeInDuration, sceneConfig.FadeOutDuration);
+                        var scene = Activator.CreateInstance(MyUtilities.FindTypesByName(sceneConfig.ScriptName)[0], sceneConfig.ID, sceneConfig.PrefabName, sceneConfig.IsInitWhenLoadUnityScene, sceneConfig.IsHideHUD, sceneConfig.FadeInDuration, sceneConfig.FadeOutDuration);
                         unityScene.AddScene((MyUGUIScene)scene);
                     }
                     mListUnityScene.Add(unityScene);
@@ -812,7 +865,7 @@ namespace MyClasses.UI
             }
 
             mDictPopupConfig.Clear();
-            MyUGUIConfigPopups popupsConfig = Resources.Load<MyUGUIConfigPopups>(SETTING_DIRECTORY + typeof(MyUGUIConfigPopups).Name);
+            MyUGUIConfigPopups popupsConfig = Resources.Load<MyUGUIConfigPopups>(CONFIG_DIRECTORY + typeof(MyUGUIConfigPopups).Name);
             if (popupsConfig != null)
             {
                 foreach (MyUGUIConfigPopup popupConfig in popupsConfig.ListPopup)
@@ -835,28 +888,30 @@ namespace MyClasses.UI
             Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitCanvas()</color>");
 #endif
 
-            mCanvas = GameObject.Find("Canvas");
-            if (mCanvas == null)
+            GameObject goCanvas = GameObject.Find("Canvas");
+            if (goCanvas == null)
             {
                 Debug.LogError("[" + typeof(MyUGUIManager).Name + "] OnUGUIInit(): Could not find \"Canvas\" in scene \"" + SceneManager.GetActiveScene().name + "\". Please create \"Canvas\" first.");
             }
-            if (mCanvas != null)
+            if (goCanvas != null)
             {
-                mCanvas.GetComponent<Canvas>().sortingOrder = -1000;
+                mCanvas = goCanvas.GetComponent<Canvas>();
+                mCanvas.sortingOrder = -1000;
             }
 
-            mCanvasOnTop = GameObject.Find("CanvasOnTop");
-            if (mCanvasOnTop == null)
+            GameObject goCanvasOnTop = GameObject.Find("CanvasOnTop");
+            if (goCanvasOnTop == null)
             {
                 Debug.LogError("[" + typeof(MyUGUIManager).Name + "] OnUGUIInit(): Could not find \"CanvasOnTop\" in scene \"" + SceneManager.GetActiveScene().name + "\". Please create \"CanvasOnTop\" first.");
             }
-            if (mCanvasOnTop != null)
+            if (goCanvasOnTop != null)
             {
-                mCanvasOnTop.GetComponent<Canvas>().sortingOrder = 1000;
+                mCanvasOnTop = goCanvasOnTop.GetComponent<Canvas>();
+                mCanvasOnTop.sortingOrder = 1000;
 
                 if (mCurrentUnityScene.HUD != null)
                 {
-                    mCanvasOnTopHUD = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, "HUD");
+                    mCanvasOnTopHUD = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop.gameObject, "HUD");
                     if (mCanvasOnTopHUD == null)
                     {
                         mCanvasOnTopHUD = new GameObject("HUD");
@@ -874,7 +929,7 @@ namespace MyClasses.UI
                     }
                 }
 
-                mCanvasOnTopPopup = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, "Popups");
+                mCanvasOnTopPopup = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop.gameObject, "Popups");
                 if (mCanvasOnTopPopup == null)
                 {
                     mCanvasOnTopPopup = new GameObject("Popups");
@@ -891,7 +946,7 @@ namespace MyClasses.UI
                     mCanvasOnTopPopup.transform.SetAsLastSibling();
                 }
 
-                mCanvasOnTopFloatPopup = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, "FloatPopups");
+                mCanvasOnTopFloatPopup = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop.gameObject, "FloatPopups");
                 if (mCanvasOnTopFloatPopup == null)
                 {
                     mCanvasOnTopFloatPopup = new GameObject("FloatPopups");
@@ -908,7 +963,7 @@ namespace MyClasses.UI
                     mCanvasOnTopFloatPopup.transform.SetAsLastSibling();
                 }
 
-                mCanvasOnTopLoadingIndicator = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, "LoadingIndicator");
+                mCanvasOnTopLoadingIndicator = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop.gameObject, "LoadingIndicator");
                 if (mCanvasOnTopLoadingIndicator == null)
                 {
                     mCanvasOnTopLoadingIndicator = new GameObject("LoadingIndicator");
@@ -971,6 +1026,14 @@ namespace MyClasses.UI
                 {
                     mCameraUI = uiCamera.GetComponent<Camera>();
                 }
+
+                if (mCanvas.renderMode == RenderMode.ScreenSpaceCamera)
+                {
+                    mCanvas.worldCamera = mCameraUI;
+
+                    CanvasScaler canvasScaler = mCanvas.GetComponent<CanvasScaler>();
+                    mCameraUI.transform.position = new Vector3(canvasScaler.referenceResolution.x / 2, canvasScaler.referenceResolution.y / 2, -mCanvas.planeDistance);
+                }
             }
         }
 
@@ -986,7 +1049,7 @@ namespace MyClasses.UI
             if (mCurrentSceneFading == null || mCurrentSceneFading.GameObject == null)
             {
                 mCurrentSceneFading = new MyUGUISceneFading();
-                mCurrentSceneFading.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUISceneFading.PREFAB_NAME);
+                mCurrentSceneFading.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop.gameObject, MyUGUISceneFading.PREFAB_NAME);
 
                 if (mCurrentSceneFading.GameObject == null)
                 {
@@ -1099,105 +1162,163 @@ namespace MyClasses.UI
         }
 
         /// <summary>
-        /// Init running text.
+        /// Init flying message.
         /// </summary>
-        private void _InitRunningText(MyUGUIRunningText.EType type = MyUGUIRunningText.EType.Default)
+        private void _InitFlyingMessage()
         {
 #if DEBUG_MY_UI
-            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitRunningText()</color>: type=" + type);
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitFlyingMessage()</color>");
 #endif
 
-            if (mCurrentRunningText != null && mCurrentRunningText.GameObject != null && mCurrentRunningText.Type != type)
+            mCurrentFlyingMessage = null;
+
+            for (int i = 0, count = mListFlyingMessage.Count; i < count; ++i)
             {
-                mCurrentRunningText.HideImmedialy();
-                mCurrentRunningText = null;
-                for (int i = 0, count = mListRunningText.Count; i < count; i++)
+                if (!mListFlyingMessage[i].IsPlaying)
                 {
-                    if (mListRunningText[i].Type == type)
+                    if (mCurrentFlyingMessage == null)
                     {
-                        mCurrentRunningText = mListRunningText[i];
+                        mCurrentFlyingMessage = mListFlyingMessage[i];
+                        mCurrentFlyingMessage.GameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        mListFlyingMessage[i].GameObject.SetActive(false);
+                    }
+                }
+            }
+
+            if (mCurrentFlyingMessage == null)
+            {
+                mCurrentFlyingMessage = new MyUGUIFlyingMessage();
+
+                if (mCoreAssetBundleConfig != null && !string.IsNullOrEmpty(mCoreAssetBundleConfig.URL))
+                {
+                    AssetBundle bundle = MyAssetBundleManager.Get(mCoreAssetBundleConfig.URL, mCoreAssetBundleConfig.Version);
+                    if (bundle == null)
+                    {
+                        Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitFlyingMessage(): Could not get asset bundle which contains Flying Message. A template was created instead.");
+                        mCurrentFlyingMessage.GameObject = MyUGUIFlyingMessage.CreateTemplate();
+                    }
+                    else
+                    {
+                        mCurrentFlyingMessage.GameObject = Instantiate(bundle.LoadAsset(MyUGUIFlyingMessage.PREFAB_NAME) as GameObject);
+                    }
+                }
+                else
+                {
+                    mCurrentFlyingMessage.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIFlyingMessage.PREFAB_NAME) as GameObject);
+                }
+
+                mCurrentFlyingMessage.GameObject.name = MyUGUIFlyingMessage.PREFAB_NAME;
+                mCurrentFlyingMessage.Transform.SetParent(mCanvasOnTop.transform, false);
+
+                mListFlyingMessage.Add(mCurrentFlyingMessage);
+            }
+
+            mCurrentFlyingMessage.Transform.SetAsLastSibling();
+        }
+
+        /// <summary>
+        /// Init running message.
+        /// </summary>
+        private void _InitRunningMessage(MyUGUIRunningMessage.EType type = MyUGUIRunningMessage.EType.Default)
+        {
+#if DEBUG_MY_UI
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitRunningMessage()</color>: type=" + type);
+#endif
+
+            if (mCurrentRunningMessage != null && mCurrentRunningMessage.GameObject != null && mCurrentRunningMessage.Type != type)
+            {
+                mCurrentRunningMessage.HideImmedialy();
+                mCurrentRunningMessage = null;
+                for (int i = 0, count = mListRunningMessage.Count; i < count; i++)
+                {
+                    if (mListRunningMessage[i].Type == type)
+                    {
+                        mCurrentRunningMessage = mListRunningMessage[i];
                         break;
                     }
                 }
             }
 
-            if (mCurrentRunningText == null || mCurrentRunningText.GameObject == null)
+            if (mCurrentRunningMessage == null || mCurrentRunningMessage.GameObject == null)
             {
-                mCurrentRunningText = new MyUGUIRunningText(type);
-                mCurrentRunningText.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUIRunningText.GetGameObjectName(type));
+                mCurrentRunningMessage = new MyUGUIRunningMessage(type);
+                mCurrentRunningMessage.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop.gameObject, MyUGUIRunningMessage.GetGameObjectName(type));
 
-                if (mCurrentRunningText.GameObject == null)
+                if (mCurrentRunningMessage.GameObject == null)
                 {
                     if (mCoreAssetBundleConfig != null && !string.IsNullOrEmpty(mCoreAssetBundleConfig.URL))
                     {
                         AssetBundle bundle = MyAssetBundleManager.Get(mCoreAssetBundleConfig.URL, mCoreAssetBundleConfig.Version);
                         if (bundle == null)
                         {
-                            Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitRunningText(): Could not get asset bundle which contains Running Text. A template was created instead.");
-                            mCurrentRunningText.GameObject = MyUGUIRunningText.CreateTemplate(type);
+                            Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitRunningMessage(): Could not get asset bundle which contains Running Message. A template was created instead.");
+                            mCurrentRunningMessage.GameObject = MyUGUIRunningMessage.CreateTemplate(type);
                         }
                         else
                         {
-                            mCurrentRunningText.GameObject = Instantiate(bundle.LoadAsset(MyUGUIRunningText.GetGameObjectName(type)) as GameObject);
+                            mCurrentRunningMessage.GameObject = Instantiate(bundle.LoadAsset(MyUGUIRunningMessage.GetGameObjectName(type)) as GameObject);
                         }
                     }
                     else
                     {
-                        mCurrentRunningText.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIRunningText.GetGameObjectName(type)) as GameObject);
+                        mCurrentRunningMessage.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIRunningMessage.GetGameObjectName(type)) as GameObject);
                     }
                 }
 
-                mCurrentRunningText.GameObject.name = MyUGUIRunningText.GetGameObjectName(type);
-                mCurrentRunningText.GameObject.SetActive(false);
-                mCurrentRunningText.Transform.SetParent(mCanvasOnTop.transform, false);
+                mCurrentRunningMessage.GameObject.name = MyUGUIRunningMessage.GetGameObjectName(type);
+                mCurrentRunningMessage.GameObject.SetActive(false);
+                mCurrentRunningMessage.Transform.SetParent(mCanvasOnTop.transform, false);
 
-                mListRunningText.Add(mCurrentRunningText);
+                mListRunningMessage.Add(mCurrentRunningMessage);
             }
 
-            mCurrentRunningText.Transform.SetAsLastSibling();
+            mCurrentRunningMessage.Transform.SetAsLastSibling();
         }
 
         /// <summary>
-        /// Init toast.
+        /// Init toast message.
         /// </summary>
-        private void _InitToast()
+        private void _InitToastMessage()
         {
 #if DEBUG_MY_UI
-            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitToast()</color>");
+            Debug.Log("[" + typeof(MyUGUIManager).Name + "] <color=#FF7777FF>_InitToastMessage()</color>");
 #endif
 
-            if (mCurrentToast == null || mCurrentToast.GameObject == null)
+            if (mCurrentToastMessage == null || mCurrentToastMessage.GameObject == null)
             {
-                mCurrentToast = new MyUGUIToast();
-                mCurrentToast.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop, MyUGUIToast.PREFAB_NAME);
+                mCurrentToastMessage = new MyUGUIToastMessage();
+                mCurrentToastMessage.GameObject = MyUtilities.FindObjectInFirstLayer(mCanvasOnTop.gameObject, MyUGUIToastMessage.PREFAB_NAME);
 
-                if (mCurrentToast.GameObject == null)
+                if (mCurrentToastMessage.GameObject == null)
                 {
                     if (mCoreAssetBundleConfig != null && !string.IsNullOrEmpty(mCoreAssetBundleConfig.URL))
                     {
                         AssetBundle bundle = MyAssetBundleManager.Get(mCoreAssetBundleConfig.URL, mCoreAssetBundleConfig.Version);
                         if (bundle == null)
                         {
-                            Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitToast(): Could not get asset bundle which contains Toast. A template was created instead.");
-                            mCurrentToast.GameObject = MyUGUIToast.CreateTemplate();
+                            Debug.LogError("[" + typeof(MyUGUIManager).Name + "] _InitToastMessage(): Could not get asset bundle which contains Toast Message. A template was created instead.");
+                            mCurrentToastMessage.GameObject = MyUGUIToastMessage.CreateTemplate();
                         }
                         else
                         {
-                            mCurrentToast.GameObject = Instantiate(bundle.LoadAsset(MyUGUIToast.PREFAB_NAME) as GameObject);
+                            mCurrentToastMessage.GameObject = Instantiate(bundle.LoadAsset(MyUGUIToastMessage.PREFAB_NAME) as GameObject);
                         }
                     }
                     else
                     {
-                        mCurrentToast.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIToast.PREFAB_NAME) as GameObject);
+                        mCurrentToastMessage.GameObject = Instantiate(Resources.Load(SPECIAL_DIRECTORY + MyUGUIToastMessage.PREFAB_NAME) as GameObject);
                     }
                 }
 
-                mCurrentToast.GameObject.name = MyUGUIToast.PREFAB_NAME;
-                mCurrentToast.GameObject.SetActive(false);
-                mCurrentToast.Transform.SetParent(mCanvasOnTop.transform, false);
+                mCurrentToastMessage.GameObject.name = MyUGUIToastMessage.PREFAB_NAME;
+                mCurrentToastMessage.GameObject.SetActive(false);
+                mCurrentToastMessage.Transform.SetParent(mCanvasOnTop.transform, false);
             }
 
-            mCurrentToast.Transform.SetAsLastSibling();
+            mCurrentToastMessage.Transform.SetAsLastSibling();
         }
 
         /// <summary>
@@ -1206,24 +1327,33 @@ namespace MyClasses.UI
         private MyUGUIPopup _ShowPopup(EPopupID popupID, bool isRepeatable, object attachedData, Action onCloseCallback = null)
         {
             MyUGUIPopup popup = null;
+            bool isReuse = false;
 
             for (int i = mListPopup.Count - 1; i >= 0; i--)
             {
                 MyUGUIPopup tmpPopup = mListPopup[i];
-                if (tmpPopup == null)
+                if (tmpPopup != null)
                 {
-                    mListPopup.RemoveAt(i);
-                }
-                else if (!isRepeatable && popupID == tmpPopup.ID)
-                {
-                    popup = tmpPopup;
+                    if (!isRepeatable && popupID == tmpPopup.ID)
+                    {
+                        popup = tmpPopup;
+                        isReuse = true;
+                    }
                 }
             }
 
             if (popup == null && mDictPopupConfig.ContainsKey(popupID))
             {
                 MyUGUIConfigPopup popupConfig = mDictPopupConfig[popupID];
-                popup = (MyUGUIPopup)Activator.CreateInstance(Type.GetType(popupConfig.ScriptName), popupConfig.ID, popupConfig.PrefabName, false, isRepeatable);
+                if (popupConfig.ScriptName.Contains("."))
+                {
+                    popup = (MyUGUIPopup)Activator.CreateInstance(Type.GetType(popupConfig.ScriptName), popupConfig.ID, popupConfig.PrefabName, false, isRepeatable);
+                }
+                else
+                {
+                    popup = (MyUGUIPopup)Activator.CreateInstance(MyUtilities.FindTypesByName(popupConfig.ScriptName)[0], popupConfig.ID, popupConfig.PrefabName, false, isRepeatable);
+                }
+
                 if (popup != null)
                 {
                     popup.SetAssetBundle(popupConfig.AssetBundleURL, popupConfig.AssetBundleVersion);
@@ -1244,7 +1374,10 @@ namespace MyClasses.UI
 
                 _UpdatePopup(ref popup, 0f);
 
-                mListPopup.Add(popup);
+                if (!isReuse)
+                {
+                    mListPopup.Add(popup);
+                }
             }
 
             return popup;
@@ -1260,7 +1393,7 @@ namespace MyClasses.UI
             if (mDictPopupConfig.ContainsKey(popupID))
             {
                 MyUGUIConfigPopup popupConfig = mDictPopupConfig[popupID];
-                popup = (MyUGUIPopup)Activator.CreateInstance(Type.GetType(popupConfig.ScriptName), popupConfig.ID, popupConfig.PrefabName, true, isRepeatable);
+                popup = (MyUGUIPopup)Activator.CreateInstance(MyUtilities.FindTypesByName(popupConfig.ScriptName)[0], popupConfig.ID, popupConfig.PrefabName, true, isRepeatable);
                 if (popup != null)
                 {
                     popup.SetAssetBundle(popupConfig.AssetBundleURL, popupConfig.AssetBundleVersion);
@@ -1276,16 +1409,6 @@ namespace MyClasses.UI
                 if (!popup.IsRepeatable)
                 {
                     mCurrentFloatPopup = null;
-
-                    int countPopup = mListFloatPopup.Count;
-                    for (int i = countPopup - 1; i >= 0; i--)
-                    {
-                        MyUGUIPopup tmpPopup = mListFloatPopup[i];
-                        if (tmpPopup == null || (tmpPopup.ID == popup.ID && !tmpPopup.IsRepeatable))
-                        {
-                            mListFloatPopup.RemoveAt(i);
-                        }
-                    }
                 }
 
                 popup.AttachedData = attachedData;
@@ -1323,8 +1446,8 @@ namespace MyClasses.UI
                         if (mCurrentSceneFading == null || !mCurrentSceneFading.IsFading)
                         {
                             mCurrentPopupOverlay = null;
-                            mCurrentRunningText = null;
-                            mCurrentToast = null;
+                            mCurrentRunningMessage = null;
+                            mCurrentToastMessage = null;
 
                             if (mCurrentUnityScene.HUD != null && mCurrentUnityScene.HUD.IsLoaded)
                             {
@@ -1344,7 +1467,8 @@ namespace MyClasses.UI
                             }
 
                             mListPopup.Clear();
-                            mListRunningText.Clear();
+                            mListRunningMessage.Clear();
+                            mListFlyingMessage.Clear();
 
                             mUnitySceneUnloadUnusedAsset = Resources.UnloadUnusedAssets();
 
@@ -1580,10 +1704,10 @@ namespace MyClasses.UI
                                 mCurrentScene.GameObject.SetActive(false);
                             }
 
-                            if (mIsHideRunningTextWhenSwitchingScene)
+                            if (mIsHideRunningMessageWhenSwitchingScene)
                             {
-                                HideRunningText();
-                                mIsHideRunningTextWhenSwitchingScene = false;
+                                HideRunningMessage();
+                                mIsHideRunningMessageWhenSwitchingScene = false;
                             }
 
                             if (mIsHideToastWhenSwitchingScene)
@@ -1683,11 +1807,6 @@ namespace MyClasses.UI
             }
 #endif
 
-            if (mCurrentPopup == null)
-            {
-                mCurrentPopup = popup;
-            }
-
             switch (popup.State)
             {
                 case EBaseState.LoadAssetBundle:
@@ -1752,29 +1871,27 @@ namespace MyClasses.UI
                     {
                         if (popup.OnUGUIInvisible())
                         {
-                            if (mCurrentPopup.ID == popup.ID)
+                            if (mCurrentPopup == popup)
                             {
                                 mCurrentPopup = null;
-                            }
-
-                            if (popup.GameObject != null)
-                            {
-                                if (popup.IsRepeatable)
-                                {
-                                    Destroy(popup.GameObject);
-                                }
-                                else
-                                {
-                                    popup.GameObject.SetActive(false);
-                                }
                             }
 
                             if (popup.IsRetainable)
                             {
                                 popup.State = EBaseState.Idle;
+
+                                if (popup.GameObject != null)
+                                {
+                                    popup.GameObject.SetActive(false);
+                                }
                             }
                             else
                             {
+                                if (popup.GameObject != null)
+                                {
+                                    Destroy(popup.GameObject);
+                                }
+
                                 popup = null;
                             }
                         }
@@ -1802,11 +1919,6 @@ namespace MyClasses.UI
             }
 #endif
 
-            if (mCurrentFloatPopup == null)
-            {
-                mCurrentFloatPopup = popup;
-            }
-
             switch (popup.State)
             {
                 case EBaseState.Init:
@@ -1820,6 +1932,8 @@ namespace MyClasses.UI
                     break;
                 case EBaseState.Enter:
                     {
+                        mCurrentFloatPopup = popup;
+
                         popup.OnUGUIEnter();
                         popup.State = EBaseState.Visible;
 
@@ -1850,16 +1964,29 @@ namespace MyClasses.UI
                     {
                         if (popup.OnUGUIInvisible())
                         {
-                            if (mCurrentFloatPopup.ID == popup.ID)
+                            if (mCurrentFloatPopup == popup)
                             {
                                 mCurrentFloatPopup = null;
                             }
 
-                            if (popup.GameObject != null)
+                            if (popup.IsRetainable)
                             {
-                                popup.GameObject.SetActive(false);
+                                popup.State = EBaseState.Idle;
+
+                                if (popup.GameObject != null)
+                                {
+                                    popup.GameObject.SetActive(false);
+                                }
                             }
-                            popup = null;
+                            else
+                            {
+                                if (popup.GameObject != null)
+                                {
+                                    Destroy(popup.GameObject);
+                                }
+
+                                popup = null;
+                            }
                         }
                     }
                     break;
@@ -2024,7 +2151,7 @@ namespace MyClasses.UI
         Invisible
     }
 
-    public enum ERunningTextSpeed
+    public enum ERunningMessageSpeed
     {
         VerySlow = 50,
         Slow = 100,
@@ -2033,7 +2160,7 @@ namespace MyClasses.UI
         VeryFast = 300
     }
 
-    public enum EToastDuration
+    public enum EToastMessageDuration
     {
         Short = 2,
         Medium = 3,

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+#pragma warning disable 0649
+
 public class MyClasses_FieldOfView_CharacterController : MonoBehaviour
 {
     #region ----- Variable -----

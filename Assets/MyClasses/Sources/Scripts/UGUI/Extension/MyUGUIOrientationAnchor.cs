@@ -1,10 +1,11 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIOrientationAnchor (version 2.1)
+ * Class:       MyUGUIOrientationAnchor (version 2.2)
  */
 
 #pragma warning disable 0414
+#pragma warning disable 0649
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -47,7 +48,7 @@ namespace MyClasses.UI
         private bool mIsCurrentAnchorLoaded = false;
 
         [SerializeField]
-        private DeviceOrientation mDeviceOrientation;
+        private ScreenOrientation mDeviceOrientation;
 
         #endregion
 
@@ -65,14 +66,14 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Event -----
+        #region ----- Implement MonoBehaviour -----
 
         /// <summary>
         /// Awake.
         /// </summary>
         void Awake()
         {
-            Anchor(0);
+            Anchor();
         }
 
         /// <summary>
@@ -80,7 +81,7 @@ namespace MyClasses.UI
         /// </summary>
         void OnEnable()
         {
-            Anchor(0);
+            Anchor();
         }
 
         /// <summary>
@@ -88,14 +89,13 @@ namespace MyClasses.UI
         /// </summary>
         void Update()
         {
-            if (mDeviceOrientation != Input.deviceOrientation)
+#if UNITY_EDITOR
+            if ((mDeviceOrientation == ScreenOrientation.Landscape && Screen.width < Screen.height) || (mDeviceOrientation == ScreenOrientation.Portrait && Screen.width > Screen.height))
+#else
+            if (mDeviceOrientation != Screen.orientation)
+#endif
             {
-                bool isNeedUpdate = (mDeviceOrientation == DeviceOrientation.LandscapeLeft || mDeviceOrientation == DeviceOrientation.LandscapeRight) && (mDeviceOrientation == DeviceOrientation.Portrait || mDeviceOrientation == DeviceOrientation.PortraitUpsideDown);
-                mDeviceOrientation = Input.deviceOrientation;
-                if (isNeedUpdate)
-                {
-                    Anchor(mDelayAnchorTime);
-                }
+                Anchor();
             }
         }
 
@@ -103,32 +103,7 @@ namespace MyClasses.UI
 
         #region ----- Public Method -----
 
-        /// <summary>
-        /// Anchor.
-        /// </summary>
-        public void Anchor(float delayTime)
-        {
-#if UNITY_EDITOR
-            if (!Application.isPlaying)
-            {
-                _Anchor();
-            }
-            else
-#endif
-            {
-                MyCoroutiner.ExcuteAfterDelayTime("MyUGUIOrientationAnchor_Anchor", delayTime, () =>
-                {
-                    _Anchor();
-                });
-            }
-        }
-
-        #endregion
-
-
-        #region ----- Private Method -----
-
-        private void _Anchor()
+        public void Anchor()
         {
 #if UNITY_EDITOR
             if (!Application.isPlaying)
@@ -136,24 +111,17 @@ namespace MyClasses.UI
                 System.Type T = System.Type.GetType("UnityEditor.GameView,UnityEditor");
                 System.Reflection.MethodInfo getSizeOfMainGameView = T.GetMethod("GetSizeOfMainGameView", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
                 Vector2 resolution = (Vector2)getSizeOfMainGameView.Invoke(null, null);
-                mDeviceOrientation = resolution.x > resolution.y ? DeviceOrientation.LandscapeLeft : DeviceOrientation.Portrait;
+                mDeviceOrientation = resolution.x > resolution.y ? ScreenOrientation.Landscape : ScreenOrientation.Portrait;
             }
             else
+            {
+                mDeviceOrientation = Screen.width > Screen.height ? ScreenOrientation.Landscape : ScreenOrientation.Portrait;
+            }
+#else
+            mDeviceOrientation = Screen.orientation;
 #endif
-            {
-                mDeviceOrientation = Input.deviceOrientation;
-            }
 
-            if (mDeviceOrientation == DeviceOrientation.LandscapeLeft || mDeviceOrientation == DeviceOrientation.LandscapeRight)
-            {
-                RectTransform rectTrans = gameObject.GetComponent<RectTransform>();
-                rectTrans.pivot = mPortraitPivot;
-                rectTrans.anchorMin = mPortraitAnchorMin;
-                rectTrans.anchorMax = mPortraitAnchorMax;
-                rectTrans.offsetMin = mPortraitOffsetMin;
-                rectTrans.offsetMax = mPortraitOffsetMax;
-            }
-            else
+            if (mDeviceOrientation == ScreenOrientation.Landscape || mDeviceOrientation == ScreenOrientation.LandscapeLeft || mDeviceOrientation == ScreenOrientation.LandscapeRight)
             {
                 RectTransform rectTrans = gameObject.GetComponent<RectTransform>();
                 rectTrans.pivot = mLandscapePivot;
@@ -161,6 +129,15 @@ namespace MyClasses.UI
                 rectTrans.anchorMax = mLandscapeAnchorMax;
                 rectTrans.offsetMin = mLandscapeOffsetMin;
                 rectTrans.offsetMax = mLandscapeOffsetMax;
+            }
+            else if (mDeviceOrientation == ScreenOrientation.Portrait || mDeviceOrientation == ScreenOrientation.PortraitUpsideDown)
+            {
+                RectTransform rectTrans = gameObject.GetComponent<RectTransform>();
+                rectTrans.pivot = mPortraitPivot;
+                rectTrans.anchorMin = mPortraitAnchorMin;
+                rectTrans.anchorMax = mPortraitAnchorMax;
+                rectTrans.offsetMin = mPortraitOffsetMin;
+                rectTrans.offsetMax = mPortraitOffsetMax;
             }
         }
 
@@ -243,6 +220,19 @@ namespace MyClasses.UI
         {
             EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour(mScript), typeof(MyUGUIOrientationAnchor), false);
 
+            bool isPortrait = true;
+            if (!Application.isPlaying)
+            {
+                System.Type T = System.Type.GetType("UnityEditor.GameView,UnityEditor");
+                System.Reflection.MethodInfo getSizeOfMainGameView = T.GetMethod("GetSizeOfMainGameView", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                Vector2 resolution = (Vector2)getSizeOfMainGameView.Invoke(null, null);
+                isPortrait = resolution.x < resolution.y;
+            }
+            else
+            {
+                isPortrait = Screen.width < Screen.height;
+            }
+
             serializedObject.Update();
 
             EditorGUILayout.LabelField(string.Empty);
@@ -250,7 +240,7 @@ namespace MyClasses.UI
 
             EditorGUILayout.LabelField(string.Empty);
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Portrait", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Portrait" + (isPortrait ? " (Current)" : string.Empty), EditorStyles.boldLabel);
             if (GUILayout.Button("Use Current Anchor", GUILayout.MaxWidth(135)))
             {
                 mPortraitPivot.vector2Value = mRectTransform.pivot;
@@ -268,7 +258,7 @@ namespace MyClasses.UI
 
             EditorGUILayout.LabelField(string.Empty);
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Landscape", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Landscape" + (!isPortrait ? " (Current)" : string.Empty), EditorStyles.boldLabel);
             if (GUILayout.Button("Use Current Anchor", GUILayout.MaxWidth(135)))
             {
                 mLandscapePivot.vector2Value = mRectTransform.pivot;
@@ -288,7 +278,7 @@ namespace MyClasses.UI
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Anchor Now", GUILayout.MaxWidth(135)))
             {
-                mScript.Anchor(0);
+                mScript.Anchor();
             }
             GUILayout.EndHorizontal();
 

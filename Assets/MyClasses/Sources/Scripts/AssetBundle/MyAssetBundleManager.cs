@@ -4,6 +4,11 @@
  * Class:       MyAssetBundleManager (version 1.1)
  */
 
+#pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0618
+#pragma warning disable 0649
+
 using UnityEngine;
 using System;
 using System.Collections;

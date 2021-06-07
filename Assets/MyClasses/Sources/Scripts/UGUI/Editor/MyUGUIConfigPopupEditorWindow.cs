@@ -24,16 +24,16 @@ namespace MyClasses.UI.Tool
 
         #endregion
 
-        #region ----- MonoBehaviour Event -----
+        #region ----- Implement MonoBehaviour -----
 
         /// <summary>
         /// OnEnable.
         /// </summary>
         void OnEnable()
         {
-            if (!Directory.Exists("Assets/Resources/" + MyUGUIManager.SETTING_DIRECTORY))
+            if (!Directory.Exists("Assets/Resources/" + MyUGUIManager.CONFIG_DIRECTORY))
             {
-                Directory.CreateDirectory("Assets/Resources/" + MyUGUIManager.SETTING_DIRECTORY);
+                Directory.CreateDirectory("Assets/Resources/" + MyUGUIManager.CONFIG_DIRECTORY);
             }
 
             if (!Directory.Exists("Assets/Resources/" + MyUGUIManager.SCENE_DIRECTORY))
@@ -131,7 +131,7 @@ namespace MyClasses.UI.Tool
         /// </summary>
         private void _DeleteAssetFile()
         {
-            string filePath = "Assets/Resources/" + MyUGUIManager.SETTING_DIRECTORY + typeof(MyUGUIConfigPopups).Name + ".asset";
+            string filePath = "Assets/Resources/" + MyUGUIManager.CONFIG_DIRECTORY + typeof(MyUGUIConfigPopups).Name + ".asset";
             if (File.Exists(filePath))
             {
                 AssetDatabase.DeleteAsset(filePath);
@@ -150,7 +150,7 @@ namespace MyClasses.UI.Tool
                 return;
             }
 
-            string filePath = "Assets/Resources/" + MyUGUIManager.SETTING_DIRECTORY + typeof(MyUGUIConfigPopups).Name + ".asset";
+            string filePath = "Assets/Resources/" + MyUGUIManager.CONFIG_DIRECTORY + typeof(MyUGUIConfigPopups).Name + ".asset";
             mPopups = AssetDatabase.LoadAssetAtPath(filePath, typeof(MyUGUIConfigPopups)) as MyUGUIConfigPopups;
             if (mPopups == null)
             {

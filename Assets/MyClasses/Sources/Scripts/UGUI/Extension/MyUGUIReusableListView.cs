@@ -1,8 +1,12 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIReusableListView (version 2.7)
+ * Class:       MyUGUIReusableListView (version 2.8)
  */
+
+#pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0649
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -279,12 +283,10 @@ namespace MyClasses.UI
         /// </summary>
         public static void CreateTemplate()
         {
-            GameObject canvas = MyUtilities.FindObjectInRoot("Canvas");
-
             GameObject obj = new GameObject("ReusableListView");
-            if (canvas != null)
+            if (Selection.activeTransform != null)
             {
-                obj.transform.SetParent(canvas.transform, false);
+                obj.transform.parent = Selection.activeTransform;
             }
 
             GameObject viewport = new GameObject("Viewport");

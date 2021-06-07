@@ -72,7 +72,7 @@ namespace MyClasses.UI
         {
             base.OnUGUIInit();
 
-            GameObject = MyUtilities.FindObjectInFirstLayer(MyUGUIManager.Instance.Canvas, PrefabName);
+            GameObject = MyUtilities.FindObjectInFirstLayer(MyUGUIManager.Instance.Canvas.gameObject, PrefabName);
             if (GameObject == null)
             {
                 if (IsUseAssetBundle)

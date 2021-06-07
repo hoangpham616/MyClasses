@@ -1,10 +1,12 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPieChart (version 2.6)
+ * Class:       MyUGUIPieChart (version 2.7)
  */
 
 #pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0649
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -93,7 +95,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Event -----
+        #region ----- Implement MonoBehaviour -----
 
         /// <summary>
         /// Start.
@@ -163,12 +165,10 @@ namespace MyClasses.UI
         /// </summary>
         public static void CreateTemplate()
         {
-            GameObject canvas = MyUtilities.FindObjectInRoot("Canvas");
-
             GameObject obj = new GameObject("PieChart");
-            if (canvas != null)
+            if (Selection.activeTransform != null)
             {
-                obj.transform.SetParent(canvas.transform, false);
+                obj.transform.parent = Selection.activeTransform;
             }
 
             obj.AddComponent<MyUGUIPieChart>();
@@ -270,7 +270,7 @@ namespace MyClasses.UI
             float densityValue = (float)densityProperty.intValue;
             densityProperty.intValue = (int)EditorGUILayout.Slider("Density", densityValue, 1, 200);
 
-            mIsVisible = EditorGUILayout.Foldout(mIsVisible, "Pieces");
+            mIsVisible = EditorGUILayout.Foldout(mIsVisible, "Pieces", true);
             if (mIsVisible)
             {
                 SerializedProperty piecesProperty = serializedObject.FindProperty("mListPiece");

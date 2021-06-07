@@ -60,7 +60,7 @@ namespace MyClasses.UI
 
         public bool IsActive
         {
-            get { return mGameObject != null && mGameObject.activeSelf; }
+            get { return mGameObject != null && mGameObject.activeSelf && State != EBaseState.Idle; }
         }
 
         public bool IsLoaded

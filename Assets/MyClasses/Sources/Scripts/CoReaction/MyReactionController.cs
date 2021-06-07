@@ -35,7 +35,7 @@ namespace MyClasses.CoReaction
 
         #endregion
 
-        #region ----- MonoBehaviour Event -----
+        #region ----- Implement MonoBehaviour -----
 
         /// <summary>
         /// LateUpdate.

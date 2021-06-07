@@ -1,10 +1,11 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyLocalizationManager (version 2.21)
+ * Class:       MyLocalizationManager (version 3.3)
  */
 
 #pragma warning disable 0162
+#pragma warning disable 0414
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -23,18 +24,16 @@ namespace MyClasses
     {
         #region ----- Variable -----
 
+#if USE_MY_LOCALIZATION_ARABIC
+        public readonly string[] ARABIC_SYMBOLS = new string[] { ".", "؟", "(" };
+#endif
+
+        public static string CONFIG_DIRECTORY = "Configs/";
+
         [SerializeField]
-        private string mPathPersistent = "/localization.csv";
+        private MyLocalizationConfig mConfig;
         [SerializeField]
-        private string mPathResources = "Configs/localization";
-        [SerializeField]
-        private EPath mPath = EPath.RESOURCES;
-        [SerializeField]
-        private EMode mMode = EMode.DEVICE_LANGUAGE_AND_CACHE;
-        [SerializeField]
-        private ELanguage mDefaultLanguage = ELanguage.Vietnamese;
-        [SerializeField]
-        private bool mIsConvertKhmerFont = true;
+        private bool mIsAutoSaveOnChange = true;
 
         private ELanguage mLanguageType = ELanguage.None;
         private string[] mLanguageKeys;
@@ -46,34 +45,9 @@ namespace MyClasses
 
         #region ----- Property -----
 
-        public string PathPersistent
+        public MyLocalizationConfig Config
         {
-            get { return mPathPersistent; }
-            set { mPathPersistent = value; }
-        }
-
-        public string PathResources
-        {
-            get { return mPathResources; }
-            set { mPathResources = value; }
-        }
-
-        public EPath Path
-        {
-            get { return mPath; }
-            set { mPath = value; }
-        }
-
-        public EMode Mode
-        {
-            get { return mMode; }
-            set { mMode = value; }
-        }
-
-        public ELanguage DefaultLanguage
-        {
-            get { return mDefaultLanguage; }
-            set { mDefaultLanguage = value; }
+            get { return mConfig; }
         }
 
         public ELanguage Language
@@ -82,18 +56,20 @@ namespace MyClasses
             {
                 if (mLanguageType == ELanguage.None)
                 {
-                    switch (mMode)
+                    switch (Config.Mode)
                     {
                         case EMode.CACHE_ONLY:
                             {
                                 _LoadLanguageFromCache();
                             }
                             break;
+
                         case EMode.DEVICE_LANGUAGE_ONLY:
                             {
                                 _LoadLanguageBasedOnDevice();
                             }
                             break;
+
                         case EMode.DEVICE_LANGUAGE_AND_CACHE:
                             {
                                 _LoadLanguagBasedOnDeviceAndCache();
@@ -132,8 +108,16 @@ namespace MyClasses
                         {
                             GameObject obj = new GameObject(typeof(MyLocalizationManager).Name);
                             mInstance = obj.AddComponent<MyLocalizationManager>();
-                            DontDestroyOnLoad(obj);
+                            if (Application.isPlaying)
+                            {
+                                DontDestroyOnLoad(obj);
+                            }
                         }
+                        else if (Application.isPlaying)
+                        {
+                            DontDestroyOnLoad(mInstance);
+                        }
+                        mInstance.LoadConfig();
                     }
                 }
                 return mInstance;
@@ -144,84 +128,82 @@ namespace MyClasses
 
         #region ----- Public Method -----
 
+#if UNITY_EDITOR
+
         /// <summary>
-        /// Initalize.
+        /// Create a template.
         /// </summary>
-        /// <param name="localized mode"></param>
-        /// <param name="default language"></param>
-        public void Init(EMode mode, ELanguage defaultLanguage)
+        public static void CreateTemplate()
         {
-            mMode = mode;
-            mDefaultLanguage = defaultLanguage;
-            LoadLanguage(Language);
+            GameObject obj = new GameObject(typeof(MyLocalizationManager).Name);
+            MyLocalizationManager script = obj.AddComponent<MyLocalizationManager>();
+            script.LoadConfig();
+
+            EditorGUIUtility.PingObject(obj);
+            Selection.activeGameObject = obj.gameObject;
         }
 
         /// <summary>
-        /// Reload localization file.
+        /// Save config to asset file.
         /// </summary>
-        public void Reload()
+        public void SaveConfig()
         {
-            if (mPath == EPath.PERSISTENT)
-            {
-                if (!File.Exists(Application.persistentDataPath + mPathPersistent))
-                {
-                    Debug.LogError("[" + typeof(MyLocalizationManager).Name + "] Reload(): Could not find file \"" + (Application.persistentDataPath + mPathPersistent) + "\".");
+            EditorUtility.SetDirty(mConfig);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
 
-                    TextAsset textAsset = Resources.Load(mPathResources) as TextAsset;
-                    if (textAsset == null)
-                    {
-                        Debug.LogError("[" + typeof(MyLocalizationManager).Name + "] Reload(): Could not find file \"" + mPathResources + "\" too.");
-                    }
-                    else
-                    {
-                        mDictionary = MyCSV.DeserializeByRowAndRowName(textAsset.text);
-                        mLanguageKeys = mDictionary.First().Value;
-                    }
-                }
-                else
-                {
-                    string text = File.ReadAllText(Application.persistentDataPath + mPathPersistent);
-                    mDictionary = MyCSV.DeserializeByRowAndRowName(text);
-                    mLanguageKeys = mDictionary.First().Value;
-                }
-            }
-            else
+#endif
+
+        /// <summary>
+        /// Load config from asset file.
+        /// </summary>
+        public void LoadConfig()
+        {
+            if (mConfig != null)
             {
-                TextAsset textAsset = Resources.Load(mPathResources) as TextAsset;
-                if (textAsset == null)
-                {
-                    Debug.LogError("[" + typeof(MyLocalizationManager).Name + "] Reload(): Could not find file \"" + mPathResources + "\".");
-                }
-                else
-                {
-                    mDictionary = MyCSV.DeserializeByRowAndRowName(textAsset.text);
-                    mLanguageKeys = mDictionary.First().Value;
-                }
+                return;
             }
 
-            if (mLanguageKeys == null)
+#if UNITY_EDITOR
+            if (!Directory.Exists("Assets/Resources/" + MyLocalizationManager.CONFIG_DIRECTORY))
             {
-                mLanguageKeys = new string[1];
-                mLanguageKeys[0] = mDefaultLanguage.ToString();
+                Directory.CreateDirectory("Assets/Resources/" + MyLocalizationManager.CONFIG_DIRECTORY);
             }
+#endif
+
+            string filePath = MyLocalizationManager.CONFIG_DIRECTORY + typeof(MyLocalizationConfig).Name + ".asset";
+            mConfig = Resources.Load(filePath, typeof(MyLocalizationConfig)) as MyLocalizationConfig;
+#if UNITY_EDITOR
+            if (mConfig == null)
+            {
+                mConfig = ScriptableObject.CreateInstance<MyLocalizationConfig>();
+                AssetDatabase.CreateAsset(mConfig, "Assets/Resources/" + filePath);
+                AssetDatabase.SaveAssets();
+            }
+#endif
         }
 
         /// <summary>
-        /// Load language file.
+        /// Load language.
         /// </summary>
-        public void LoadLanguage(ELanguage language)
+        public void LoadLanguage(ELanguage language, bool isForce = false)
         {
             Language = language;
 
-            if (mLanguageKeys == null)
+            if (isForce)
             {
-                Reload();
+                mLanguageKeys = null;
             }
 
-            if (mIsConvertKhmerFont && Language == ELanguage.Unknown)
+            if (mLanguageKeys == null)
             {
-                MyFontKhmerConverter.Initialize();
+                _LoadLocalization();
             }
+
+#if USE_MY_LOCALIZATION_KHMER
+            MyFontKhmerConverter.Initialize();
+#endif
 
             for (int i = 0; i < mLanguageKeys.Length; i++)
             {
@@ -245,14 +227,38 @@ namespace MyClasses
 
             if (mDictionary.ContainsKey(key))
             {
-                if (mIsConvertKhmerFont && mLanguageType == ELanguage.Unknown)
+#if USE_MY_LOCALIZATION_ARABIC
+                // please import "Arabic Support" package
+                if (mLanguageType == ELanguage.Arabic)
+                {
+                    string value = mDictionary[key][mLanguageIndex];
+                    string arabic = ArabicSupport.ArabicFixer.Fix(value, false, false);
+                    for (int i = 0; i < 10; ++i)
+                    {
+                        string format = "{" + i + "}";
+                        if (value.Contains(format))
+                        {
+                            arabic = arabic.Replace("}{" + i, format);
+                            for (int j = 0; j < ARABIC_SYMBOLS.Length; ++j)
+                            {
+                                arabic = arabic.Replace(format + ARABIC_SYMBOLS[j], ARABIC_SYMBOLS[j] + format);
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    return arabic;
+                }
+#endif
+#if USE_MY_LOCALIZATION_KHMER
+                if (mLanguageType == ELanguage.Unknown)
                 {
                     return MyFontKhmerConverter.Convert(mDictionary[key][mLanguageIndex]);
                 }
-                else
-                {
-                    return mDictionary[key][mLanguageIndex];
-                }
+#endif
+                return mDictionary[key][mLanguageIndex];
             }
 
             Debug.LogWarning("[" + typeof(MyLocalizationManager).Name + "] LoadKey(): Key \"" + key + "\" missing or null");
@@ -342,6 +348,56 @@ namespace MyClasses
         #region ----- Private Method -----
 
         /// <summary>
+        /// Load localization from csv file.
+        /// </summary>
+        private void _LoadLocalization()
+        {
+            if (Config.Location == ELocation.PERSISTENT)
+            {
+                if (!File.Exists(Application.persistentDataPath + Config.PersistentPath))
+                {
+                    Debug.LogError("[" + typeof(MyLocalizationManager).Name + "] Reload(): Could not find file \"" + (Application.persistentDataPath + Config.PersistentPath) + "\".");
+
+                    TextAsset textAsset = Resources.Load(Config.ResourcesPath) as TextAsset;
+                    if (textAsset == null)
+                    {
+                        Debug.LogError("[" + typeof(MyLocalizationManager).Name + "] Reload(): Could not find file \"" + Config.ResourcesPath + "\" too.");
+                    }
+                    else
+                    {
+                        mDictionary = MyCSV.DeserializeByRowAndRowName(textAsset.text);
+                        mLanguageKeys = mDictionary.First().Value;
+                    }
+                }
+                else
+                {
+                    string text = File.ReadAllText(Application.persistentDataPath + Config.PersistentPath);
+                    mDictionary = MyCSV.DeserializeByRowAndRowName(text);
+                    mLanguageKeys = mDictionary.First().Value;
+                }
+            }
+            else
+            {
+                TextAsset textAsset = Resources.Load(Config.ResourcesPath) as TextAsset;
+                if (textAsset == null)
+                {
+                    Debug.LogError("[" + typeof(MyLocalizationManager).Name + "] Reload(): Could not find file \"" + Config.ResourcesPath + "\".");
+                }
+                else
+                {
+                    mDictionary = MyCSV.DeserializeByRowAndRowName(textAsset.text);
+                    mLanguageKeys = mDictionary.First().Value;
+                }
+            }
+
+            if (mLanguageKeys == null)
+            {
+                mLanguageKeys = new string[1];
+                mLanguageKeys[0] = Config.DefaultLanguage.ToString();
+            }
+        }
+
+        /// <summary>
         /// Load language type from cache.
         /// </summary>
         private void _LoadLanguageFromCache()
@@ -353,7 +409,7 @@ namespace MyClasses
             }
             else
             {
-                mLanguageType = mDefaultLanguage;
+                mLanguageType = Config.DefaultLanguage;
             }
         }
 
@@ -362,13 +418,13 @@ namespace MyClasses
         /// </summary>
         private void _LoadLanguageBasedOnDevice()
         {
-            if (Application.systemLanguage != SystemLanguage.Unknown && Enum.IsDefined(typeof(ELanguage), (int)Application.systemLanguage))
+            if (Application.systemLanguage < SystemLanguage.Unknown && Enum.IsDefined(typeof(ELanguage), (int)Application.systemLanguage))
             {
                 mLanguageType = (ELanguage)Application.systemLanguage;
             }
             else
             {
-                mLanguageType = mDefaultLanguage;
+                mLanguageType = Config.DefaultLanguage;
             }
         }
 
@@ -392,7 +448,7 @@ namespace MyClasses
 
         #region ----- Enumeration -----
 
-        public enum EPath
+        public enum ELocation
         {
             RESOURCES,
             PERSISTENT
@@ -450,7 +506,8 @@ namespace MyClasses
             Vietnamese = 39,
             ChineseSimplified = 40,
             ChineseTraditional = 41,
-            Unknown = 42
+            Unknown = 42,
+            Hindi = 43,
         }
 
         #endregion
@@ -462,6 +519,8 @@ namespace MyClasses
     public class MyLocalizationManagerEditor : Editor
     {
         private MyLocalizationManager mScript;
+        private SerializedProperty mConfig;
+        private SerializedProperty mIsAutoSaveOnChange;
 
         /// <summary>
         /// OnEnable.
@@ -469,6 +528,13 @@ namespace MyClasses
         void OnEnable()
         {
             mScript = (MyLocalizationManager)target;
+            mConfig = serializedObject.FindProperty("mConfig");
+            mIsAutoSaveOnChange = serializedObject.FindProperty("mIsAutoSaveOnChange");
+
+            if (mScript.Config == null)
+            {
+                mScript.LoadConfig();
+            }
         }
 
         /// <summary>
@@ -478,12 +544,45 @@ namespace MyClasses
         {
             EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour(mScript), typeof(MyLocalizationManager), false);
 
-            mScript.PathPersistent = EditorGUILayout.TextField("Persistent Path", mScript.PathPersistent);
-            mScript.PathResources = EditorGUILayout.TextField("Resources Path", mScript.PathResources);
+            serializedObject.Update();
+
+            EditorGUILayout.ObjectField(mConfig, new GUIContent("Config File"));
+
+            EditorGUI.BeginChangeCheck();
+
+            mIsAutoSaveOnChange.boolValue = EditorGUILayout.Toggle("Auto Save On Change", mIsAutoSaveOnChange.boolValue);
+
             EditorGUILayout.LabelField(string.Empty);
-            mScript.Path = (MyLocalizationManager.EPath)EditorGUILayout.EnumPopup("Path", mScript.Path);
-            mScript.Mode = (MyLocalizationManager.EMode)EditorGUILayout.EnumPopup("Mode", mScript.Mode);
-            mScript.DefaultLanguage = (MyLocalizationManager.ELanguage)EditorGUILayout.EnumPopup("Default Language", mScript.DefaultLanguage);
+            if (GUILayout.Button("Save"))
+            {
+                mScript.SaveConfig();
+            }
+
+            EditorGUILayout.LabelField(string.Empty);
+            EditorGUILayout.LabelField("Location", EditorStyles.boldLabel);
+            mScript.Config.Location = (MyLocalizationManager.ELocation)EditorGUILayout.EnumPopup("   Location", mScript.Config.Location);
+            if (mScript.Config.Location == MyLocalizationManager.ELocation.RESOURCES)
+            {
+                mScript.Config.ResourcesPath = EditorGUILayout.TextField("   Path", mScript.Config.ResourcesPath);
+            }
+            else
+            {
+                mScript.Config.PersistentPath = EditorGUILayout.TextField("   Path", mScript.Config.PersistentPath);
+            }
+
+            EditorGUILayout.LabelField(string.Empty);
+            EditorGUILayout.LabelField("Other", EditorStyles.boldLabel);
+            mScript.Config.Mode = (MyLocalizationManager.EMode)EditorGUILayout.EnumPopup("   Mode", mScript.Config.Mode);
+            mScript.Config.DefaultLanguage = (MyLocalizationManager.ELanguage)EditorGUILayout.EnumPopup("   Default Language", mScript.Config.DefaultLanguage);
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+                if (mIsAutoSaveOnChange.boolValue)
+                {
+                    mScript.SaveConfig();
+                }
+            }
         }
     }
 

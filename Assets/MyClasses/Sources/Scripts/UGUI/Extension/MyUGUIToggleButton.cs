@@ -1,8 +1,12 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIToggleButton (version 2.18)
+ * Class:       MyUGUIToggleButton (version 2.21)
  */
+
+#pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0649
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -34,9 +38,9 @@ namespace MyClasses.UI
         [SerializeField]
         private Image mToggle;
         [SerializeField]
-        private Text mTitleTurnOn;
+        private GameObject mTitleTurnOn;
         [SerializeField]
-        private Text mTitleTurnOff;
+        private GameObject mTitleTurnOff;
         [SerializeField]
         private bool mIsShowTitle = true;
         [SerializeField]
@@ -117,7 +121,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Event -----
+        #region ----- Implement MonoBehaviour -----
 
         void OnEnable()
         {
@@ -295,12 +299,10 @@ namespace MyClasses.UI
         /// </summary>
         public static void CreateTemplate()
         {
-            GameObject canvas = MyUtilities.FindObjectInRoot("Canvas");
-
             GameObject obj = new GameObject("ToggleButton");
-            if (canvas != null)
+            if (Selection.activeTransform != null)
             {
-                obj.transform.SetParent(canvas.transform, false);
+                obj.transform.parent = Selection.activeTransform;
             }
 
             RectTransform contentRectTransform = obj.AddComponent<RectTransform>();
@@ -360,24 +362,24 @@ namespace MyClasses.UI
 
             GameObject positionTurnOn = new GameObject("PositionTurnOn");
             positionTurnOn.SetActive(false);
-            positionTurnOn.transform.SetParent(obj.transform, false);
+            positionTurnOn.transform.SetParent(background.transform, false);
 
             RectTransform positionTurnOnRectTransform = positionTurnOn.AddComponent<RectTransform>();
-            MyUtilities.Anchor(ref positionTurnOnRectTransform, MyUtilities.EAnchorPreset.MiddleCenter, MyUtilities.EAnchorPivot.MiddleCenter, 10, 10, -50, 0);
+            MyUtilities.Anchor(ref positionTurnOnRectTransform, MyUtilities.EAnchorPreset.MiddleCenter, MyUtilities.EAnchorPivot.MiddleCenter, 10, 10, 50, 0);
 
             GameObject positionTurnOff = new GameObject("PositionTurnOff");
             positionTurnOff.SetActive(false);
-            positionTurnOff.transform.SetParent(obj.transform, false);
+            positionTurnOff.transform.SetParent(background.transform, false);
 
             RectTransform positionTurnOffRectTransform = positionTurnOff.AddComponent<RectTransform>();
-            MyUtilities.Anchor(ref positionTurnOffRectTransform, MyUtilities.EAnchorPreset.MiddleCenter, MyUtilities.EAnchorPivot.MiddleCenter, 10, 10, 50, 0);
+            MyUtilities.Anchor(ref positionTurnOffRectTransform, MyUtilities.EAnchorPreset.MiddleCenter, MyUtilities.EAnchorPivot.MiddleCenter, 10, 10, -50, 0);
 
             MyUGUIToggleButton objToggleButton = obj.AddComponent<MyUGUIToggleButton>();
             objToggleButton.mButton = backgroundButton;
             objToggleButton.mBackground = backgroundImage;
             objToggleButton.mToggle = toggleImage;
-            objToggleButton.mTitleTurnOn = titleTurnOnText;
-            objToggleButton.mTitleTurnOff = titleTurnOffText;
+            objToggleButton.mTitleTurnOn = titleTurnOnText.gameObject;
+            objToggleButton.mTitleTurnOff = titleTurnOffText.gameObject;
             objToggleButton.mTurnOnPosition = positionTurnOn.transform;
             objToggleButton.mTurnOffPosition = positionTurnOff.transform;
 
@@ -446,7 +448,7 @@ namespace MyClasses.UI
                 {
                     mTitleTurnOff.gameObject.SetActive(false);
                 }
-                mToggle.transform.position = mTurnOnPosition.position;
+                mToggle.transform.localPosition = mTurnOnPosition.localPosition;
             }
             else
             {
@@ -466,7 +468,7 @@ namespace MyClasses.UI
                 {
                     mTitleTurnOn.gameObject.SetActive(false);
                 }
-                mToggle.transform.position = mTurnOffPosition.position;
+                mToggle.transform.localPosition = mTurnOffPosition.localPosition;
             }
 
             if (OnValueChange != null)
@@ -545,8 +547,8 @@ namespace MyClasses.UI
             mButton.objectReferenceValue = EditorGUILayout.ObjectField("Button", mButton.objectReferenceValue, typeof(Button), true);
             mBackground.objectReferenceValue = EditorGUILayout.ObjectField("Image Background", mBackground.objectReferenceValue, typeof(Image), true);
             mToggle.objectReferenceValue = EditorGUILayout.ObjectField("Image Toggle", mToggle.objectReferenceValue, typeof(Image), true);
-            mTextTurnOn.objectReferenceValue = EditorGUILayout.ObjectField("Text Turn On (Nullable)", mTextTurnOn.objectReferenceValue, typeof(Text), true);
-            mTextTurnOff.objectReferenceValue = EditorGUILayout.ObjectField("Text Turn Off (Nullable)", mTextTurnOff.objectReferenceValue, typeof(Text), true);
+            mTextTurnOn.objectReferenceValue = EditorGUILayout.ObjectField("Text Turn On (Nullable)", mTextTurnOn.objectReferenceValue, typeof(GameObject), true);
+            mTextTurnOff.objectReferenceValue = EditorGUILayout.ObjectField("Text Turn Off (Nullable)", mTextTurnOff.objectReferenceValue, typeof(GameObject), true);
             mIsShowTitle.boolValue = EditorGUILayout.Toggle("Is Show Title", mIsShowTitle.boolValue);
             mScript.SlideTime = EditorGUILayout.FloatField("Slide Time", mScript.SlideTime);
             EditorGUI.indentLevel--;

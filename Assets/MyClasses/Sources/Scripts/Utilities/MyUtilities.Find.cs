@@ -1,11 +1,13 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUtilities.Find (version 1.1)
+ * Class:       MyUtilities.Find (version 1.3)
  */
 
 using UnityEngine;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace MyClasses
 {
@@ -140,6 +142,50 @@ namespace MyClasses
             }
 
             return listObj.ToArray();
+        }
+
+        /// <summary>
+        /// Return child objects.
+        /// </summary>
+        public static T[] FindChildObjects<T>(Transform parent)
+        {
+            List<T> listObj = new List<T>();
+
+            if (parent != null)
+            {
+                foreach (Transform child in parent)
+                {
+                    listObj.Add(child.GetComponent<T>());
+                }
+            }
+
+            return listObj.ToArray();
+        }
+
+        #endregion
+
+        #region ----- Type -----
+
+        /// <summary>
+        /// Return an type array by class name.
+        /// </summary>
+        public static Type[] FindTypesByName(string className)
+        {
+            List<Type> types = new List<Type>();
+
+            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type[] assemblyTypes = a.GetTypes();
+                for (int j = 0; j < assemblyTypes.Length; j++)
+                {
+                    if (assemblyTypes[j].Name == className)
+                    {
+                        types.Add(assemblyTypes[j]);
+                    }
+                }
+            }
+
+            return types.ToArray();
         }
 
         #endregion

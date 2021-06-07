@@ -5,11 +5,48 @@
  */
 
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace MyClasses
 {
     public static partial class MyUtilities
     {
+        #region ----- Number -----
+
+        /// <summary>
+        /// Check if the array contains a element.
+        /// </summary>
+        public static bool CheckContains(int[] array, int target)
+        {
+            for (int i = 0; i < array.Length; ++i)
+            {
+                if (array[i] == target)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check if the list contains a element.
+        /// </summary>
+        public static bool CheckContains(List<int> list, int target)
+        {
+            for (int i = 0, count = list.Count; i < count; ++i)
+            {
+                if (list[i] == target)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        #endregion
+
+        #region ----- Point -----
+
         /// <summary>
         /// Check if the triangle contains a point.
         /// </summary>
@@ -81,5 +118,7 @@ namespace MyClasses
 
             return true;
         }
+
+        #endregion
     }
 }

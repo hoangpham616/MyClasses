@@ -4,6 +4,10 @@
  * Class:       MyUGUIDropHandler (version 2.0)
  */
 
+#pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0649
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

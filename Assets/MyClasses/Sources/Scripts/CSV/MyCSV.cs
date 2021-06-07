@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyCSV (version 1.3)
+ * Class:       MyCSV (version 1.5)
  */
 
 using System.Collections.Generic;
@@ -128,23 +128,44 @@ namespace MyClasses
             List<string> listCell = new List<string>();
             StringBuilder stringBuilder = new StringBuilder();
             bool isQuote = false;
+            bool isHasQuotationMarksInCell = false; // '""' represents '"' when exporting CSV file
 
-            foreach (char c in input.ToCharArray())
+            char[] characters = input.ToCharArray();
+            for(int i = 0; i < characters.Length; ++i)
             {
+                char c = characters[i];
                 if (c == charComma && !isQuote)
                 {
                     listCell.Add(stringBuilder.ToString().Replace(charCarriageReturnInCell, "\n"));
                     stringBuilder.Length = 0;
                 }
-                else if (c == charQuotationMarks || c == '\n')
+                else if (c == '\n')
                 {
                     isQuote = !isQuote;
+                }
+                else if (c == charQuotationMarks)
+                {
+                    if (isQuote && isHasQuotationMarksInCell)
+                    {
+                        isHasQuotationMarksInCell = false;
+                    }
+                    else if (isQuote && i < characters.Length - 1 && characters[i + 1] != charComma)
+                    {
+                        stringBuilder.Append(c);
+                        isHasQuotationMarksInCell = true;
+                    }
+                    else
+                    {
+                        isQuote = !isQuote;
+                        isHasQuotationMarksInCell = false;
+                    }
                 }
                 else
                 {
                     stringBuilder.Append(c);
                 }
             }
+
             listCell.Add(stringBuilder.ToString().Replace(charCarriageReturnInCell, "\n"));
 
             return listCell;

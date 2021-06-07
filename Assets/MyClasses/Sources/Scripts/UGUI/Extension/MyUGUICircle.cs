@@ -1,10 +1,12 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUICircle (version 2.0)
+ * Class:       MyUGUICircle (version 2.2)
  */
 
 #pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0649
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -97,7 +99,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Event -----
+        #region ----- Implement MonoBehaviour -----
 
         /// <summary>
         /// Start.
@@ -118,7 +120,7 @@ namespace MyClasses.UI
         {
             vh.Clear();
 
-            float outer = -mRadius / 2;
+            float outer = -mRadius;
             float inner = outer + mThickness;
 
             Vector2 prevPos1 = Vector2.zero;
@@ -154,6 +156,39 @@ namespace MyClasses.UI
                 }
             }
         }
+
+        #endregion
+
+        #region ----- Public Method -----
+
+        /// <summary>
+        /// Refresh.
+        /// </summary>
+        public void Refresh()
+        {
+            SetAllDirty();
+        }
+
+#if UNITY_EDITOR
+
+        /// <summary>
+        /// Create a template.
+        /// </summary>
+        public static void CreateTemplate()
+        {
+            GameObject obj = new GameObject(typeof(MyUGUICircle).Name);
+            if (Selection.activeTransform != null)
+            {
+                obj.transform.parent = Selection.activeTransform;
+            }
+
+            obj.AddComponent<MyUGUIRadarChart>();
+
+            EditorGUIUtility.PingObject(obj);
+            Selection.activeGameObject = obj.gameObject;
+        }
+
+#endif
 
         #endregion
 

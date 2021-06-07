@@ -1,10 +1,12 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIRadarChart (version 2.6)
+ * Class:       MyUGUIRadarChart (version 2.7)
  */
 
 #pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0649
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -62,7 +64,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Event -----
+        #region ----- Implement MonoBehaviour -----
 
         /// <summary>
         /// Start.
@@ -125,12 +127,10 @@ namespace MyClasses.UI
         /// </summary>
         public static void CreateTemplate()
         {
-            GameObject canvas = MyUtilities.FindObjectInRoot("Canvas");
-
             GameObject obj = new GameObject("RadarChart");
-            if (canvas != null)
+            if (Selection.activeTransform != null)
             {
-                obj.transform.SetParent(canvas.transform, false);
+                obj.transform.parent = Selection.activeTransform;
             }
 
             obj.AddComponent<MyUGUIRadarChart>();
@@ -173,7 +173,7 @@ namespace MyClasses.UI
             SerializedProperty rotationProperty = serializedObject.FindProperty("mRotation");
             rotationProperty.floatValue = EditorGUILayout.Slider("Rotation", rotationProperty.floatValue, 0, 360);
 
-            mIsVisible = EditorGUILayout.Foldout(mIsVisible, "Verticles");
+            mIsVisible = EditorGUILayout.Foldout(mIsVisible, "Verticles", true);
             if (mIsVisible)
             {
                 SerializedProperty verticlesProperty = serializedObject.FindProperty("mListVerticle");

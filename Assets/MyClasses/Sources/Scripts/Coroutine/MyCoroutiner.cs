@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyCoroutiner (version 1.5)
+ * Class:       MyCoroutiner (version 1.6)
  */
 
 using UnityEngine;
@@ -22,6 +22,16 @@ namespace MyClasses
         #endregion
 
         #region ----- Public Method -----
+
+        /// <summary>
+        /// Excute a function after a delay.
+        /// </summary>
+        public static void ExcuteAfterEndOfFrame(Action action)
+        {
+            _Initialize();
+
+            mCoroutineInstance.StartCoroutine(_DelayActionUntilEndOfFrame(action));
+        }
 
         /// <summary>
         /// Excute a function after a delay.
@@ -189,6 +199,19 @@ namespace MyClasses
                 {
                     mCoroutineInstance = mCoroutineObject.AddComponent(typeof(CoroutineInstance)) as CoroutineInstance;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Delay a action.
+        /// </summary>
+        private static IEnumerator _DelayActionUntilEndOfFrame(Action action)
+        {
+            yield return new WaitForEndOfFrame();
+
+            if (action != null)
+            {
+                action();
             }
         }
 

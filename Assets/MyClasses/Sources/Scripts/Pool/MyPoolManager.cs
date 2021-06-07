@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyPoolManager (version 2.10)
+ * Class:       MyPoolManager (version 2.11)
  */
 
 using UnityEngine;
@@ -90,6 +90,44 @@ namespace MyClasses
         }
 
         /// <summary>
+        /// Provide an available object. If no objects are present in the pool, a new object is created and returned.
+        /// </summary>
+        public GameObject Use(GameObject prefab)
+        {
+            if (mDictPooler.ContainsKey(prefab.name))
+            {
+                mDictPooler[prefab.name].SetTemplate(prefab);
+                return mDictPooler[prefab.name].Use();
+            }
+
+            GameObject root = MyUtilities.FindObjectInFirstLayer(gameObject, prefab.name);
+            if (root == null)
+            {
+                root = new GameObject(prefab.name);
+                root.transform.SetParent(transform, false);
+            }
+
+            GameObject rootFree = MyUtilities.FindObjectInFirstLayer(root, "Free");
+            if (rootFree == null)
+            {
+                rootFree = new GameObject("Free");
+                rootFree.transform.SetParent(root.transform, false);
+            }
+
+            GameObject rootOccupied = MyUtilities.FindObjectInFirstLayer(root, "Occupied");
+            if (rootOccupied == null)
+            {
+                rootOccupied = new GameObject("Occupied");
+                rootOccupied.transform.SetParent(root.transform, false);
+            }
+
+            mDictPooler.Add(prefab.name, new MyPool(prefab.name, rootFree, rootOccupied));
+
+            mDictPooler[prefab.name].SetTemplate(prefab);
+            return Use(prefab.name, false);
+        }
+
+        /// <summary>
         /// Add an object back into the pool.
         /// </summary>
         public void Return(GameObject obj)
@@ -151,6 +189,14 @@ namespace MyClasses
         #endregion
 
         #region ----- Public Method -----
+        
+        /// <summary>
+        /// Set the template.
+        /// </summary>
+        public void SetTemplate(GameObject template)
+        {
+            mTemplate = template;
+        }
 
         /// <summary>
         /// Provide an available object. If no objects are present in the pool, a new object is created and returned.

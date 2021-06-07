@@ -1,8 +1,13 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopup1Button (version 2.11)
+ * Class:       MyUGUIPopup1Button (version 2.13)
  */
+
+#pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0618
+#pragma warning disable 0649
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,6 +26,7 @@ namespace MyClasses.UI
 
 #if USE_MY_UI_TMPRO
         private TextMeshProUGUI mTitleTMPro;
+        private TextMeshProUGUI mBodyTMPro;
 #endif
 
         private Text mTitle;
@@ -61,26 +67,37 @@ namespace MyClasses.UI
         {
             base.OnUGUIInit();
 
-            GameObject _container = MyUtilities.FindObjectInAllLayers(GameObject, "Container");
-            mBody = MyUtilities.FindObjectInFirstLayer(_container, "Body").GetComponent<Text>();
-            mButtonMain = MyUtilities.FindObjectInFirstLayer(_container, "ButtonMain").GetComponent<MyUGUIButton>();
+            GameObject container = MyUtilities.FindObjectInAllLayers(GameObject, "Container");
+            mButtonMain = MyUtilities.FindObjectInFirstLayer(container, "ButtonMain").GetComponent<MyUGUIButton>();
 
-            GameObject _title = MyUtilities.FindObjectInFirstLayer(_container, "Title");
-            if (_title != null)
+            GameObject title = MyUtilities.FindObjectInFirstLayer(container, "Title");
+            if (title != null)
             {
-                mTitle = _title.GetComponent<Text>();
+                mTitle = title.GetComponent<Text>();
 #if USE_MY_UI_TMPRO
                 if (mTitle == null)
                 {
-                    mTitleTMPro = _title.GetComponent<TextMeshProUGUI>();
+                    mTitleTMPro = title.GetComponent<TextMeshProUGUI>();
                 }
 #endif
             }
 
-            GameObject _close = MyUtilities.FindObjectInFirstLayer(_container, "ButtonClose");
-            if (_close != null)
+            GameObject body = MyUtilities.FindObjectInFirstLayer(container, "Body");
+            if (body != null)
             {
-                mButtonClose = _close.GetComponent<MyUGUIButton>();
+                mBody = body.GetComponent<Text>();
+#if USE_MY_UI_TMPRO
+                if (mBody == null)
+                {
+                    mBodyTMPro = body.GetComponent<TextMeshProUGUI>();
+                }
+#endif
+            }
+
+            GameObject close = MyUtilities.FindObjectInFirstLayer(container, "ButtonClose");
+            if (close != null)
+            {
+                mButtonClose = close.GetComponent<MyUGUIButton>();
             }
         }
 
@@ -236,7 +253,16 @@ namespace MyClasses.UI
             }
 #endif
 
-            mBody.text = body;
+            if (mBody != null)
+            {
+                mBody.text = body;
+            }
+#if USE_MY_UI_TMPRO
+            else if (mBodyTMPro != null)
+            {
+                mBodyTMPro.text = body;
+            }
+#endif
 
             if (mButtonClose != null)
             {
@@ -274,9 +300,9 @@ namespace MyClasses.UI
             string[] paths = new string[] { "Assets/MyClasses", "Assets/Core/MyClasses", "Assets/Plugin/MyClasses", "Assets/Plugins/MyClasses", "Assets/Framework/MyClasses", "Assets/Frameworks/MyClasses" };
             for (int i = 0; i < paths.Length; i++)
             {
-                if (System.IO.File.Exists(paths[i] + "/Animations/my_animator_dialog.controller"))
+                if (System.IO.File.Exists(paths[i] + "/Sources/Animations/my_animator_dialog.controller"))
                 {
-                    root_animator.runtimeAnimatorController = (RuntimeAnimatorController)UnityEditor.AssetDatabase.LoadAssetAtPath(paths[i] + "/Animations/my_animator_dialog.controller", typeof(RuntimeAnimatorController));
+                    root_animator.runtimeAnimatorController = (RuntimeAnimatorController)UnityEditor.AssetDatabase.LoadAssetAtPath(paths[i] + "/Sources/Animations/my_animator_dialog.controller", typeof(RuntimeAnimatorController));
                     Debug.LogError("[" + typeof(MyUGUIPopup1Button).Name + "] CreateTemplate(): please setup \"my_animator_dialog\" controller.");
                     Debug.LogError("[" + typeof(MyUGUIPopup1Button).Name + "] CreateTemplate(): mapping \"my_animation_dialog_show\" motion for \"Show\" state.");
                     Debug.LogError("[" + typeof(MyUGUIPopup1Button).Name + "] CreateTemplate(): mapping \"my_animation_dialog_hide\" motion for \"Hide\" state.");
@@ -340,6 +366,9 @@ namespace MyClasses.UI
             buttonClose_image.color = Color.red;
             buttonClose_image.raycastTarget = true;
 
+            Button buttonClose_button = buttonClose.AddComponent<Button>();
+            buttonClose_button.transition = Selectable.Transition.None;
+
             buttonClose.AddComponent<MyUGUIButton>();
 
             GameObject buttonMain = new GameObject("ButtonMain");
@@ -351,6 +380,9 @@ namespace MyClasses.UI
             Image buttonMain_image = buttonMain.AddComponent<Image>();
             buttonMain_image.color = Color.green;
             buttonMain_image.raycastTarget = true;
+
+            Button buttonMain_button = buttonMain.AddComponent<Button>();
+            buttonMain_button.transition = Selectable.Transition.None;
 
             buttonMain.AddComponent<MyUGUIButton>();
 

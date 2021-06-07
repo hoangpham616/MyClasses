@@ -1,8 +1,13 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIPopupOverlay (version 2.9)
+ * Class:       MyUGUIPopupOverlay (version 2.12)
  */
+
+#pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0618
+#pragma warning disable 0649
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -146,9 +151,9 @@ namespace MyClasses.UI
             string[] paths = new string[] { "Assets/MyClasses", "Assets/Core/MyClasses", "Assets/Plugin/MyClasses", "Assets/Plugins/MyClasses", "Assets/Framework/MyClasses", "Assets/Frameworks/MyClasses" };
             for (int i = 0; i < paths.Length; i++)
             {
-                if (System.IO.File.Exists(paths[i] + "/Animations/my_animator_popup_overlay.controller"))
+                if (System.IO.File.Exists(paths[i] + "/Sources/Animations/my_animator_popup_overlay.controller"))
                 {
-                    root_animator.runtimeAnimatorController = (RuntimeAnimatorController)UnityEditor.AssetDatabase.LoadAssetAtPath(paths[i] + "/Animations/my_animator_popup_overlay.controller", typeof(RuntimeAnimatorController));
+                    root_animator.runtimeAnimatorController = (RuntimeAnimatorController)UnityEditor.AssetDatabase.LoadAssetAtPath(paths[i] + "/Sources/Animations/my_animator_popup_overlay.controller", typeof(RuntimeAnimatorController));
                     Debug.LogError("[" + typeof(MyUGUIPopupOverlay).Name + "] CreateTemplate(): please setup \"my_animator_popup_overlay\" controller.");
                     Debug.LogError("[" + typeof(MyUGUIPopupOverlay).Name + "] CreateTemplate(): mapping \"my_animation_popup_overlay_show\" motion for \"Show\" state.");
                     Debug.LogError("[" + typeof(MyUGUIPopupOverlay).Name + "] CreateTemplate(): mapping \"my_animation_popup_overlay_hide\" motion for \"Hide\" state.");
@@ -166,14 +171,19 @@ namespace MyClasses.UI
             image.color = new Color(0, 0, 0, 0.5f);
             image.raycastTarget = true;
 
-            MyUGUIButton button = obj.AddComponent<MyUGUIButton>();
-            ColorBlock colorBlock = button.colors;
+            Button button = obj.AddComponent<Button>();
+            button.transition = Selectable.Transition.None;
+
+            MyUGUIButton myButton = obj.AddComponent<MyUGUIButton>();
+            ColorBlock colorBlock = myButton.Button.colors;
             colorBlock.normalColor = Color.white;
             colorBlock.highlightedColor = Color.white;
             colorBlock.pressedColor = Color.white;
             colorBlock.disabledColor = Color.white;
-            button.colors = colorBlock;
-            button.SFXClick = string.Empty;
+            myButton.Button.colors = colorBlock;
+            myButton.SoundResourcePath = string.Empty;
+            myButton.PressAnimationType = MyUGUIButton.EAnimationType.None;
+            myButton.ClickAnimationType = MyUGUIButton.EAnimationType.None;
 
             return obj;
         }

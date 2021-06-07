@@ -4,6 +4,11 @@
  * Class:       MyUGUISceneFading (version 2.8)
  */
 
+#pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0618
+#pragma warning disable 0649
+
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;

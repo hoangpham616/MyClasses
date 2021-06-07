@@ -12,6 +12,130 @@ namespace MyClasses.Tool
 {
     public class MyToolEditor
     {
+        #region ----- Managers -----
+
+        /// <summary>
+        /// Create a game object with MyLocalizationManager attached.
+        /// </summary>
+        [MenuItem("MyClasses/Managers/MyLocalizationManager/Create", false, 1)]
+        public static void CreateMyLocalizationManager()
+        {
+            MyLocalizationManager script = GameObject.FindObjectOfType<MyLocalizationManager>();
+            if (script != null)
+            {
+                EditorGUIUtility.PingObject(script);
+                Selection.activeGameObject = script.gameObject;
+
+                Debug.Log("[MyClasses] " + typeof(MyLocalizationManager).Name + " is existed.");
+            }
+            else
+            {
+                MyLocalizationManager.CreateTemplate();
+
+                Debug.Log("[MyClasses] " + typeof(MyLocalizationManager).Name + " was created.");
+            }
+        }
+
+        /// <summary>
+        /// Localize all MyLocalization in current scene.
+        /// </summary>
+        [MenuItem("MyClasses/Managers/MyLocalizationManager/Localize All", false, 2)]
+        public static void LocalizeAllMyLocalization()
+        {
+            MyLocalizationManager script = GameObject.FindObjectOfType<MyLocalizationManager>();
+            if (script != null)
+            {
+                script.LoadLanguage(script.Language, true);
+            }
+
+            MyLocalization[] scripts = GameObject.FindObjectsOfType<MyLocalization>();
+            foreach (var item in scripts)
+            {
+                item.Initialize();
+                item.Localize();
+            }
+
+            Debug.Log("[MyClasses] All " + typeof(MyLocalization).Name + "s in scene were lozalized.");
+        }
+
+        /// <summary>
+        /// Create a game object with MyTextStyleManager attached.
+        /// </summary>
+        [MenuItem("MyClasses/Managers/MyTextStyleManager/Create", false, 1)]
+        public static void CreateMyTextStyleManager()
+        {
+            MyTextStyleManager script = GameObject.FindObjectOfType<MyTextStyleManager>();
+            if (script != null)
+            {
+                EditorGUIUtility.PingObject(script);
+                Selection.activeGameObject = script.gameObject;
+
+                Debug.Log("[MyClasses] " + typeof(MyTextStyleManager).Name + " is existed.");
+            }
+            else
+            {
+                MyTextStyleManager.CreateTemplate();
+
+                Debug.Log("[MyClasses] " + typeof(MyTextStyleManager).Name + " was created.");
+            }
+        }
+
+        /// <summary>
+        /// Refresh all MyTextStyle in current scene.
+        /// </summary>
+        [MenuItem("MyClasses/Managers/MyTextStyleManager/Refresh All", false, 2)]
+        public static void LocalizeAllMyTextStyles()
+        {
+            MyTextStyle[] scripts = GameObject.FindObjectsOfType<MyTextStyle>();
+            foreach (var item in scripts)
+            {
+                item.Refresh();
+            }
+
+            Debug.Log("[MyClasses] All " + typeof(MyTextStyle).Name + "s in scene were refreshed.");
+        }
+
+        /// <summary>
+        /// Create a game object with MyImageStyleManager attached.
+        /// </summary>
+        [MenuItem("MyClasses/Managers/MyImageStyleManager/Create", false, 1)]
+        public static void CreateMyImageStyleManager()
+        {
+            MyImageStyleManager script = GameObject.FindObjectOfType<MyImageStyleManager>();
+            if (script != null)
+            {
+                EditorGUIUtility.PingObject(script);
+                Selection.activeGameObject = script.gameObject;
+
+                Debug.Log("[MyClasses] " + typeof(MyImageStyleManager).Name + " is existed.");
+            }
+            else
+            {
+                MyImageStyleManager.CreateTemplate();
+
+                Debug.Log("[MyClasses] " + typeof(MyImageStyleManager).Name + " was created.");
+            }
+        }
+
+        /// <summary>
+        /// Refresh all MyImageStyle in current scene.
+        /// </summary>
+        [MenuItem("MyClasses/Managers/MyImageStyleManager/Refresh All", false, 2)]
+        public static void RefreshAllMyImageStyles()
+        {
+            MyImageStyle[] scripts = GameObject.FindObjectsOfType<MyImageStyle>();
+            foreach (var item in scripts)
+            {
+                item.Refresh();
+            }
+
+            Debug.Log("[MyClasses] All " + typeof(MyImageStyle).Name + "s in scene were refreshed.");
+        }
+
+        #endregion
+
+        #region ----- Utilities -----
+
         /// <summary>
         /// Delete all PlayerPrefs.
         /// </summary>
@@ -116,5 +240,7 @@ namespace MyClasses.Tool
 
             Debug.Log("[MyClasses] Noise Texture (128x128) was created.");
         }
+
+        #endregion
     }
 }

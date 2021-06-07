@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyUGUIConfigIDEditor (version 2.3)
+ * Class:       MyUGUIConfigIDEditor (version 2.6)
  */
 
 using UnityEngine;
@@ -20,16 +20,16 @@ namespace MyClasses.UI.Tool
 
         #endregion
 
-        #region ----- MonoBehaviour Event -----
+        #region ----- Implement MonoBehaviour -----
 
         /// <summary>
         /// OnEnable.
         /// </summary>
         void OnEnable()
         {
-            if (!Directory.Exists("Assets/Resources/" + MyUGUIManager.SETTING_DIRECTORY))
+            if (!Directory.Exists("Assets/Resources/" + MyUGUIManager.CONFIG_DIRECTORY))
             {
-                Directory.CreateDirectory("Assets/Resources/" + MyUGUIManager.SETTING_DIRECTORY);
+                Directory.CreateDirectory("Assets/Resources/" + MyUGUIManager.CONFIG_DIRECTORY);
             }
 
             if (!Directory.Exists("Assets/Resources/" + MyUGUIManager.SCENE_DIRECTORY))
@@ -130,7 +130,7 @@ namespace MyClasses.UI.Tool
                 return;
             }
 
-            string filePath = "Assets/Resources/" + MyUGUIManager.SETTING_DIRECTORY + typeof(MyUGUIConfigGroups).Name + ".asset";
+            string filePath = "Assets/Resources/" + MyUGUIManager.CONFIG_DIRECTORY + typeof(MyUGUIConfigGroups).Name + ".asset";
             mGroups = AssetDatabase.LoadAssetAtPath(filePath, typeof(MyUGUIConfigGroups)) as MyUGUIConfigGroups;
             if (mGroups == null)
             {
@@ -195,7 +195,7 @@ namespace MyClasses.UI.Tool
             {
                 if (Directory.Exists(paths[i]))
                 {
-                    File.WriteAllText(paths[i] + "/Scripts/UGUI/Core/MyUGUIConfigID.cs", content);
+                    File.WriteAllText(paths[i] + "/Sources/Scripts/UGUI/MyUGUIConfigID.cs", content);
                     AssetDatabase.Refresh();
                     Debug.Log("[MyClasses] MyUGUIConfigID was created.");
                     return;

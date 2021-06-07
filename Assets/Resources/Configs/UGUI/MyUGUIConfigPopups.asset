@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 722bd1ba23ee84947b24783e904dac2d, type: 3}
+  m_Name: MyUGUIConfigPopups
+  m_EditorClassIdentifier: 
+  NumDefault: 3
+  ListPopup:
+  - IsFoldOut: 1
+    ID: 0
+    ScriptNameIndex: 0
+    ScriptName: MyClasses.UI.MyUGUIPopup0Button
+    PrefabNameIndex: 0
+    PrefabName: Dialog0ButtonPopup
+    AssetBundleURL: 
+    AssetBundleVersion: 0
+  - IsFoldOut: 1
+    ID: 1
+    ScriptNameIndex: 0
+    ScriptName: MyClasses.UI.MyUGUIPopup1Button
+    PrefabNameIndex: 0
+    PrefabName: Dialog1ButtonPopup
+    AssetBundleURL: 
+    AssetBundleVersion: 0
+  - IsFoldOut: 1
+    ID: 2
+    ScriptNameIndex: 0
+    ScriptName: MyClasses.UI.MyUGUIPopup2Buttons
+    PrefabNameIndex: 0
+    PrefabName: Dialog2ButtonsPopup
+    AssetBundleURL: 
+    AssetBundleVersion: 0
+  - IsFoldOut: 1
+    ID: 3
+    ScriptNameIndex: 222
+    ScriptName: PoolPopup
+    PrefabNameIndex: 2
+    PrefabName: PoolPopup
+    AssetBundleURL: 
+    AssetBundleVersion: 0
+  - IsFoldOut: 1
+    ID: 4
+    ScriptNameIndex: 220
+    ScriptName: LocalizationPopup
+    PrefabNameIndex: 1
+    PrefabName: LocalizationPopup
+    AssetBundleURL: 
+    AssetBundleVersion: 0
+  - IsFoldOut: 1
+    ID: 5
+    ScriptNameIndex: 219
+    ScriptName: AdMobPopup
+    PrefabNameIndex: 0
+    PrefabName: AdMobPopup
+    AssetBundleURL: 
+    AssetBundleVersion: 0

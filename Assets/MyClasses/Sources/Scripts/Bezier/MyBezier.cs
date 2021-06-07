@@ -13,20 +13,20 @@ namespace MyClasses
         #region ----- Public Method -----
 
         /// <summary>
-        /// Returns a point on a linear bezier curve based on time.
+        /// Returns a point on a linear bezier curve by time.
         /// </summary>
         /// <param name="t">0 -> 1</param>
-        public static Vector3 CalculateLinearBezierPoint(float t, Vector3 p0, Vector3 p1)
+        public static Vector3 GetLinearBezierPoint(Vector3 p0, Vector3 p1, float t)
         {
             t = Mathf.Clamp01(t);
             return p0 + (t * (p1 - p0));
         }
 
         /// <summary>
-        /// Returns a point on a quadratic bezier curve based on time.
+        /// Returns a point on a quadratic bezier curve by time.
         /// </summary>
         /// <param name="t">0 -> 1</param>
-        public static Vector3 CalculateQuadraticBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2)
+        public static Vector3 GetQuadraticBezierPoint(Vector3 p0, Vector3 p1, Vector3 p2, float t)
         {
             t = Mathf.Clamp01(t);
             float tt = t * t;
@@ -36,10 +36,10 @@ namespace MyClasses
         }
 
         /// <summary>
-        /// Returns a point on a cubic bezier based curve on time.
+        /// Returns a point on a cubic bezier curve by time.
         /// </summary>
         /// <param name="t">0 -> 1</param>
-        public static Vector3 CalculateCubicBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+        public static Vector3 GetCubicBezierPoint(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
         {
             t = Mathf.Clamp01(t);
             float tt = t * t;

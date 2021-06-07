@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyResourceManager (version 1.7)
+ * Class:       MyResourceManager (version 1.8)
  */
 
 using UnityEngine;
@@ -149,7 +149,7 @@ namespace MyClasses
         /// <summary>
         /// Load a prefab asynchronously.
         /// </summary>
-        public static void LoadAsyncPrefab(string path, Action<GameObject> onLoadComplete, bool isCache = true)
+        public static void LoadAsyncPrefab(string path, Action<float> onLoading, Action<GameObject> onLoadComplete, bool isCache = true)
         {
             if (mDictPrefab.ContainsKey(path))
             {
@@ -160,7 +160,7 @@ namespace MyClasses
                 return;
             }
 
-            MyCoroutiner.Start(_DoLoadAsyncPrefab(path, onLoadComplete, isCache));
+            MyCoroutiner.Start(_DoLoadAsyncPrefab(path, onLoading, onLoadComplete, isCache));
         }
 
         /// <summary>
@@ -501,10 +501,17 @@ namespace MyClasses
         /// <summary>
         /// Load a prefab asynchronously.
         /// </summary>
-        private static IEnumerator _DoLoadAsyncPrefab(string path, Action<GameObject> onLoadComplete, bool isCache)
+        private static IEnumerator _DoLoadAsyncPrefab(string path, Action<float> onLoading, Action<GameObject> onLoadComplete, bool isCache)
         {
             ResourceRequest requester = Resources.LoadAsync<GameObject>(path);
-            yield return requester;
+            while (!requester.isDone)
+            {
+                if (onLoading != null)
+                {
+                    onLoading(requester.progress);
+                }
+                yield return null;
+            }
 
             if (requester.asset == null)
             {

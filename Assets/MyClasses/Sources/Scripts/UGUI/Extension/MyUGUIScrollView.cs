@@ -4,6 +4,10 @@
  * Class:       MyUGUIScrollView (version 2.1)
  */
 
+#pragma warning disable 0114
+#pragma warning disable 0414
+#pragma warning disable 0649
+
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -19,7 +23,7 @@ namespace MyClasses.UI
 
         #endregion
 
-        #region ----- MonoBehaviour Event -----
+        #region ----- Implement MonoBehaviour -----
 
         void Awake()
         {
