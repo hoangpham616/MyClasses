@@ -91,10 +91,11 @@ namespace MyClasses.UI
         [SerializeField]
         private bool mIsTriggerClickEventAfterAnimationComplete = false;
 
-        private MyPointerEvent mOnEventPointerClick;
         private MyPointerEvent mOnEventPointerDown;
         private MyPointerEvent mOnEventPointerPress;
         private MyPointerEvent mOnEventPointerUp;
+        private MyPointerEvent mOnEventPointerClick;
+        private MyPointerEvent mOnEventPointerDoubleClick;
         private PointerEventData mPointerEventDataPress;
         private PointerEventData mPointerEventDataClick;
 
@@ -102,8 +103,9 @@ namespace MyClasses.UI
         private EEffectType mDarkType = EEffectType.Dark;
         private EEffectType mGrayType = EEffectType.Gray;
 
-        private long mId = 0;
         private bool mIsPressAnimationScaleCompleted = false;
+        private float mLastClickTime = 0;
+        private long mId = 0;
 
         #endregion
 
@@ -323,18 +325,6 @@ namespace MyClasses.UI
         }
 #endif
 
-        public MyPointerEvent OnEventPointerClick
-        {
-            get
-            {
-                if (mOnEventPointerClick == null)
-                {
-                    mOnEventPointerClick = new MyPointerEvent();
-                }
-                return mOnEventPointerClick;
-            }
-        }
-
         public MyPointerEvent OnEventPointerDown
         {
             get
@@ -368,6 +358,30 @@ namespace MyClasses.UI
                     mOnEventPointerUp = new MyPointerEvent();
                 }
                 return mOnEventPointerUp;
+            }
+        }
+
+        public MyPointerEvent OnEventPointerClick
+        {
+            get
+            {
+                if (mOnEventPointerClick == null)
+                {
+                    mOnEventPointerClick = new MyPointerEvent();
+                }
+                return mOnEventPointerClick;
+            }
+        }
+
+        public MyPointerEvent OnEventPointerDoubleClick
+        {
+            get
+            {
+                if (mOnEventPointerDoubleClick == null)
+                {
+                    mOnEventPointerDoubleClick = new MyPointerEvent();
+                }
+                return mOnEventPointerDoubleClick;
             }
         }
 
@@ -459,7 +473,23 @@ namespace MyClasses.UI
 
             if (Button.interactable)
             {
-                _ProcessPointerClickEvent();
+                if (mOnEventPointerDoubleClick != null)
+                {
+                    if (mLastClickTime == 0 || Time.time - mLastClickTime > 1)
+                    {
+                        mLastClickTime = Time.time;
+                        _ProcessPointerClickEvent();
+                    }
+                    else
+                    {
+                        mLastClickTime = 0;
+                        _ProcessPointerDoubleClickEvent();
+                    }
+                }
+                else
+                {
+                    _ProcessPointerClickEvent();
+                }
             }
         }
 
@@ -1028,6 +1058,82 @@ namespace MyClasses.UI
                             if (mOnEventPointerClick != null && mPointerEventDataClick != null)
                             {
                                 mOnEventPointerClick.Invoke(mPointerEventDataClick);
+                            }
+                            mPointerEventDataClick = null;
+                        }
+                    }
+                    break;
+            }
+
+            switch (mClickSoundType)
+            {
+                case ESoundType.ResourcesPath:
+                    {
+                        if (!string.IsNullOrEmpty(mClickSoundResourcePath))
+                        {
+                            MySoundManager.Instance.PlaySFX(mClickSoundResourcePath, mClickSoundDelayTime, mClickSoundLocalVolume);
+                        }
+                    }
+                    break;
+
+                case ESoundType.AudioClip:
+                    {
+                        if (mClickSoundAudioClip != null)
+                        {
+                            MySoundManager.Instance.PlaySFX(mClickSoundAudioClip, mClickSoundDelayTime, mClickSoundLocalVolume);
+                        }
+                    }
+                    break;
+            }
+
+            if (mPressAnimationExtraTouchZone != null)
+            {
+                mPressAnimationExtraTouchZone.gameObject.SetActive(false);
+            }
+        }
+
+
+        /// <summary>
+        /// Process OnPointerDoubleClick event.
+        /// </summary>
+        private void _ProcessPointerDoubleClickEvent()
+        {
+            Button.OnSubmit(mPointerEventDataClick);
+
+            switch (mClickAnimationType)
+            {
+                case EAnimationType.Scale:
+                    {
+                        if (!mIsTriggerClickEventAfterAnimationComplete)
+                        {
+                            if (mOnEventPointerDoubleClick != null && mPointerEventDataClick != null)
+                            {
+                                mOnEventPointerDoubleClick.Invoke(mPointerEventDataClick);
+                            }
+                            mPointerEventDataClick = null;
+                        }
+
+                        MyCoroutiner.Start(DO_CLICK_SCALE_ANIMATION, _DoClickScaleAnimation(() =>
+                        {
+                            if (mIsTriggerClickEventAfterAnimationComplete)
+                            {
+                                if (mOnEventPointerDoubleClick != null && mPointerEventDataClick != null)
+                                {
+                                    mOnEventPointerDoubleClick.Invoke(mPointerEventDataClick);
+                                }
+                            }
+                            mPointerEventDataClick = null;
+                        }));
+                    }
+                    break;
+
+                default:
+                    {
+                        if (mPressAnimationType == EAnimationType.None || !mIsTriggerClickEventAfterAnimationComplete || mIsPressAnimationScaleCompleted)
+                        {
+                            if (mOnEventPointerDoubleClick != null && mPointerEventDataClick != null)
+                            {
+                                mOnEventPointerDoubleClick.Invoke(mPointerEventDataClick);
                             }
                             mPointerEventDataClick = null;
                         }

@@ -1,7 +1,8 @@
 ﻿/*
  * Copyright (c) 2016 Phạm Minh Hoàng
  * Framework:   MyClasses
- * Class:       MyAdMobManager (version 1.10)
+ * Class:       MyAdMobManager (version 1.11)
+ * Require:     GoogleMobileAds-v6.0.0
  */
 
 #pragma warning disable 0162
@@ -62,8 +63,6 @@ namespace MyClasses
         [SerializeField]
         private bool mIsLoadingInterstitial = false;
         [SerializeField]
-        private bool mIsEditorInterstitialLoaded = false;
-        [SerializeField]
         private string mAndroidDefaultRewardedAdId = string.Empty;
         [SerializeField]
         private string mIosDefaultRewardedAdId = string.Empty;
@@ -72,21 +71,19 @@ namespace MyClasses
         [SerializeField]
         private bool mIsLoadingRewardred = false;
         [SerializeField]
-        private bool mIsEditorRewardredLoaded = false;
+        private bool mIsHasReward = false;
 
         private BannerView mBanner;
         private AdRequest mBannerRequest;
         private Action mOnBannerLoadedCallback;
         private Action mOnBannerFailedToLoadCallback;
         private Action mOnBannerOpeningCallback;
-        private Action mOnBannerLeavingApplicationCallback;
         private Action mOnBannerClosedCallback;
 
         private InterstitialAd mInterstitialAd;
         private Action mOnInterstitialAdLoadedCallback;
         private Action mOnInterstitialAdFailedToLoadCallback;
         private Action mOnInterstitialAdOpeningCallback;
-        private Action mOnInterstitialAdLeavingApplicationCallback;
         private Action mOnInterstitialAdClosedCallback;
 
         private RewardedAd mRewardedAd;
@@ -248,57 +245,9 @@ namespace MyClasses
         }
 
         /// <summary>
-        /// Show a new banner.
-        /// </summary>
-        public void ShowNewBanner(string adUnitId = null, AdSize size = null, AdPosition position = AdPosition.Bottom, Action onLoadedCallback = null, Action onFailedToLoad = null, Action onOpeningCallback = null, Action onLeavingApplicationCallback = null, Action onClosedCallback = null)
-        {
-            if (adUnitId == null)
-            {
-#if UNITY_ANDROID
-                adUnitId = PlayerPrefs.GetString("MyAdMobManager_BannerId", mAndroidDefaultBannerId);
-#elif UNITY_IOS
-                adUnitId = PlayerPrefs.GetString("MyAdMobManager_BannerId", mIosDefaultBannerId);
-#endif
-            }
-
-            if (size == null)
-            {
-                size = AdSize.Banner;
-            }
-
-#if DEBUG_MY_ADMOB
-            Debug.Log("[" + typeof(MyAdMobManager).Name + "] ShowNewBanner(): adUnitId=" + adUnitId + " | size=" + size.AdType + " | position=" + position);
-#endif
-
-            mOnBannerLoadedCallback = onLoadedCallback;
-            mOnBannerFailedToLoadCallback = onFailedToLoad;
-            mOnBannerOpeningCallback = onOpeningCallback;
-            mOnBannerLeavingApplicationCallback = onLeavingApplicationCallback;
-            mOnBannerClosedCallback = onClosedCallback;
-
-            mLastBannerShowTimestamp = MyLocalTime.CurrentUnixTime;
-
-            if (mBannerRequest == null)
-            {
-                mBannerRequest = new AdRequest.Builder().Build();
-            }
-            if (mBanner != null)
-            {
-                mBanner.Destroy();
-            }
-            mBanner = new BannerView(adUnitId, size, position);
-            mBanner.LoadAd(mBannerRequest);
-            mBanner.OnAdLoaded += _OnBannerLoaded;
-            mBanner.OnAdFailedToLoad += _OnBannerFaiedToLoad;
-            mBanner.OnAdOpening += _OnBannerOpening;
-            mBanner.OnAdLeavingApplication += _OnBannerLeavingApplication;
-            mBanner.OnAdClosed += _OnBannerClosed;
-        }
-
-        /// <summary>
         /// Show a banner.
         /// </summary>
-        public void ShowBanner(string adUnitId = null, AdSize size = null, AdPosition position = AdPosition.Bottom, Action onLoadedCallback = null, Action onFailedToLoad = null, Action onOpeningCallback = null, Action onLeavingApplicationCallback = null, Action onClosedCallback = null)
+        public void ShowBanner(string adUnitId = null, AdSize size = null, AdPosition position = AdPosition.Bottom, Action onLoadedCallback = null, Action onFailedToLoadCallback = null, Action onOpeningCallback = null, Action onClosedCallback = null)
         {
             if (adUnitId == null)
             {
@@ -319,9 +268,8 @@ namespace MyClasses
 #endif
 
             mOnBannerLoadedCallback = onLoadedCallback;
-            mOnBannerFailedToLoadCallback = onFailedToLoad;
+            mOnBannerFailedToLoadCallback = onFailedToLoadCallback;
             mOnBannerOpeningCallback = onOpeningCallback;
-            mOnBannerLeavingApplicationCallback = onLeavingApplicationCallback;
             mOnBannerClosedCallback = onClosedCallback;
 
             mLastBannerShowTimestamp = MyLocalTime.CurrentUnixTime;
@@ -335,7 +283,6 @@ namespace MyClasses
             mBanner.OnAdLoaded += _OnBannerLoaded;
             mBanner.OnAdFailedToLoad += _OnBannerFaiedToLoad;
             mBanner.OnAdOpening += _OnBannerOpening;
-            mBanner.OnAdLeavingApplication += _OnBannerLeavingApplication;
             mBanner.OnAdClosed += _OnBannerClosed;
         }
 
@@ -351,7 +298,6 @@ namespace MyClasses
             mOnBannerLoadedCallback = null;
             mOnBannerFailedToLoadCallback = null;
             mOnBannerOpeningCallback = null;
-            mOnBannerLeavingApplicationCallback = null;
             mOnBannerClosedCallback = null;
 
             if (mBanner != null)
@@ -395,11 +341,7 @@ namespace MyClasses
         /// </summary>
         public bool IsInterstitialAdLoaded()
         {
-#if UNITY_EDITOR
-            return mIsEditorInterstitialLoaded;
-#else
             return mInterstitialAd != null && mInterstitialAd.IsLoaded();
-#endif
         }
 
         /// <summary>
@@ -423,22 +365,15 @@ namespace MyClasses
             mOnInterstitialAdLoadedCallback = onLoadedCallback;
             mOnInterstitialAdFailedToLoadCallback = onFailedToLoadCallback;
             mOnInterstitialAdOpeningCallback = null;
-            mOnInterstitialAdLeavingApplicationCallback = null;
             mOnInterstitialAdClosedCallback = null;
 
-#if UNITY_EDITOR
-            mIsLoadingInterstitial = false;
-            mIsEditorInterstitialLoaded = UnityEngine.Random.Range(0, 100) < 80;
-#else
             mIsLoadingInterstitial = true;
-#endif
 
             mInterstitialAd = new InterstitialAd(adUnitId);
             mInterstitialAd.LoadAd(new AdRequest.Builder().Build());
             mInterstitialAd.OnAdLoaded += _OnInterstitialLoaded;
             mInterstitialAd.OnAdFailedToLoad += _OnInterstitialFaiedToLoad;
             mInterstitialAd.OnAdOpening += _OnInterstitialOpening;
-            mInterstitialAd.OnAdLeavingApplication += _OnInterstitialLeavingApplication;
             mInterstitialAd.OnAdClosed += _OnInterstitialClosed;
         }
 
@@ -453,28 +388,14 @@ namespace MyClasses
 
             if (IsInterstitialAdLoaded())
             {
-#if UNITY_EDITOR
-                mIsEditorInterstitialLoaded = false;
-
-                if (onOpeningCallback != null)
-                {
-                    onOpeningCallback();
-                }
-                if (onClosedCallback != null)
-                {
-                    onClosedCallback();
-                }
-#else
                 mOnInterstitialAdLoadedCallback = null;
                 mOnInterstitialAdFailedToLoadCallback = null;
                 mOnInterstitialAdOpeningCallback = onOpeningCallback;
-                mOnInterstitialAdLeavingApplicationCallback = onLeavingApplicationCallback;
                 mOnInterstitialAdClosedCallback = onClosedCallback;
 
                 mLastInterstitialShowTimestamp = MyLocalTime.CurrentUnixTime;
 
                 mInterstitialAd.Show();
-#endif
             }
         }
 
@@ -513,11 +434,7 @@ namespace MyClasses
         /// </summary>
         public bool IsRewardedAdLoaded()
         {
-#if UNITY_EDITOR
-            return mIsEditorRewardredLoaded;
-#else
             return mRewardedAd != null && mRewardedAd.IsLoaded();
-#endif
         }
 
         /// <summary>
@@ -546,17 +463,11 @@ namespace MyClasses
             mOnRewardedAdSkippedCallback = null;
             mOnRewardedAdClosedCallback = null;
 
-#if UNITY_EDITOR
-            mIsLoadingRewardred = false;
-            mIsEditorRewardredLoaded = UnityEngine.Random.Range(0, 100) < 80;
-#else
             mIsLoadingRewardred = true;
-#endif
 
             mRewardedAd = new RewardedAd(adUnitId);
             mRewardedAd.LoadAd(new AdRequest.Builder().Build());
             mRewardedAd.OnAdLoaded += _OnRewardedAdLoaded;
-            mRewardedAd.OnAdFailedToLoad += _OnRewardedAdFaiedToLoad;
             mRewardedAd.OnAdOpening += _OnRewardedAdOpening;
             mRewardedAd.OnAdFailedToShow += _OnRewardedAdFaiedToShow;
             mRewardedAd.OnUserEarnedReward += _OnRewardedAdUserEarnedReward;
@@ -574,22 +485,6 @@ namespace MyClasses
 
             if (IsRewardedAdLoaded())
             {
-#if UNITY_EDITOR
-                mIsEditorRewardredLoaded = false;
-
-                if (onOpeningCallback != null)
-                {
-                    onOpeningCallback();
-                }
-                if (onUserEarnedRewardCallback != null)
-                {
-                    onUserEarnedRewardCallback();
-                }
-                if (onClosedCallback != null)
-                {
-                    onClosedCallback();
-                }
-#else
                 mOnRewardedAdLoadedCallback = null;
                 mOnRewardedAdFailedToLoadCallback = null;
                 mOnRewardedAdOpeningCallback = onOpeningCallback;
@@ -599,9 +494,9 @@ namespace MyClasses
                 mOnRewardedAdClosedCallback = onClosedCallback;
 
                 mLastRewardedShowTimestamp = MyLocalTime.CurrentUnixTime;
+                mIsHasReward = false;
 
                 mRewardedAd.Show();
-#endif
             }
         }
 
@@ -644,18 +539,6 @@ namespace MyClasses
             if (mOnBannerOpeningCallback != null)
             {
                 mOnBannerOpeningCallback();
-            }
-        }
-
-        private void _OnBannerLeavingApplication(object sender, EventArgs args)
-        {
-#if DEBUG_MY_ADMOB
-            Debug.Log("[" + typeof(MyAdMobManager).Name + "] _OnBannerLeavingApplication()");
-#endif
-
-            if (mOnBannerLeavingApplicationCallback != null)
-            {
-                mOnBannerLeavingApplicationCallback();
             }
         }
 
@@ -717,30 +600,21 @@ namespace MyClasses
             }
         }
 
-        private void _OnInterstitialLeavingApplication(object sender, EventArgs args)
-        {
-#if DEBUG_MY_ADMOB
-            Debug.Log("[" + typeof(MyAdMobManager).Name + "] _OnInterstitialLeavingApplication()");
-#endif
-
-            if (mOnInterstitialAdLeavingApplicationCallback != null)
-            {
-                mOnInterstitialAdLeavingApplicationCallback();
-            }
-        }
-
         private void _OnInterstitialClosed(object sender, EventArgs args)
         {
 #if DEBUG_MY_ADMOB
             Debug.Log("[" + typeof(MyAdMobManager).Name + "] _OnInterstitialClosed()");
 #endif
 
-            mIsLoadingInterstitial = false;
-
-            if (mOnInterstitialAdClosedCallback != null)
+            MyCoroutiner.ExcuteAfterDelayFrame(2, () =>
             {
-                mOnInterstitialAdClosedCallback();
-            }
+                mIsLoadingInterstitial = false;
+
+                if (mOnInterstitialAdClosedCallback != null)
+                {
+                    mOnInterstitialAdClosedCallback();
+                }
+            });
         }
 
         #endregion
@@ -807,11 +681,7 @@ namespace MyClasses
             Debug.Log("[" + typeof(MyAdMobManager).Name + "] _OnRewardedAdUserEarnedReward()");
 #endif
 
-            if (mOnRewardedAdUserEarnedRewardCallback != null)
-            {
-                mOnRewardedAdUserEarnedRewardCallback();
-                mOnRewardedAdUserEarnedRewardCallback = null;
-            }
+            mIsHasReward = true;
         }
 
         private void _OnRewardedAdClosed(object sender, EventArgs args)
@@ -820,36 +690,29 @@ namespace MyClasses
             Debug.Log("[" + typeof(MyAdMobManager).Name + "] _OnRewardedAdClosed()");
 #endif
 
-            mIsLoadingRewardred = false;
+            MyCoroutiner.ExcuteAfterDelayFrame(2, () =>
+            {
+                mIsLoadingRewardred = false;
 
-            if (mOnRewardedAdUserEarnedRewardCallback == null)
-            {
-                if (mOnRewardedAdClosedCallback != null)
+                if (mIsHasReward)
                 {
-                    mOnRewardedAdClosedCallback();
+                    if (mOnRewardedAdUserEarnedRewardCallback != null)
+                    {
+                        mOnRewardedAdUserEarnedRewardCallback();
+                    }
                 }
-            }
-            else if (mOnRewardedAdSkippedCallback != null)
-            {
-                MyCoroutiner.ExcuteAfterDelayFrame(2, () =>
+                else
                 {
-                    if (mOnRewardedAdUserEarnedRewardCallback != null && mOnRewardedAdSkippedCallback != null)
+                    if (mOnRewardedAdSkippedCallback != null)
                     {
                         mOnRewardedAdSkippedCallback();
                     }
-                    if (mOnRewardedAdClosedCallback != null)
-                    {
-                        mOnRewardedAdClosedCallback();
-                    }
-                });
-            }
-            else
-            {
+                }
                 if (mOnRewardedAdClosedCallback != null)
                 {
                     mOnRewardedAdClosedCallback();
                 }
-            }
+            });
         }
 
         #endregion

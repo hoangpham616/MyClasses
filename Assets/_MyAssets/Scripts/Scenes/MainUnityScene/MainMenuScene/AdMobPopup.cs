@@ -122,12 +122,16 @@ namespace MyApp
 
         private void _OnClickShowBanner(PointerEventData arg0)
         {
+            Debug.Log("AdMobPopup._OnClickShowBanner()");
+
             MyAdMobManager.Instance.ShowBanner();
         }
 
         private void _OnClickLoadInterstitial(PointerEventData arg0)
         {
-            if (!MyAdMobManager.Instance.IsInterstitialAdLoaded() && MyAdMobManager.Instance.IsInterstitialAdLoading())
+            Debug.Log("AdMobPopup._OnClickLoadInterstitial()");
+
+            if (!MyAdMobManager.Instance.IsInterstitialAdLoaded() && !MyAdMobManager.Instance.IsInterstitialAdLoading())
             {
                 MyAdMobManager.Instance.LoadInterstitialAd(null, () =>
                 {
@@ -145,15 +149,14 @@ namespace MyApp
 
         private void _OnClickShowInterstitial(PointerEventData arg0)
         {
-            if (!MyAdMobManager.Instance.IsInterstitialAdLoaded() && MyAdMobManager.Instance.IsInterstitialAdLoading())
+            Debug.Log("AdMobPopup._OnClickShowInterstitial()");
+
+            if (!MyAdMobManager.Instance.IsInterstitialAdLoaded() || MyAdMobManager.Instance.IsInterstitialAdLoading())
             {
                 MyUGUIManager.Instance.ShowToastMessage("Interstitial hasn't loaded yet");
             }
             else
             {
-#if UNITY_EDITOR
-                Debug.LogError("AdMobPopup._OnClickShowInterstitial(): please test on the real device");
-#endif
                 MyAdMobManager.Instance.ShowInterstitialAd(() =>
                 {
                     Debug.Log("AdMobPopup._OnClickShowInterstitial().ShowInterstitialAd(): onOpeningCallback");
@@ -169,7 +172,9 @@ namespace MyApp
 
         private void _OnClickLoadRewardedVideo(PointerEventData arg0)
         {
-            if (!MyAdMobManager.Instance.IsRewardedAdLoaded() && MyAdMobManager.Instance.IsRewardedAdLoading())
+            Debug.Log("AdMobPopup._OnClickLoadRewardedVideo()");
+
+            if (!MyAdMobManager.Instance.IsRewardedAdLoaded() && !MyAdMobManager.Instance.IsRewardedAdLoading())
             {
                 MyAdMobManager.Instance.LoadRewardedAd(null, () =>
                 {
@@ -187,15 +192,14 @@ namespace MyApp
 
         private void _OnClickShowRewardedVideo(PointerEventData arg0)
         {
-            if (!MyAdMobManager.Instance.IsRewardedAdLoaded() && MyAdMobManager.Instance.IsRewardedAdLoading())
+            Debug.Log("AdMobPopup._OnClickShowRewardedVideo()");
+
+            if (!MyAdMobManager.Instance.IsRewardedAdLoaded() || MyAdMobManager.Instance.IsRewardedAdLoading())
             {
                 MyUGUIManager.Instance.ShowToastMessage("Rewarded Video hasn't loaded yet");
             }
             else
             {
-#if UNITY_EDITOR
-                Debug.LogError("AdMobPopup._OnClickShowRewardedVideo(): please test on the real device");
-#endif
                 MyAdMobManager.Instance.ShowRewardedAd(() =>
                 {
                     Debug.Log("AdMobPopup._OnClickShowRewardedVideo().ShowRewardedAd(): onOpeningCallback");

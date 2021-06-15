@@ -53,7 +53,7 @@ namespace MyApp.UI
 
             base.OnUGUIEnter();
 
-            _btnRunningMessage.OnEventPointerClick.AddListener(_OnClickRunningMessage);
+            _btnRunningMessage.OnEventPointerDoubleClick.AddListener(_OnClickRunningMessage);
             _btnFlyingMessage.OnEventPointerClick.AddListener(_OnClickFlyingMessage);
             _btnToastMessage.OnEventPointerClick.AddListener(_OnClickToastMessage);
             _btnLoadingIndicator.OnEventPointerClick.AddListener(_OnClickLoadingIndicator);
@@ -118,6 +118,8 @@ namespace MyApp.UI
 
         private void _OnClickRunningMessage(PointerEventData arg0)
         {
+            Debug.Log("MainMenuScene._OnClickRunningMessage()");
+
             MyUGUIManager.Instance.SetRunningMessageMaxQueue(MyUGUIRunningMessage.EType.Default, 3);
             MyUGUIManager.Instance.ShowRunningMessage("This is Running Message 1 (will not show because out of queue)", ERunningMessageSpeed.Normal, MyUGUIRunningMessage.EType.Default);
             MyUGUIManager.Instance.ShowRunningMessage("This is Running Message 2 (will not show because out of queue)", ERunningMessageSpeed.Normal, MyUGUIRunningMessage.EType.Default);
@@ -128,16 +130,22 @@ namespace MyApp.UI
 
         private void _OnClickFlyingMessage(PointerEventData arg0)
         {
+            Debug.Log("MainMenuScene._OnClickFlyingMessage()");
+
             MyUGUIManager.Instance.ShowFlyingMessage("This is Flying Message", MyUGUIFlyingMessage.EType.ShortFlyFromBot);
         }
 
         private void _OnClickToastMessage(PointerEventData arg0)
         {
+            Debug.Log("MainMenuScene._OnClickToastMessage()");
+
             MyUGUIManager.Instance.ShowToastMessage("This is Toast Message", EToastMessageDuration.Medium);
         }
 
         private void _OnClickLoadingIndicator(PointerEventData arg0)
         {
+            Debug.Log("MainMenuScene._OnClickLoadingIndicator()");
+
             int id1 = MyUGUIManager.Instance.ShowLoadingIndicator(1, () =>
             {
                 Debug.Log("Loading Indicator 1 timeout");
@@ -154,6 +162,8 @@ namespace MyApp.UI
 
         private void _OnClickDialog2Buttons(PointerEventData arg0)
         {
+            Debug.Log("MainMenuScene._OnClickDialog2Buttons()");
+
             MyUGUIPopup2Buttons popup = (MyUGUIPopup2Buttons)MyUGUIManager.Instance.ShowPopup(EPopupID.Dialog2ButtonsPopup);
             popup.SetData("TITLE", "Body", "Left", (data) =>
             {
@@ -169,21 +179,29 @@ namespace MyApp.UI
 
         private void _OnClickGameScene(PointerEventData arg0)
         {
+            Debug.Log("MainMenuScene._OnClickGameScene()");
+
             MyUGUIManager.Instance.ShowScene(ESceneID.GameScene);
         }
 
         private void _OnClickPool(PointerEventData arg0)
         {
+            Debug.Log("MainMenuScene._OnClickPool()");
+
             MyUGUIManager.Instance.ShowPopup(EPopupID.PoolPopup);
         }
 
         private void _OnClickLocalization(PointerEventData arg0)
         {
+            Debug.Log("MainMenuScene._OnClickLocalization()");
+
             MyUGUIManager.Instance.ShowPopup(EPopupID.LocalizationPopup);
         }
 
         private void _OnClickAdMob(PointerEventData arg0)
         {
+            Debug.Log("MainMenuScene._OnClickAdMob()");
+
             MyUGUIManager.Instance.ShowPopup(EPopupID.AdMobPopup);
         }
 
